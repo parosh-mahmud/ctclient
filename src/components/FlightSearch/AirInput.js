@@ -273,7 +273,7 @@ const AirInput = ({
   searchedAirports.map((airport, index) => (
     <div
       key={`${airport.code}-${index}`}
-      onClick={() => handleFromAirportSelect(airport)}
+      onClick={() => handleToAirportSelect(airport)}
       className={classes.airportItem}
     >
       <Box sx={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>

@@ -272,19 +272,22 @@ function CustomIconButton({ value, selectedValue, onChange, Icon, label }) {
 
 const handleToAirportSelect = (airport) => {
   console.log('Selecting to airport:', airport);
-  setSelectedToAirport(airport);
-  setToAnchorEl(null); // Close the 'to' popover
+  setSelectedToAirport(airport); // Assuming setSelectedToAirport updates the state in the parent component
+  setToAnchorEl(null); // Close the "To" popover
 };
 
+
+// This function should be defined in the parent component where state is managed
 const handlePopoverClick = (event, anchor) => {
   if (anchor === 'from') {
     setFromAnchorEl(event.currentTarget);
-    setToAnchorEl(null); // Explicitly make sure 'to' anchor is nullified
+    setToAnchorEl(null); // Ensure to close or reset the 'to' anchor
   } else if (anchor === 'to') {
     setToAnchorEl(event.currentTarget);
-    setFromAnchorEl(null); // Explicitly make sure 'from' anchor is nullified
+    setFromAnchorEl(null); // Ensure to close or reset the 'from' anchor
   }
 };
+
 
 
 

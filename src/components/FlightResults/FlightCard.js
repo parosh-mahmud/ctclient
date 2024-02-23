@@ -118,6 +118,7 @@ const airlineCode = segment?.Airline?.AirlineCode;
         try {
           const response = await axios.get(`/api/airline/${flightData.segments[0].Airline.AirlineCode}`);
           setAirlineLogoUrl(response.data.logoUrl);
+          console.log('Logo URL:', response.data.logoUrl);
         } catch (error) {
           console.error('Error fetching airline logo:', error);
         }

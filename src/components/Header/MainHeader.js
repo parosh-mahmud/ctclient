@@ -14,6 +14,7 @@ import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 // import ProductSansBoldItalic from '..//../assets/fonts/ProductSansBoldItalic'
 import CityLogo from "../../assets/logos/CityLogo.png";
+import CityLogoSvg from "../../assets/logos/headerlogo.svg";
 import { Grid } from '@mui/material';
 import { useAuthCont } from '../auth/AuthContext';
 import { useAuth,auth } from '../../firebaseconfig';
@@ -115,7 +116,8 @@ console.log(currentUser)
               textDecoration: 'none',
             }}
           >
-            <img src={CityLogo} style={{ color: 'red' }}  alt="Logo" />
+                          <img src={CityLogoSvg} style={{ width: '150px', height: 'auto' }} alt="Logo" />
+
           </Typography>
             </div>
           <Drawer
@@ -203,9 +205,22 @@ console.log(currentUser)
         </>
       ) : (
         // If the user is not logged in, show the Sign In button
-        <Button variant="contained" component={Link} to="/signin" sx={{ width: 120, color: 'black', display: { md: 'block' } }}>
-          Sign In
-        </Button>
+        <Button
+  variant="contained"
+  component={Link}
+  to="/signin"
+  sx={{
+    width: { xs: 'auto', sm: 120 }, // Adjusts width based on screen size
+    color: 'white',
+    textTransform: 'capitalize', // Capitalizes the button text
+    display: 'block', // Ensures the button is always displayed
+    mx: 'auto', // Centers the button on smaller screens
+    backgroundColor: ' # 0067FF',
+
+  }}
+>
+  Sign In
+</Button>
       )}
           <IconButton
             size="large"
