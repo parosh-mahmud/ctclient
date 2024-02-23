@@ -4,9 +4,7 @@
   "private": true,
   "proxy": "https://otomotions.com",
   "dependencies": {
-    "@chakra-ui/icons": "^2.1.1",
-    "@chakra-ui/react": "^2.8.1",
-    "@emotion/react": "^11.11.1",
+    "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/poppins": "^5.0.8",
     "@mui/icons-material": "^5.14.14",
@@ -21,7 +19,6 @@
     "axios": "^1.5.1",
     "dayjs": "^1.11.10",
     "firebase": "^10.4.0",
-    "framer-motion": "^10.16.4",
     "html2pdf.js": "^0.10.1",
     "jspdf": "^2.5.1",
     "react": "^18.2.0",

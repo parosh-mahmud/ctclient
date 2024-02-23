@@ -1,35 +1,31 @@
-import { Flex, Radio, RadioGroup, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
 import SearchForm from './SearchForm';
 
 const Oneway = () => {
-  const [journeyType, setJourneyType] = useState(1); // Initialize with 1 for One Way
+  const [journeyType, setJourneyType] = useState('1'); // Initialize with '1' for One Way
 
-  const handleJourneyTypeChange = (value) => {
-    const selectedJourneyType = parseInt(value, 10); // Parse value as an integer
-    setJourneyType(selectedJourneyType);
-    
+  const handleJourneyTypeChange = (event) => {
+    setJourneyType(event.target.value);
   };
 
   return (
     <div>
       {/* One way, Return, Multicity */}
-      <Flex align="center" mb={4}>
-        <RadioGroup defaultValue="1" onChange={handleJourneyTypeChange}>
-          <Radio value="1" size="lg" colorScheme="teal">
-            <Text fontSize="lg">One Way</Text>
-          </Radio>
-          <Radio value="2" size="lg" colorScheme="teal">
-            <Text fontSize="lg">Return</Text>
-          </Radio>
-          <Radio value="3" size="lg" colorScheme="teal">
-            <Text fontSize="lg">Multicity</Text>
-          </Radio>
+      <FormControl component="fieldset">
+        <RadioGroup 
+          aria-label="journeyType" 
+          name="journeyType" 
+          value={journeyType} 
+          onChange={handleJourneyTypeChange}
+        >
+          <FormControlLabel value="1" control={<Radio />} label={<Typography variant="body1">One Way</Typography>} />
+          <FormControlLabel value="2" control={<Radio />} label={<Typography variant="body1">Return</Typography>} />
+          <FormControlLabel value="3" control={<Radio />} label={<Typography variant="body1">Multicity</Typography>} />
         </RadioGroup>
-      </Flex>
+      </FormControl>
 
       {/* Pass journeyType as a prop to SearchForm */}
-      
     </div>
   );
 };
