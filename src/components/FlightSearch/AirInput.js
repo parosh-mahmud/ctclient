@@ -71,6 +71,7 @@ const AirInput = ({
   dAnchorEl,
   handleDPopoverClose,
   selectedDate,
+  handleSwapAirports,
   dayOfWeek,
   handleDepartureDateChange,
   handleRPopoverClick,
@@ -121,14 +122,15 @@ const AirInput = ({
               </Box>
 
                {/* <Divider orientation="vertical" flexItem  /> */}
- <Box style={{ 
+ <Box onClick={handleSwapAirports} style={{ 
   display: 'flex', 
   justifyContent: 'center', 
   alignItems: 'center', 
   width: '40px', // Adjust the width as needed
   height: '40px', // Adjust the height as needed
   position: 'relative', // Optional, if you need to position it relative to something
-  zIndex: 1 
+  zIndex: 1 ,
+  cursor: 'pointer'
 }}>
   <SwapHorizIcon style={{ 
     fontSize: '45px', // Adjust to your desired icon size

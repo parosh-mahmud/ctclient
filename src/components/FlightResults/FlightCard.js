@@ -26,6 +26,7 @@ import { fetchAirPrice } from "../../redux/slices/airPriceSlice";
 import { selectFlightSearchData } from '../../redux/reducers/flightSlice';
 import AirlineSeatReclineNormalIcon from '@mui/icons-material/AirlineSeatReclineNormal';
 import { setSearchIDResultID } from "../../redux/slices/searchIDResultIDSlice";
+const BASE_URL = process.env.REACT_APP_API_URL
 const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: 'rgba(255,255,255,0.5)',
@@ -116,7 +117,7 @@ const airlineCode = segment?.Airline?.AirlineCode;
     if (flightData?.segments?.[0]?.Airline?.AirlineCode) {
       const fetchLogoUrl = async () => {
         try {
-          const response = await axios.get(`/api/airline/${flightData.segments[0].Airline.AirlineCode}`);
+          const response = await axios.get(`${BASE_URL}/api/airline/${flightData.segments[0].Airline.AirlineCode}`);
           setAirlineLogoUrl(response.data.logoUrl);
           console.log('Logo URL:', response.data.logoUrl);
         } catch (error) {

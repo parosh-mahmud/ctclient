@@ -210,12 +210,17 @@ console.log(currentUser)
   component={Link}
   to="/signin"
   sx={{
-    width: { xs: 'auto', sm: 120 }, // Adjusts width based on screen size
+  width: { xs: 'auto', sm: 120 }, // Adjusts width based on screen size
+    padding: '6px 12px', // Adjust padding to control height and maintain text alignment
+    fontSize: { xs: '0.75rem', sm: '0.875rem' }, // Responsive font size
     color: 'white',
     textTransform: 'capitalize', // Capitalizes the button text
     display: 'block', // Ensures the button is always displayed
     mx: 'auto', // Centers the button on smaller screens
-    backgroundColor: ' # 0067FF',
+    backgroundColor: '#0067FF',
+    whiteSpace: 'nowrap', // Prevents the text from wrapping
+    overflow: 'hidden', // Keeps the content within the button
+    textOverflow: 'ellipsis', // Adds an ellipsis if the text overflows
 
   }}
 >

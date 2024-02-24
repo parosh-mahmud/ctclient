@@ -156,7 +156,11 @@ const [formData, setFormData] = useState({
       },
     ],
   });
-
+const handleSwapAirports = () => {
+    const temp = selectedFromAirport;
+    setSelectedFromAirport(selectedToAirport);
+    setSelectedToAirport(temp);
+  };
 
  const handleAddCity = () => {
   setAirInputs([...airInputs, { id: airInputs.length + 1 }]);
@@ -450,6 +454,7 @@ useEffect(() => {
        journeyType={journeyType}
     canRemove={airInputs.length > 1 && index !== 0} 
         key={input.id}
+        
         onAddCity={handleAddCity}
     onRemoveCity={() => handleRemoveCity(input.id)}
     
@@ -488,6 +493,7 @@ useEffect(() => {
          setAdults={setAdults}
   setChildren={setChildren}
   setInfants={setInfants}
+
       />
     )) :
     <AirInput
@@ -498,6 +504,7 @@ useEffect(() => {
         handlePopoverClick={handlePopoverClick}
         fromAnchorEl={fromAnchorEl}
         toAnchorEl={toAnchorEl}
+        
         handlePopoverClose={handlePopoverClose}
         handleSearchQueryChange={handleSearchQueryChange}
         searchQuery={searchQuery}
@@ -509,6 +516,7 @@ useEffect(() => {
         handleDPopoverClose={handleDPopoverClose}
         selectedDate={selectedDate}
         dayOfWeek={dayOfWeek}
+        handleSwapAirports = {handleSwapAirports}
         handleDepartureDateChange={handleDepartureDateChange}
         handleRPopoverClick={handleRPopoverClick}
         returnAnchorEl={returnAnchorEl}
