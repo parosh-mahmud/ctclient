@@ -251,6 +251,7 @@ function CustomIconButton({ value, selectedValue, onChange, Icon, label }) {
           marginLeft: '8px',
           color: 'inherit', // Ensure the text color inherits from the Box
           fontSize: '14px', // Adjust font size as needed
+          fontFamily:'Google Sans sans serif'
         }}
       >
         {label}

@@ -262,11 +262,11 @@ const AirInput = ({
     >
       <Box sx={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
         <Box>
-          <Typography fontWeight="bold">{airport.city}, {airport.country}</Typography>
-          <Typography fontSize="15px">{airport.name}</Typography>
+          <Typography  fontFamily="Google Sans" fontWeight="bold">{airport.city}, {airport.country}</Typography>
+          <Typography fontFamily="Google Sans" fontSize="15px">{airport.name}</Typography>
         </Box>
         <Box>
-          <Typography fontWeight="bold">{airport.code}</Typography>
+          <Typography fontFamily="Google Sans" fontWeight="bold">{airport.code}</Typography>
         </Box>
       </Box>
     </div>

@@ -94,9 +94,13 @@ console.log(currentUser)
      <AppBar
       position="sticky"
       sx={{
-        backgroundColor: scrolling ? '#EFEFEF' : '#EFEFEF',
-        boxShadow: scrolling ? '0px 1px 5px rgba(0, 0, 0, 0.1)' : 'none',
+        backgroundColor:  'rgba(255,255,255,0.5)',
+        boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', 
         transition: 'background-color 0.3s, box-shadow 0.3s',
+        height:'48px',
+        justifyContent:'center',
+        alignItems:'center',
+        
       }}
     >
       <Container maxWidth="xl">
@@ -132,8 +136,9 @@ console.log(currentUser)
           >
             <List>
               {pages.map((page) => (
-                <ListItem button key={page.label} onClick={handleDrawerClose} component={Link} to={page.link}>
-                  <ListItemText primary={page.label} />
+                <ListItem  button key={page.label} onClick={handleDrawerClose} component={Link} to={page.link}>
+                  <ListItemText  primary={page.label} />
+
                 </ListItem>
               ))}
             </List>
@@ -153,7 +158,7 @@ console.log(currentUser)
                     display: { xs: 'none', md: 'block' }, // Hide on mobile, show on desktop
                   }}
                 >
-                  {page.label}
+                  <Typography sx={{fontSize:'14px',fontFamily:'Google Sans, Arial, sans serif',fontWeight:"550",color:'#212F3C'}}>{page.label}</Typography>
                 </Button>
               </Grid>
             ))}
@@ -221,6 +226,8 @@ console.log(currentUser)
     whiteSpace: 'nowrap', // Prevents the text from wrapping
     overflow: 'hidden', // Keeps the content within the button
     textOverflow: 'ellipsis', // Adds an ellipsis if the text overflows
+    fontFamily:'Google Sans ',
+    
 
   }}
 >
