@@ -98,7 +98,7 @@ const AirInput = ({
         {/* item 1 */}
         <Grid item sm={12} xs={12} lg={6} md={6} direction='row'>
           <Box  style={paperStyle} >
-             <Box onClick={(event) => handlePopoverClick(event, 'from')}  style={{ border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '90px', cursor: 'pointer',borderRadius:'5px'}}>
+             <Box onClick={(event) => handlePopoverClick(event, 'from')}  style={{ border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer',borderRadius:'5px'}}>
         <Stack direction="column"
   justifyContent="flex-start"
   alignItems="flex-start"
@@ -206,7 +206,7 @@ const AirInput = ({
   </div>
 </Popover>
 
-    <Box onClick={(event) => handlePopoverClick(event, 'to')}  style={{border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '90px', cursor: 'pointer',borderRadius:'5px' }}>
+    <Box onClick={(event) => handlePopoverClick(event, 'to')}  style={{border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer',borderRadius:'5px' }}>
                 
                  <Stack direction="column"
   justifyContent="flex-start"
@@ -300,7 +300,7 @@ const AirInput = ({
         
         <Grid item sm={12} xs={12} lg={4} md={4}>
           <Box  style={paperStyle}>
-             <Box onClick={handleDPopoverClick} style={{ borderRight:'none', border:'1px solid #0067FF',borderBottomLeftRadius:'5px',borderTopLeftRadius:'5px', width: '50%', height: '90px',  float: 'left',cursor:'pointer', boxSizing:'border-box' }}>
+             <Box onClick={handleDPopoverClick} style={{ borderRight:'none', border:'1px solid #0067FF',borderBottomLeftRadius:'5px',borderTopLeftRadius:'5px', width: '50%', height: '96px',  float: 'left',cursor:'pointer', boxSizing:'border-box' }}>
     <Box style={{display:'flex',}}>
        <CalendarMonthIcon style={{color:'#0067FF'}}/>
       <Typography>Travel Date</Typography>
@@ -341,7 +341,7 @@ const AirInput = ({
 
          {/* return date */}
 
-  <Box onClick={(event) => handleRPopoverClick(event)} style={{ width: '50%', height: '90px', float: 'left', boxSizing: 'border-box', border:'1px solid #0067FF', borderTopRightRadius:'5px', borderBottomRightRadius:'5px', borderLeft:'none', cursor:'pointer' }}>
+  <Box onClick={(event) => handleRPopoverClick(event)} style={{ width: '50%', height: '96px', float: 'left', boxSizing: 'border-box', border:'1px solid #0067FF', borderTopRightRadius:'5px', borderBottomRightRadius:'5px', borderLeft:'none', cursor:'pointer' }}>
   <Box style={{ display: 'flex' }}>
     <CalendarMonthIcon style={{color:'#0067FF'}} />
     <Typography>Return</Typography>
@@ -386,13 +386,16 @@ const AirInput = ({
           <Box  style={paperStyle}>
              {/* Travller class */}
            
-<Box onClick={openModal} style={{ width: '100%', height: '90px', cursor: 'pointer', border: '1px solid #0067FF', borderRadius: '5px', boxSizing: 'border-box', padding: '10px' }}>
+<Box onClick={openModal} style={{ width: '100%', height: '96px', cursor: 'pointer', border: '1px solid #0067FF', borderRadius: '5px', boxSizing: 'border-box', padding: '10px' }}>
  {(isFirstChild || journeyType !== 'multicity') && (
     <>
       <Typography>Traveller & Class</Typography>
       <Typography style={{ fontSize: '22px', fontWeight: 'bold' }}>{`${adults + children + infants} Person${adults + children + infants > 1 ? 's' : ''}`}</Typography>
       <Typography style={{ fontStyle: 'italic', fontWeight: 'bold' }}>{selectedClass}</Typography>
     </>
+   
+    
+
   )}
   
   {/* Conditionally show "Add Another City" and "Remove" for multi-city inputs */}
@@ -407,7 +410,6 @@ const AirInput = ({
     </Box>
   )}
 </Box>
-
 
 <Popover
   open={isModalOpen}
@@ -458,6 +460,7 @@ const AirInput = ({
     </Button>
   </Box>
 </Popover>
+
           </Box>
 
                   

@@ -94,7 +94,7 @@ console.log(currentUser)
      <AppBar
       position="sticky"
       sx={{
-        backgroundColor: scrolling ? '#fff' : 'transparent',
+        backgroundColor: scrolling ? '#EFEFEF' : '#EFEFEF',
         boxShadow: scrolling ? '0px 1px 5px rgba(0, 0, 0, 0.1)' : 'none',
         transition: 'background-color 0.3s, box-shadow 0.3s',
       }}
@@ -116,7 +116,7 @@ console.log(currentUser)
               textDecoration: 'none',
             }}
           >
-                          <img src={CityLogoSvg} style={{ width: '150px', height: 'auto' }} alt="Logo" />
+                          <img src={CityLogoSvg} style={{ width: '96px', height: '48px' }} alt="Logo" />
 
           </Typography>
             </div>

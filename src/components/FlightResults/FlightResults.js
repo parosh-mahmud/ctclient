@@ -11,6 +11,8 @@ import { selectFlightSearchData } from '../../redux/reducers/flightSlice';
 import FilterComponent from '../filterComponent/FilterComponent';
 import SearchForm from '../FlightSearch/SearchForm';
 import RecommendFilter from '../filterComponent/RecommendFilter';
+import { fetchFlightResults } from '../../redux/reducers/flightSlice';
+import { useLocation } from 'react-router-dom';
 
 
 
@@ -46,13 +48,19 @@ const inboundSegments = flightSearchData;
 console.log(outboundSegments)
  const [showSortedFlights, setShowSortedFlights] = useState(false);
   const [sortedFlights, setSortedFlights] = useState([]);
-
+const location = useLocation();
   const handleSortFlights = (sortedFlights) => {
     setSortedFlights([...sortedFlights]);
     setShowSortedFlights(true);
   };
 
- 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const paramsObject = Object.fromEntries(searchParams.entries());
+    if (Object.keys(paramsObject).length > 0) {
+      dispatch(fetchFlightResults(paramsObject));
+    }
+  }, [dispatch, location.search]);
 
 
 
