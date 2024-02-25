@@ -5,7 +5,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useDispatch } from 'react-redux';
 import { setFlightSearchData } from '../../redux/slices/flightSlice';
 
-const FilterByDate = () => {
+const FilterByDate = ({onDateSelect}) => {
   const dispatch = useDispatch();
   const theme = useTheme(); // Using theme for consistent styling
 
@@ -46,10 +46,12 @@ const FilterByDate = () => {
     return formatDate(currentDate);
   };
 
-  const handleBoxClick = (boxNumber) => {
-    // Assuming you might want to dispatch some action or handle date selection
-    setActiveBox(boxNumber);
-  };
+   const handleBoxClick = (boxNumber, daysOffset) => {
+        setActiveBox(boxNumber);
+        const selectedDate = new Date();
+        selectedDate.setDate(selectedDate.getDate() + daysOffset);
+        onDateSelect(selectedDate); // Call onDateSelect with the selected date
+    };
 
   useEffect(() => {
     setActiveBox(3);
@@ -57,15 +59,15 @@ const FilterByDate = () => {
   }, [dispatch]);
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', overflowX: 'auto' }}>
+    <Box  sx={{ display: 'flex', alignItems: 'center', overflowX: 'auto' }}>
       <IconButton onClick={() => handleBoxClick(Math.max(activeBox - 1, 1))} disabled={activeBox === 1}>
         <ArrowBackIcon />
       </IconButton>
       {[...Array(7)].map((_, index) => (
         <Box
           key={index}
-          onClick={() => handleBoxClick(index + 1)}
-          sx={boxStyle(activeBox === index + 1)}
+      onClick={() => handleBoxClick(index + 1, index - 2)} // Adjusted to pass daysOffset
+      sx={boxStyle(activeBox === index + 1)}
         >
           <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' } }}>
             {getRelativeDate(index - 2)}

@@ -14,7 +14,7 @@ import RecommendFilter from '../filterComponent/RecommendFilter';
 import { fetchFlightResults } from '../../redux/reducers/flightSlice';
 import { useLocation } from 'react-router-dom';
 import { Backdrop, CircularProgress } from '@mui/material';
-
+import { selectFlightSearchParams } from '../../redux/reducers/flightSlice';
 
 const recommendedBoxStyle = {
   width: '100%',
@@ -36,9 +36,9 @@ const boxStyle={
 
 const FlightResults = () => {
   const dispatch = useDispatch();
- 
+ const [searchParams, setSearchParams] = useState({});
 const [backdropOpen, setBackdropOpen] = useState(false);
-
+const currentSearchParams = useSelector(selectFlightSearchParams);
   
 const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
 const flightSearchData = useSelector(selectFlightSearchData);
@@ -54,6 +54,17 @@ const location = useLocation();
     setSortedFlights([...sortedFlights]);
     setShowSortedFlights(true);
   };
+
+ const handleDateSelect = (date) => {
+    const formattedDate = date.toISOString().split('T')[0];
+    
+    const updatedSearchParams = {
+        ...currentSearchParams, // Use the actual current search parameters
+        departureDate: formattedDate,
+    };
+
+    dispatch(fetchFlightResults(updatedSearchParams));
+};
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -84,7 +95,7 @@ const location = useLocation();
       {/* Second Row with Background Color */}
       <Box sx={{ backgroundColor: 'rgba(255,255,255,0.5)', padding: 2, display: 'flex',
         justifyContent: 'center', alignItems:'center',borderRadius:'5px'}}>
-        <FilterByDate />
+        <FilterByDate onDateSelect={handleDateSelect} />
         {/* Content for the second row */}
         
       </Box>

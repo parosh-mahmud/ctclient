@@ -3,16 +3,15 @@ import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_API_URL;
 
-// Define an async thunk for fetching flight results
+// Async thunk for fetching flight results
 export const fetchFlightResults = createAsyncThunk(
   'flight/fetchFlightResults',
-  async (formData, { rejectWithValue }) => {
+  async (searchParams, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/airSearch`, formData);
-      return response.data; // Automatically dispatched as fulfilled action
+      const response = await axios.post(`${BASE_URL}/api/airSearch`, searchParams);
+      return { data: response.data, searchParams }; // Return both data and searchParams
     } catch (error) {
-      // Use `rejectWithValue` to return a custom error payload
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || 'Something went wrong');
     }
   }
 );
@@ -21,46 +20,51 @@ const flightSlice = createSlice({
   name: 'flight',
   initialState: {
     searchData: null,
-    searchParams: null, // Store the last search parameters
+    searchParams: null,
     isLoadingFlightData: false,
-    error: null, // Store the error if any
+    error: null,
+    hasResults: false, // Flag to indicate if search results are empty
   },
   reducers: {
-    // You can still keep simple reducers here
-    setLoadingFlightData: (state) => {
-      state.isLoadingFlightData = true;
+    setSearchParams: (state, action) => {
+      state.searchParams = action.payload;
+    },
+    resetFlightState: (state) => {
+      state.searchData = null;
+      state.searchParams = null;
+      state.isLoadingFlightData = false;
+      state.error = null;
+      state.hasResults = false;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchFlightResults.pending, (state) => {
         state.isLoadingFlightData = true;
-        state.error = null; // Clear error on new fetch
+        state.error = null;
       })
       .addCase(fetchFlightResults.fulfilled, (state, action) => {
-        state.searchData = action.payload;
+        state.searchData = action.payload.data;
+        state.searchParams = action.payload.searchParams; // Store the last search parameters
         state.isLoadingFlightData = false;
+        state.hasResults = !!action.payload.data && action.payload.data.length > 0;
       })
       .addCase(fetchFlightResults.rejected, (state, action) => {
         state.isLoadingFlightData = false;
-        state.error = action.payload || 'Failed to fetch flight results'; // Default error message
+        state.error = action.payload;
+        state.hasResults = false;
       });
   },
 });
 
-export const { setLoadingFlightData } = flightSlice.actions;
+// Actions and selectors
+export const { setSearchParams, resetFlightState } = flightSlice.actions;
 
-// Selector to get the flight search data
 export const selectFlightSearchData = (state) => state.flight.searchData;
-
-// Selector to get the loading state
-export const selectIsLoadingFlightData = (state) => state.flight.isLoadingFlightData;
-
-// Selector to get the last search parameters
 export const selectFlightSearchParams = (state) => state.flight.searchParams;
-
-// Selector to get any error
+export const selectIsLoadingFlightData = (state) => state.flight.isLoadingFlightData;
 export const selectFlightError = (state) => state.flight.error;
+export const selectHasFlightResults = (state) => state.flight.hasResults;
 
 export default flightSlice.reducer;
 
