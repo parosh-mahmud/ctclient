@@ -1,13 +1,19 @@
-
 import React from 'react';
 import DashBoardHeader from '../components/Header/MainHeader';
-import Footer from '../components/footer/Footer';
+import Footer from '../components/footer/Footer'; // Ensure the path is correct
 
 const LayoutPage = ({ children }) => {
   return (
-    <div style={{justifyContent:'center',alignItems:'center'}}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh', // Sets minimum height to full viewport height
+      justifyContent: 'space-between', // Spaces out the header, content, and footer
+    }}>
       <DashBoardHeader />
-      {children}
+      <main style={{flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+        {children}
+      </main>
       <Footer />
     </div>
   );

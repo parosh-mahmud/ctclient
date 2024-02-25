@@ -1,53 +1,80 @@
 import React from 'react';
-import { Box, Typography, Link, Grid, Divider, Container } from '@mui/material';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
+import Container from '@mui/material/Container';
+import { makeStyles } from '@mui/styles';
+import Grid from '@mui/material/Grid';
 import CityLogoSvg from "../../assets/logos/headerlogo.svg";
-const Footer = () => {
-  const linkStyle = {
-    display: 'block', // Makes link take its own line
-    height: '30px', // Fixed height for each link
-    lineHeight: '30px', // Centers text vertically
-    color: 'inherit',
-    textDecoration: 'none', // Removes underline from links
-    '&:hover': {
-      textDecoration: 'underline', // Adds underline on hover
-    },
-  };
+import { Typography } from '@mui/material';
 
-  const textStyle = {
-    marginY: '4px', // Adds vertical margin for spacing between text lines
-  };
+const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    color: 'white',
+    width: '100%',
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+  },
+  navLink: {
+    color: 'gray',
+    
+    
+    '&:hover': {
+      color: 'white',
+      
+    },
+    marginRight: theme.spacing(2), // Adjust spacing between links
+    marginBottom: theme.spacing(1), // Adds spacing below each link for better visual separation
+  },
+  logo: {
+    width: '96px',
+    height: '48px',
+    marginBottom: theme.spacing(2), // Adds some space below the logo
+  },
+}));
+
+export default function Footer() {
+  const classes = useStyles();
 
   return (
-    <Box bgcolor="gray.200" py={4} mt={5}>
+    <Box sx={{
+      // backgroundColor: 'rgba(255,255,255,0.5)',
+      color: 'white',
+      width: '100%',
+      pt: 2, // theme.spacing(2)
+      pb: 2, // theme.spacing(2)
+      height:'24px'
+    }}>
       <Container>
-        <Grid container justifyContent="space-between" spacing={2}>
-          
-          <Grid item xs={12} sm={4} sx={{justifyContent:'flex-start',alignItems:'initial'}}>
-             <img src={CityLogoSvg} style={{ width: '96px', height: '48px' }} alt="Logo" />
-            <Link href="#" sx={linkStyle}>About Us</Link>
-            <Link href="#" sx={linkStyle}>Talent & Culture</Link>
-            <Link href="#" sx={linkStyle}>News & Media</Link>
-            <Link href="#" sx={linkStyle}>Become an Investor</Link>
-            <Link href="#" sx={linkStyle}>Contact Us</Link>
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Typography variant="h6" gutterBottom>Need Help?</Typography>
-            <Link href="#" sx={linkStyle}>Help Center</Link>
-            <Typography sx={textStyle}>Knock us on Whatsapp anytime</Typography>
-            <Typography sx={textStyle}>or Call our Hotline (10AM - 10PM).</Typography>
-            <Link href="mailto:info@Cityflyers.com" sx={linkStyle}>info@Cityflyers.com</Link>
-            <Link href="tel:+88096******" sx={linkStyle}>01730596121</Link>
-          </Grid>
-        </Grid>
-        <Divider my={4} />
-        <Grid container justifyContent="space-between" alignItems="center">
+        <Grid container direction="column" alignItems="flex-start">
           <Grid item>
-            <Typography variant="body2">&copy; {new Date().getFullYear()} Cityflyers</Typography>
+            {/* <img src={CityLogoSvg} sx={{ width: '96px', height: '48px', mb: 2 }} alt="Logo" /> */}
+            <Typography color="black">
+              © Copyrights The City Flyers 2024
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Box display="flex" flexDirection="row" flexWrap="wrap" alignItems="flex-start">
+              {["Home", "Help center", "Terms & conditions", "Privacy policy", "Cookie policy", "Refund policy", "News & media", "Become an investor", "Contact us"].map((link, index) => (
+                <Link 
+                  key={index}
+                  href="#" 
+                  sx={{
+                    color: 'black',
+                    '&:hover': {
+                      color: 'white',
+                    },
+                    mr: 2, // marginRight with theme.spacing(2)
+                    mb: 1, // marginBottom with theme.spacing(1), ensures separation between rows when wrapped
+                  }}
+                >
+                  {link}
+                </Link>
+              ))}
+            </Box>
           </Grid>
         </Grid>
       </Container>
     </Box>
   );
-};
-
-export default Footer;
+}
