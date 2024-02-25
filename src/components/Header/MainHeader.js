@@ -30,10 +30,10 @@ import { getAuth, signOut } from "firebase/auth";
 const pages = [
   { label: 'Home', link: '/' },
   { label: 'Offers', link: '/offers' },
-  { label: 'Hot Deals', link: '/hotdeals' },
+ 
   { label: 'Travel Guides', link: '/travelGuides' },
-  { label: 'About Us', link: '/about' },
-  { label: 'EMI', link: '/emi' },
+ 
+  
   { label: 'News & Media', link: '/news' },
   { label: 'Blog', link: '/blog' },
   { label: 'FAQ', link: '/faq' },

@@ -11,9 +11,10 @@ body {
     background-position: center;
     backdrop-filter: blur(8px);
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
+    background-size: 900% 900%;
     animation: gradient 15s ease infinite;
     height: 100vh;
+   
   /* background-size: auto 90%; */
     /* Set the desired height (300 pixels in this example) */
      background-repeat: no-repeat;

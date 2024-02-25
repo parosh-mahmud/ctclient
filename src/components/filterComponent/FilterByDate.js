@@ -1,62 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { Box, Typography, IconButton, useTheme } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import IconButton from '@mui/material/IconButton';
-import { setFlightSearchData } from '../../redux/slices/flightSlice';
-import api from '../../services/api';
 import { useDispatch } from 'react-redux';
-
-
+import { setFlightSearchData } from '../../redux/slices/flightSlice';
 
 const FilterByDate = () => {
   const dispatch = useDispatch();
+  const theme = useTheme(); // Using theme for consistent styling
 
-  const boxStyle = {
-    width: '180px',
+  // Enhanced styling for responsiveness and visual feedback
+  const boxStyle = (isActive) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: { xs: '85px', sm: '100px', md: '170px' }, // Responsive width
     height: '70px',
     marginRight: '5px',
     textAlign: 'center',
-    lineHeight: '50px',
-    color: 'blue',
-    cursor: 'pointer',
     borderRadius: '5px',
-    border: '1px solid blue',
-    backgroundColor: 'rgba(255,255,255,0.5)',
-  };
-
-  const activeBoxStyle = {
-    ...boxStyle,
-    backgroundColor:"#0067FF" ,
-    color: 'white',
-  };
+    border: `1px solid ${theme.palette.primary.main}`,
+    backgroundColor: isActive ? theme.palette.primary.main : 'rgba(255,255,255,0.5)',
+    color: isActive ? 'white' : theme.palette.primary.main,
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.light,
+      color: 'white',
+    },
+    transition: 'background-color 0.3s, color 0.3s',
+  });
 
   const formatDate = (date) => {
     const options = { month: 'short', day: 'numeric' };
     return new Date(date).toLocaleDateString('en-US', options);
   };
 
-  const getCurrentDate = () => {
-    return formatDate(new Date());
-  };
-
-  const calculateTotalAmount = () => {
-    // Replace this with your actual logic to calculate total amount
-    return '$100'; // For example purposes
-  };
+  const getCurrentDate = () => formatDate(new Date());
 
   const [activeBox, setActiveBox] = useState(3);
-
-const handleBoxClick = async (boxNumber) => {
-  try {
-    const selectedDate = getRelativeDate(boxNumber - 3);
-   
-  } catch (error) {
-    console.error('Error fetching flight search results:', error.message);
-  }
-  setActiveBox(boxNumber);
-};
 
   const getRelativeDate = (daysOffset) => {
     const currentDate = new Date();
@@ -64,63 +46,38 @@ const handleBoxClick = async (boxNumber) => {
     return formatDate(currentDate);
   };
 
+  const handleBoxClick = (boxNumber) => {
+    // Assuming you might want to dispatch some action or handle date selection
+    setActiveBox(boxNumber);
+  };
+
   useEffect(() => {
     setActiveBox(3);
-  }, []);
+    // Assuming you might want to fetch or dispatch something on component mount
+  }, [dispatch]);
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      {/* Left Arrow Icon */}
-      <IconButton onClick={() => handleBoxClick(activeBox - 1)} disabled={activeBox === 1}>
+    <Box sx={{ display: 'flex', alignItems: 'center', overflowX: 'auto' }}>
+      <IconButton onClick={() => handleBoxClick(Math.max(activeBox - 1, 1))} disabled={activeBox === 1}>
         <ArrowBackIcon />
       </IconButton>
-      <Box fontWeight="bold" fontSize="large" 
-        sx={activeBox === 1 ? activeBoxStyle : boxStyle}
-        onClick={() => handleBoxClick(1)}
-      >
-        {getRelativeDate(-2)}
-        <Typography sx={{textDecoration:'underline'}}>View fare</Typography>
-      </Box>
-      <Box
-        sx={activeBox === 2 ? activeBoxStyle : boxStyle}
-        onClick={() => handleBoxClick(2)}
-      >
-        {getRelativeDate(-1)}
-        <Typography>View fare</Typography>
-      </Box>
-      <Box
-        sx={activeBox === 3 ? activeBoxStyle : boxStyle}
-        onClick={() => handleBoxClick(3)}
-      >
-        {getCurrentDate()}
-      </Box>
-      <Box
-        sx={activeBox === 4 ? activeBoxStyle : boxStyle}
-        onClick={() => handleBoxClick(4)}
-      >
-        {getRelativeDate(1)}
-      </Box>
-      <Box
-        sx={activeBox === 5 ? activeBoxStyle : boxStyle}
-        onClick={() => handleBoxClick(5)}
-      >
-        {getRelativeDate(2)}
-      </Box>
-      <Box
-        sx={activeBox === 6 ? activeBoxStyle : boxStyle}
-        onClick={() => handleBoxClick(6)}
-      >
-        {getRelativeDate(3)}
-      </Box>
-      <Box
-        sx={activeBox === 7 ? activeBoxStyle : boxStyle}
-        onClick={() => handleBoxClick(7)}
-      >
-        {getRelativeDate(4)}
-      </Box>
-
-       {/* Right Arrow Icon */}
-      <IconButton onClick={() => handleBoxClick(activeBox + 1)} disabled={activeBox === 7}>
+      {[...Array(7)].map((_, index) => (
+        <Box
+          key={index}
+          onClick={() => handleBoxClick(index + 1)}
+          sx={boxStyle(activeBox === index + 1)}
+        >
+          <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' } }}>
+            {getRelativeDate(index - 2)}
+          </Typography>
+          {activeBox === index + 1 && (
+            <Typography variant="caption" sx={{ textDecoration: 'underline', fontSize: { xs: '0.7rem', sm: '0.75rem', md: '0.875rem' } }}>
+              
+            </Typography>
+          )}
+        </Box>
+      ))}
+      <IconButton onClick={() => handleBoxClick(Math.min(activeBox + 1, 7))} disabled={activeBox === 7}>
         <ArrowForwardIcon />
       </IconButton>
     </Box>

@@ -2,21 +2,17 @@ import React, { useEffect, useState,useRef } from 'react';
 import { Grid, Paper, Typography, Radio, RadioGroup, FormControlLabel, Button, Stack, Popover, TextField, Box, CircularProgress, Backdrop, IconButton, Icon } from '@mui/material';
 import { useDispatch } from 'react-redux';
 // import { fetchFlightResults } from '..//../redux/actions/newFlightAction';
-import Divider from '@mui/material/Divider';
-import SwapHorizontalCircleIcon from '@mui/icons-material/SwapHorizontalCircle';
-import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
-import FlightLandIcon from '@mui/icons-material/FlightLand';
+
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import SyncIcon from '@mui/icons-material/Sync';
-import MultipleStopIcon from '@mui/icons-material/MultipleStop';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+
+
 import fetchAirports from '../../services/api';
 import { makeStyles } from '@mui/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
+
 import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+
 import '..//../index.css'
 import '@fontsource/poppins';
 import { fetchFlightResults } from '../../redux/reducers/flightSlice';
@@ -48,7 +44,7 @@ import CallSplitIcon from '@mui/icons-material/CallSplit';
 const useStyles = makeStyles((theme) => ({
 
   popover: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     padding: theme.spacing(2),
     borderRadius: theme.spacing(1),
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
@@ -69,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
   },
   airportItem: {
     cursor: 'pointer',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     marginBottom: theme.spacing(1),
     '&:hover': {
       color: theme.palette.primary.main,
@@ -251,7 +248,7 @@ function CustomIconButton({ value, selectedValue, onChange, Icon, label }) {
           marginLeft: '8px',
           color: 'inherit', // Ensure the text color inherits from the Box
           fontSize: '14px', // Adjust font size as needed
-          fontFamily:'Google Sans sans serif'
+          fontFamily:'Google Sans'
         }}
       >
         {label}

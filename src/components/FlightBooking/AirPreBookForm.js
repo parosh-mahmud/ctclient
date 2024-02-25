@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectAirPriceData } from '../../redux/slices/airPriceSlice';
 import { Grid } from '@mui/material';
@@ -11,10 +11,12 @@ const AirPreBookForm = () => {
   const airPriceData = useSelector(selectAirPriceData);
   const segment = airPriceData?.Results[0]?.segments[0];
   const segmentReturn = airPriceData?.Results[0]?.segments[1];
-
+useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <LayoutPage>
-      <Grid container justifyContent="center" alignItems="flex-start" style={{ marginTop: '100px', padding: '20px' }} spacing={4}> {/* Adjust spacing here */}
+      <Grid container justifyContent="center" alignItems="flex-start" style={{ marginTop: '30px', padding: '20px' }} spacing={4}> {/* Adjust spacing here */}
         {/* Main content area (first and second column stacked) */}
         <Grid item xs={12} md={8} container direction="column" spacing={2}>
           {/* First column */}

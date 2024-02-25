@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Box, Typography, Menu, MenuItem, ButtonBase, useMediaQuery, useTheme } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -6,228 +7,102 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import PriceCheckIcon from '@mui/icons-material/PriceCheck';
 import RampRightIcon from '@mui/icons-material/RampRight';
 import AirlinesIcon from '@mui/icons-material/Airlines';
-import { Box, Typography, Menu, MenuItem } from '@mui/material';
 
 const FilterComponent = () => {
-  const [takeOffAnchorEl, setTakeOffAnchorEl] = useState(null);
-  const [selectedTakeOff, setSelectedTakeOff] = useState('Take Off');
+ const theme = useTheme();
+  const matchesSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const handleTakeOffClick = (event) => {
-    setTakeOffAnchorEl(event.currentTarget);
+  const [filters, setFilters] = useState({
+    takeOff: 'Take Off',
+    priceRange: 'Price Range',
+    refundable: 'Refundable',
+    layover: 'Layover',
+    airline: 'Airline',
+  });
+const boxStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap', // Allow items to wrap on small screens
+  };
+const buttonStyle = {
+    margin: matchesSmallScreen ? '5px' : '0 5px', // Adjust margin on small screens
   };
 
-  const handleTakeOffClose = (option) => {
-    setTakeOffAnchorEl(null);
-    setSelectedTakeOff(option);
+  const textStyle = {
+    marginLeft: 4,
+    marginRight: 4,
+    fontSize: matchesSmallScreen ? '0.875rem' : '1rem', // Adjust font size on small screens
   };
 
-  const [priceRangeAnchorEl, setPriceRangeAnchorEl] = useState(null);
-  const [selectedPriceRange, setSelectedPriceRange] = useState('Price Range');
+  const [anchorEl, setAnchorEl] = useState({
+    takeOff: null,
+    priceRange: null,
+    refundable: null,
+    layover: null,
+    airline: null,
+  });
 
-  const handlePriceRangeClick = (event) => {
-    setPriceRangeAnchorEl(event.currentTarget);
+  const handleClick = (event, type) => {
+    setAnchorEl({ ...anchorEl, [type]: event.currentTarget });
   };
 
-  const handlePriceRangeClose = (option) => {
-    setPriceRangeAnchorEl(null);
-    setSelectedPriceRange(option);
+  const handleClose = (option, type) => {
+    setAnchorEl({ ...anchorEl, [type]: null });
+    setFilters({ ...filters, [type]: option });
   };
 
-  const [refundableAnchorEl, setRefundableAnchorEl] = useState(null);
-  const [selectedRefundable, setSelectedRefundable] = useState('Refundable');
-
-  const handleRefundableClick = (event) => {
-    setRefundableAnchorEl(event.currentTarget);
+  // Map of icons for each filter type
+  const filterIcons = {
+    takeOff: <AccessTimeIcon />,
+    priceRange: <LocalOfferIcon />,
+    refundable: <PriceCheckIcon />,
+    layover: <RampRightIcon />,
+    airline: <AirlinesIcon />,
   };
 
-  const handleRefundableClose = (option) => {
-    setRefundableAnchorEl(null);
-    setSelectedRefundable(option);
+  // Menu items for each filter type
+  const menuOptions = {
+    takeOff: ['Earlier Flight', 'Later Flight'],
+    priceRange: ['Cheapest', 'Highest'],
+    refundable: ['Refundable', 'Non Refundable'],
+    layover: ['Maximum', 'Minimum'],
+    airline: ['Airline 1', 'Airline 2'], // Add more airline options as needed
   };
-
-  const [layoverAnchorEl, setLayoverAnchorEl] = useState(null);
-  const [selectedLayover, setSelectedLayover] = useState('Layover');
-
-  const handleLayoverClick = (event) => {
-    setLayoverAnchorEl(event.currentTarget);
-  };
-
-  const handleLayoverClose = (option) => {
-    setLayoverAnchorEl(null);
-    setSelectedLayover(option);
-  };
-
-  const [airlineAnchorEl, setAirlineAnchorEl] = useState(null);
-  const [selectedAirline, setSelectedAirline] = useState('Airline');
-
-  const handleAirlineClick = (event) => {
-    setAirlineAnchorEl(event.currentTarget);
-  };
-
-  const handleAirlineClose = (option) => {
-    setAirlineAnchorEl(null);
-    setSelectedAirline(option);
-  };
-
-  useEffect(() => {
-    const closeMenusOnOutsideClick = (event) => {
-      if (
-        takeOffAnchorEl ||
-        priceRangeAnchorEl ||
-        refundableAnchorEl ||
-        layoverAnchorEl ||
-        airlineAnchorEl
-      ) {
-        const isClickInsideTakeOff = takeOffAnchorEl?.contains(event.target);
-        const isClickInsidePriceRange = priceRangeAnchorEl?.contains(event.target);
-        const isClickInsideRefundable = refundableAnchorEl?.contains(event.target);
-        const isClickInsideLayover = layoverAnchorEl?.contains(event.target);
-        const isClickInsideAirline = airlineAnchorEl?.contains(event.target);
-
-        if (
-          !isClickInsideTakeOff &&
-          !isClickInsidePriceRange &&
-          !isClickInsideRefundable &&
-          !isClickInsideLayover &&
-          !isClickInsideAirline
-        ) {
-          setTakeOffAnchorEl(null);
-          setPriceRangeAnchorEl(null);
-          setRefundableAnchorEl(null);
-          setLayoverAnchorEl(null);
-          setAirlineAnchorEl(null);
-        }
-      }
-    };
-
-    window.addEventListener('click', closeMenusOnOutsideClick);
-
-    return () => {
-      window.removeEventListener('click', closeMenusOnOutsideClick);
-    };
-  }, [
-    takeOffAnchorEl,
-    priceRangeAnchorEl,
-    refundableAnchorEl,
-    layoverAnchorEl,
-    airlineAnchorEl,
-  ]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-      {/* First Box */}
-      <Box style={{ flex: 1, padding: 1, display: 'flex' }}>
-        {/* Content for the first box */}
+    <div style={boxStyle}>
+      <Box style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <TuneIcon />
       </Box>
 
-      {/* Centered 6 Boxes */}
-      <div style={{ display: 'flex', justifyContent: 'center', flex: 6 }}>
-        {/* Content for the first centered box */}
-        <Box style={{ margin: '0 5px', padding: 1, display: 'flex' }} onClick={handleTakeOffClick}>
-          <Typography>
-            <AccessTimeIcon />
-          </Typography>
-          <Typography variant="body1">{selectedTakeOff}</Typography>
-          <Typography>
+      {Object.keys(filters).map((filterType) => (
+        <Box key={filterType} style={buttonStyle}>
+          <ButtonBase onClick={(e) => handleClick(e, filterType)}>
+            {filterIcons[filterType]}
+            <Typography variant="body1" style={textStyle}>
+              {filters[filterType]}
+            </Typography>
             <ArrowDropDownIcon />
-          </Typography>
-          <Menu anchorEl={takeOffAnchorEl} open={Boolean(takeOffAnchorEl)} onClose={() => setTakeOffAnchorEl(null)}>
-            <MenuItem onClick={() => handleTakeOffClose('Earlier Flight')}>Earlier Flight</MenuItem>
-            <MenuItem onClick={() => handleTakeOffClose('Later Flight')}>Later Flight</MenuItem>
-          </Menu>
-        </Box>
-
-        {/* Content for the second centered box */}
-        <Box style={{ margin: '0 5px', padding: 1, display: 'flex' }} onClick={handlePriceRangeClick}>
-          <Typography>
-            <LocalOfferIcon />
-          </Typography>
-          <Typography>{selectedPriceRange}</Typography>
-          <Typography>
-            <ArrowDropDownIcon />
-          </Typography>
+          </ButtonBase>
           <Menu
-            anchorEl={priceRangeAnchorEl}
-            open={Boolean(priceRangeAnchorEl)}
-            onClose={() => setPriceRangeAnchorEl(null)}
+            anchorEl={anchorEl[filterType]}
+            open={Boolean(anchorEl[filterType])}
+            onClose={() => handleClose(filters[filterType], filterType)}
           >
-            <MenuItem onClick={() => handlePriceRangeClose('Cheapest')}>Cheapest</MenuItem>
-            <MenuItem onClick={() => handlePriceRangeClose('Highest')}>Highest</MenuItem>
+            {menuOptions[filterType].map((option) => (
+              <MenuItem key={option} onClick={() => handleClose(option, filterType)}>
+                {option}
+              </MenuItem>
+            ))}
           </Menu>
         </Box>
+      ))}
 
-        {/* Content for the third centered box */}
-        <Box style={{ margin: '0 5px', padding: 1 }}>
-          <Typography>Stops</Typography>
-        </Box>
-
-        {/* Content for the fourth centered box */}
-        <Box style={{ margin: '0 5px', padding: 1, display: 'flex' }} onClick={handleRefundableClick}>
-          <Typography>
-            <PriceCheckIcon />
-          </Typography>
-          <Typography>{selectedRefundable}</Typography>
-          <Typography>
-            <ArrowDropDownIcon />
-          </Typography>
-          <Menu
-            anchorEl={refundableAnchorEl}
-            open={Boolean(refundableAnchorEl)}
-            onClose={() => setRefundableAnchorEl(null)}
-          >
-            <MenuItem onClick={() => handleRefundableClose('Refundable')}>Refundable</MenuItem>
-            <MenuItem onClick={() => handleRefundableClose('Non Refundable')}>Non Refundable</MenuItem>
-          </Menu>
-        </Box>
-
-        {/* Content for the fifth centered box */}
-        <Box style={{ margin: '0 5px', padding: 1, display: 'flex' }} onClick={handleLayoverClick}>
-          <Typography>
-            <RampRightIcon />
-          </Typography>
-          <Typography>{selectedLayover}</Typography>
-          <Typography>
-            <ArrowDropDownIcon />
-          </Typography>
-          <Menu
-            anchorEl={layoverAnchorEl}
-            open={Boolean(layoverAnchorEl)}
-            onClose={() => setLayoverAnchorEl(null)}
-          >
-            <MenuItem onClick={() => handleLayoverClose('Maximum')}>Maximum</MenuItem>
-            <MenuItem onClick={() => handleLayoverClose('Minimum')}>Minimum</MenuItem>
-          </Menu>
-        </Box>
-
-        {/* Content for the sixth centered box */}
-        <Box style={{ margin: '0 5px', padding: 1, display: 'flex' }} onClick={handleAirlineClick}>
-          <Typography>
-            <AirlinesIcon />
-          </Typography>
-          <Typography>{selectedAirline}</Typography>
-          <Typography>
-            <ArrowDropDownIcon />
-          </Typography>
-          <Menu
-            anchorEl={airlineAnchorEl}
-            open={Boolean(airlineAnchorEl)}
-            onClose={() => setAirlineAnchorEl(null)}
-          >
-            <MenuItem onClick={() => handleAirlineClose('Airline 1')}>Airline 1</MenuItem>
-            <MenuItem onClick={() => handleAirlineClose('Airline 2')}>Airline 2</MenuItem>
-            {/* Add more airline options as needed */}
-          </Menu>
-        </Box>
-      </div>
-
-      {/* Last Box */}
-      <Box style={{ flex: 1, padding: 1, display: 'flex' }}>
-        {/* Content for the last box */}
-        <Typography>More Filter</Typography>
-        <Typography>
-          <ArrowDropDownIcon />
-        </Typography>
+      <Box style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography>More Filters</Typography>
+        <ArrowDropDownIcon />
       </Box>
     </div>
   );

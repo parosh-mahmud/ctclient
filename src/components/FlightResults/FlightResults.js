@@ -13,7 +13,7 @@ import SearchForm from '../FlightSearch/SearchForm';
 import RecommendFilter from '../filterComponent/RecommendFilter';
 import { fetchFlightResults } from '../../redux/reducers/flightSlice';
 import { useLocation } from 'react-router-dom';
-
+import { Backdrop, CircularProgress } from '@mui/material';
 
 
 const recommendedBoxStyle = {
@@ -37,6 +37,7 @@ const boxStyle={
 const FlightResults = () => {
   const dispatch = useDispatch();
  
+const [backdropOpen, setBackdropOpen] = useState(false);
 
   
 const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
@@ -74,7 +75,7 @@ const location = useLocation();
   <Grid item xs={12}>
     <Box style={{ height: 'auto', padding: "10px" }}>
       {/* First Row with Background Color */}
-      <Box sx={{  padding: 2,height:'auto' }}>
+      <Box sx={{  padding: 2,height:'auto', }}>
         
         {/* Content for the first row */}
        <SearchForm searchButtonLabel="Modify Search" />
@@ -82,7 +83,7 @@ const location = useLocation();
 
       {/* Second Row with Background Color */}
       <Box sx={{ backgroundColor: 'rgba(255,255,255,0.5)', padding: 2, display: 'flex',
-        justifyContent: 'center', alignItems:'center'}}>
+        justifyContent: 'center', alignItems:'center',borderRadius:'5px'}}>
         <FilterByDate />
         {/* Content for the second row */}
         
@@ -98,14 +99,14 @@ const location = useLocation();
             <Box style={{ height: '100%', padding: 16 }}>
               {/* Content for the first Paper within the Second Grid */}
               
-              <Box sx={{width:'100%',minHeight:'36px',backgroundColor: 'rgba(255,255,255,0.5)',border:'1px solid white',borderRadius:'5px'}}>
-              {/* content for filter Flight */}
-              <FilterComponent/>
-              </Box>
-              <Box sx={{width:'100%',minHeight:'80px',display:'flex',marginTop:'10px',marginBottom:'5px',border:'1 px solid gray'}}>
-             <RecommendFilter flightDataArray={flightSearchData.Results} onSortFlights={handleSortFlights} />
-                 
-              </Box>
+             <Box sx={{width:'100%', minHeight:'36px', backgroundColor: 'rgba(255,255,255,0.5)', border:'1px solid white', borderRadius:'5px'}}>
+  {/* Content for filter Flight */}
+  <FilterComponent/>
+</Box>
+<Box sx={{width:'100%', minHeight:'80px', display:'flex', marginTop:'10px', marginBottom:'5px', backgroundColor: 'rgba(255,255,255,0.5)', border:'1px solid white', borderRadius:'5px'}}>
+  <RecommendFilter flightDataArray={flightSearchData.Results} onSortFlights={handleSortFlights} />
+</Box>
+
             <Box style={{ marginTop: '10px' }}>
    {/* Iterate over flight results */}
                {showSortedFlights ? (
@@ -120,7 +121,13 @@ const location = useLocation();
                   // Display unsorted flights when showSortedFlights is false
                   flightSearchData?.Results && flightSearchData.Results.map((flight, index) => (
                     <div key={flight.ResultID}>
-                      <FlightCard flightData={flight} availability={flight.Availabilty} isLoading={loadingState} />
+                      <FlightCard 
+                      flightData={flight} 
+                      availability={flight.Availabilty} 
+                      isLoading={loadingState} 
+                      onFetchingStart={() => setBackdropOpen(true)} // Function to open the backdrop
+                      onFetchingComplete={() => setBackdropOpen(false)}
+                      />
                       {index < flightSearchData.Results.length - 1 && <hr style={{ margin: '10px 0' }} />}
                     </div>
                   ))
@@ -141,7 +148,20 @@ const location = useLocation();
         </Grid>
       </Grid>
     </Grid>
-     
+     <Backdrop
+  sx={{
+    color: '#fff',
+    zIndex: (theme) => theme.zIndex.drawer + 1,
+    position: 'fixed', // Ensures it's positioned relative to the viewport
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh'
+  }}
+  open={backdropOpen}
+>
+  <CircularProgress color="inherit" />
+</Backdrop>
     </LayoutPage>
   );
 };

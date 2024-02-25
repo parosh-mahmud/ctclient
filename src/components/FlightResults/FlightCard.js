@@ -9,7 +9,7 @@ import { makeStyles } from "@mui/styles";
 import GoogleLogo from "..//..//assets/logos/GoogleLogo.png";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useTheme } from "@mui/material/styles";
+
 import TabPanel from "@mui/lab/TabPanel";
 import { TabContext } from "@mui/lab";
 import TabComponent from "../tabComponent/TabComponent";
@@ -26,81 +26,92 @@ import { fetchAirPrice } from "../../redux/slices/airPriceSlice";
 import { selectFlightSearchData } from '../../redux/reducers/flightSlice';
 import AirlineSeatReclineNormalIcon from '@mui/icons-material/AirlineSeatReclineNormal';
 import { setSearchIDResultID } from "../../redux/slices/searchIDResultIDSlice";
+
+import { useMediaQuery, useTheme } from '@mui/material';
+
+
 const BASE_URL = process.env.REACT_APP_API_URL
 const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: 'rgba(255,255,255,0.5)',
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column", // Default to column layout for mobile
     borderRadius: "5px",
-    [theme.breakpoints.down("sm")]: {
-      flexDirection: "column",
-    },
   },
   firstBox: {
-    width: "90%", // Adjusted width for the first box
-    
+    width: "100%", // Full width on mobile devices
     padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-end",
     position: "relative",
-    [theme.breakpoints.down("sm")]: {
-      width: "100%",
-      marginBottom: theme.spacing(2),
-    },
   },
   nestedBoxes: {
     display: "flex",
-    flexDirection: "row", // Set to row
-    justifyContent: "space-between", // Adjusted to space-between for spacing
+    flexDirection: "column", // Stack nested boxes on mobile
+    justifyContent: "space-between",
   },
   nestedBox: {
-    width: "50%", // Adjusted width for each nested box
-    
+    width: "100%", // Each nested box takes full width on mobile
     padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     position: "relative",
-    margin: theme.spacing(0, 1), // Add margin between nested boxes
+    marginBottom: theme.spacing(2), // Add some space between nested boxes
   },
   secondBox: {
-    width: "10%", // Adjusted width for the second box
-    
+    width: "100%",
     padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-end",
     justifyContent: "space-between",
     position: "relative",
-    [theme.breakpoints.down("sm")]: {
-      width: "100%",
-    },
   },
   button: {
     width: "100%",
     marginTop: theme.spacing(1),
     textAlign: "right",
   },
-  
-  
- 
+  // Use breakpoints to adjust layout for larger screens
+  [theme.breakpoints.up('sm')]: {
+    container: {
+      flexDirection: "row",
+    },
+    nestedBoxes: {
+      flexDirection: "row", // Side by side nested boxes for larger screens
+    },
+    nestedBox: {
+      width: "50%", // Each takes half the width on larger screens
+      margin: theme.spacing(0, 1), // Add margin between nested boxes
+    },
+    firstBox: {
+      width: "90%", // Adjust width for larger screens
+    },
+    secondBox: {
+      width: "10%", // Adjust width for the action buttons on larger screens
+    },
+  },
 }));
 
-export const FlightCard = ({ flightData, onSelect, availability, isLoading, showActions = true }) => {
+
+export const FlightCard = ({ onFetchingStart,onFetchingComplete, flightData, onSelect, availability, isLoading, showActions = true }) => {
  
   const dispatch = useDispatch();
   const history = useHistory();
   const segment = flightData.segments[0];
   const segmentReturn = flightData.segments[1];
-  
+const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+
 
 
 
  
   const classes = useStyles();
-  const theme = useTheme();
+ 
   const [value, setValue] = useState(0); // State to track selected tab
 
   const [activeTab, setActiveTab] = useState(0);
@@ -179,6 +190,7 @@ const SearchIDs = flightSearchData.SearchId;
 
   const handleSelect = async () => {
   try {
+     onFetchingStart(); // Show backdrop
     // Validate flightData structure before proceeding
     if (!flightData?.segments?.length || !flightData.segments[0]?.Airline) {
       console.error("Incomplete flightData structure");
@@ -197,8 +209,10 @@ const SearchIDs = flightSearchData.SearchId;
     if (typeof onSelect === 'function') {
       onSelect(flightData);
     }
+     onFetchingComplete();
   } catch (error) {
     console.error("Error fetching airPrice:", error);
+      onFetchingComplete();
   }
 };
 
@@ -263,21 +277,21 @@ const SearchIDs = flightSearchData.SearchId;
               <Box sx={{}}>
                 {/* airline code + flight number */}
                 <Box sx={{display:"flex"}}>
-                <Typography >
-  <FlightInfoItem isLoading={isLoading}   valueStyle={{ fontWeight: 'bold' }} value={segment.Airline ? segment.Airline.AirlineCode : 'N/A'} />
+                <Typography variant={isMobile ? 'body2' : 'h6'}>
+  <FlightInfoItem isLoading={isLoading} isMobile={isMobile}  valueStyle={{ fontWeight: 'bold' }} value={segment.Airline ? segment.Airline.AirlineCode : 'N/A'} />
 </Typography>
 
-<Typography >
-  <FlightInfoItem isLoading={isLoading} valueStyle={{ fontWeight: 'bold' }} value={segment.Airline ? segment.Airline.FlightNumber : 'N/A'} />
+<Typography variant={isMobile ? 'body2' : 'h6'}>
+  <FlightInfoItem isMobile={isMobile} isLoading={isLoading} valueStyle={{ fontWeight: 'bold' }} value={segment.Airline ? segment.Airline.FlightNumber : 'N/A'} />
 </Typography>
                 </Box>
 
-                <Box><Typography><FlightInfoItem isLoading={isLoading} valueStyle={{fontWeight:'bold'}}   label="Aircraft: " value={segment.Equipment ? `${segment.Equipment}` : 'N/A'} /></Typography></Box>
+                <Box><Typography><FlightInfoItem isMobile={isMobile} isLoading={isLoading} valueStyle={{fontWeight:'bold'}}   label="Aircraft: " value={segment.Equipment ? `${segment.Equipment}` : 'N/A'} /></Typography></Box>
 
              <Box>
-              <Typography sx={{display:'flex'}}>
+              <Typography variant={isMobile ? 'body2' : 'h6'} sx={{display:'flex'}}>
                 <AirlineSeatReclineNormalIcon/>
-                <FlightInfoItem isLoading={isLoading} valueStyle={{fontWeight:'bold'}}    value={availability} />
+                <FlightInfoItem isMobile={isMobile} isLoading={isLoading} valueStyle={{fontWeight:'bold'}}    value={availability} />
                 </Typography>
                 
                 </Box>
@@ -287,8 +301,8 @@ const SearchIDs = flightSearchData.SearchId;
             </Box>
 
             <Box>
-              <Typography>
-                <FlightInfoItem isLoading={isLoading}    value={segment.Airline ? segment.Airline.AirlineName : 'N/A'} />
+              <Typography variant={isMobile ? 'body2' : 'h6'}>
+                <FlightInfoItem isMobile={isMobile} isLoading={isLoading}    value={segment.Airline ? segment.Airline.AirlineName : 'N/A'} />
               </Typography>
               
               </Box>
@@ -312,8 +326,8 @@ const SearchIDs = flightSearchData.SearchId;
     alignItems: 'center', // Center content vertically
           }}
         >
-           <Typography> <FlightInfoItem isLoading={isLoading}  valueStyle={{color:'green',fontWeight:'bold',fontSize:'2rem',}}  value={segment.Origin ? segment.Origin.Airport.CityName : 'N/A'} /></Typography>
-          <Typography> <FlightInfoItem isLoading={isLoading}  value={segment.Origin ? segment.Origin.Airport.CityCode : 'N/A'} /></Typography>
+           <Typography variant={isMobile ? 'body2' : 'h6'}> <FlightInfoItem isMobile={isMobile} isLoading={isLoading}  valueStyle={{color:'green',fontWeight:'bold',fontSize:'2rem',}}  value={segment.Origin ? segment.Origin.Airport.CityName : 'N/A'} /></Typography>
+          <Typography variant={isMobile ? 'body2' : 'h6'}> <FlightInfoItem isMobile={isMobile} isLoading={isLoading}  value={segment.Origin ? segment.Origin.Airport.CityCode : 'N/A'} /></Typography>
         </Box>
       </Box>
 
@@ -342,7 +356,7 @@ const SearchIDs = flightSearchData.SearchId;
         >
           <Box >
             {/* time */}
-            <Typography> <FlightInfoItem isLoading={isLoading}  valueStyle={{fontWeight: 'bold',fontSize:'2rem'}}
+            <Typography variant={isMobile ? 'body2' : 'h6'}> <FlightInfoItem isMobile={isMobile} isLoading={isLoading}  valueStyle={{fontWeight: 'bold',fontSize:'2rem'}}
              
               value={
                 segment.Destination
@@ -390,7 +404,7 @@ const SearchIDs = flightSearchData.SearchId;
             {/* duration */}
            
             <FlightInfoItem isLoading={isLoading} 
-
+                isMobile={isMobile}
                       value={calculateDuration()}
                       icon={<FaPlaneArrival />}
                     />
@@ -409,7 +423,7 @@ const SearchIDs = flightSearchData.SearchId;
            
           }}
         >
-          <Typography> <FlightInfoItem isLoading={isLoading}  valueStyle={{fontWeight: 'bold',fontSize:'2rem'}}
+          <Typography variant={isMobile ? 'body2' : 'h6'}> <FlightInfoItem isMobile={isMobile} isLoading={isLoading}  valueStyle={{fontWeight: 'bold',fontSize:'2rem'}}
              
               value={
                 segment.Destination
@@ -437,9 +451,9 @@ const SearchIDs = flightSearchData.SearchId;
             alignItems: 'center',
           }}
         >
-          <Typography>
-            <FlightInfoItem isLoading={isLoading} valueStyle={{fontSize:'2rem',color:'green',fontWeight:'bold'}} value={segment.Destination ? segment.Destination.Airport.CityName : 'N/A'} />
-            <FlightInfoItem value={segment.Destination ? segment.Destination.Airport.CityCode : 'N/A'} />
+          <Typography variant={isMobile ? 'body2' : 'h6'}>
+            <FlightInfoItem isMobile={isMobile} isLoading={isLoading} valueStyle={{fontSize:'2rem',color:'green',fontWeight:'bold'}} value={segment.Destination ? segment.Destination.Airport.CityName : 'N/A'} />
+            <FlightInfoItem isMobile={isMobile} value={segment.Destination ? segment.Destination.Airport.CityCode : 'N/A'} />
           </Typography>
         </Box>
       </Box>
@@ -475,8 +489,8 @@ const SearchIDs = flightSearchData.SearchId;
           {showActions && (
         <Box className={classes.secondBox}>
           {/* Content for the second box */}
-          <Typography>
-            <Typography fontSize='20px' fontWeight='bold'>BDT {calculateTotalAmount()} </Typography>
+          <Typography variant={isMobile ? 'body2' : 'h6'}>
+            <Typography variant={isMobile ? 'body2' : 'h6'} fontSize='20px' fontWeight='bold'>BDT {calculateTotalAmount()} </Typography>
           </Typography>
           
 <Button  variant="text" style={{ textTransform: 'capitalize', fontSize: '10px' }}
@@ -526,14 +540,14 @@ const SearchIDs = flightSearchData.SearchId;
   );
 };
 
-export const FlightInfoItem = ({ label, value, valueStyle, isLoading }) => (
+export const FlightInfoItem = ({ label, value, valueStyle, isLoading, isMobile }) => (
   <Box flex="1 1 50%" display="flex" alignItems="center">
-    <Typography>{label}</Typography>
+    <Typography variant={isMobile ? 'body2' : 'h6'}>{label}</Typography>
     {isLoading ? (
       
       <Skeleton width={90} height={30} style={{ marginLeft: 10 }} />
     ) : (
-      <Typography style={valueStyle}>{value}</Typography>
+      <Typography variant={isMobile ? 'body2' : 'h6'} style={valueStyle}>{value}</Typography>
     )}
   </Box>
 );

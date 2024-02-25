@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 
 const recommendedBoxStyle = {
-  width: '100%',
+  width: '98%',
   height: 'auto',
   backgroundColor: 'rgba(255,255,255,0.5)',
   display: 'flex',
@@ -10,15 +10,31 @@ const recommendedBoxStyle = {
   alignItems: 'center',
   padding: '10px',
   borderRadius: '5px',
+  flexDirection: {
+    xs: 'column', // Stack the boxes vertically on extra small devices
+    sm: 'row', // Use row layout on devices wider than the sm breakpoint
+  },
+  gap: {
+    xs: 2, // Add some vertical space between items on small devices
+    sm: 0, // No gap needed for row layout
+  },
 };
 
 const boxStyle = {
-  width: '300px',
-  height: '100%',
+  width: {
+    xs: '100%', // Full width on extra small devices
+    sm: '280px', // Fixed width on devices wider than the sm breakpoint
+  },
+  height: 'auto', // Adjust height automatically
   backgroundColor: 'rgba(255,255,255,0.5)',
-  border:'1px solid gray',
+  border: '1px solid gray',
   borderRadius: '5px',
   cursor: 'pointer',
+  padding: '10px', // Adjust padding if necessary
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center', // Center items for a better look on small screens
 };
 
 const headingTextStyle = {
