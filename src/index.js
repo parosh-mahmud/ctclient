@@ -43,9 +43,15 @@ import { PersistGate } from 'redux-persist/integration/react'; // Import Persist
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AuthProvider } from './components/auth/AuthContext';
 
-// Create a theme object
-const theme = createTheme();
 
+
+// Your theme customization
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Google Sans, sans-serif',
+  },
+  // Add other customizations here
+});
 // Use ReactDOM.render to render your app component
 ReactDOM.render(
   <React.StrictMode>
