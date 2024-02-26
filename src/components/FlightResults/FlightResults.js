@@ -1,6 +1,7 @@
 // FlightResults.js
 import React, { useEffect, useState } from 'react';
-import { Box, Typography,Grid,Paper } from '@mui/material'; // Import Material-UI components
+import { Box, Grid,   useMediaQuery, useTheme } from '@mui/material';
+
 import LayoutPage from '../../pages/LayoutPage';
 import FlightCard from './FlightCard';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,7 +40,9 @@ const FlightResults = () => {
  const [searchParams, setSearchParams] = useState({});
 const [backdropOpen, setBackdropOpen] = useState(false);
 const currentSearchParams = useSelector(selectFlightSearchParams);
-  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
 const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
 const flightSearchData = useSelector(selectFlightSearchData);
 console.log(flightSearchData)
@@ -103,10 +106,10 @@ const location = useLocation();
   </Grid>
 
       {/* Second Grid */}
-      <Grid item xs={12}>
+      <Grid item xs={12} >
         <Grid container spacing={2}>
           {/* First Grid within the Second Grid */}
-          <Grid item xs={9}>
+          <Grid item  xs={isMobile ? 12 : 9} >
             <Box style={{ height: '100%', padding: 16 }}>
               {/* Content for the first Paper within the Second Grid */}
               
@@ -150,7 +153,7 @@ const location = useLocation();
           </Grid>
 
           {/* Second Grid within the Second Grid */}
-          <Grid item xs={3}>
+          <Grid item xs={false} sm={false}>
             <Box style={{ height: '100%', padding: 16 }}>
               {/* Content for the second Paper within the Second Grid */}
               Show ad here

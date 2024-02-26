@@ -1,60 +1,40 @@
-/* index.css */
+html {
+  height: 100%;
+  /* Ensuring the html element covers the full height */
+}
 
 body {
   margin: 0;
-  font-family: 'Google Sans',sans-serif;
+  padding: 0;
+  font-family: 'Google Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* background: linear-gradient(to bottom, #35ABF6, #103c50); */
-  /* background-image: linear-gradient(to bottom, #35ABF6, #63bee9);
-    background-size: cover; */
-    background-position: center;
-    backdrop-filter: blur(8px);
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
-    height: 100vh;
-   
-  /* background-size: auto 90%; */
-    /* Set the desired height (300 pixels in this example) */
-     background-repeat: no-repeat;
-    background-position: top; 
-    
-    
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  min-height: 100vh;
+  /* Make sure it covers at least the viewport height */
+  width: 100vw;
+  /* Ensure it covers full viewport width */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  /* Keep the background fixed during scrolling */
+  background-position: center;
+  backdrop-filter: blur(8px);
 }
 
 @font-face {
   font-family: 'Google Sans';
-  src: 
-    
-    url('./assets/fonts/GoogleSans-Regular.ttf') format('woff'),
-    url('./assets/fonts/GoogleSans-Bold.ttf') format('woff'),
-    url('./assets/fonts/GoogleSans-BoldItalic.ttf') format('woff'),
-    url('./assets/fonts/GoogleSans-Italic.ttf') format('woff'),
-    url('./assets/fonts/GoogleSans-Medium.ttf') format('woff'),
-    url('./assets/fonts/GoogleSans-Medium.ttf') format('woff'),
-    url('./assets/fonts/GoogleSans-MediumItalic.ttf') format('woff')
-    
-    
-    format('truetype');
+  src: url('./assets/fonts/GoogleSans-Regular.ttf') format('truetype'),
+    url('./assets/fonts/GoogleSans-Bold.ttf') format('truetype'),
+    url('./assets/fonts/GoogleSans-BoldItalic.ttf') format('truetype'),
+    url('./assets/fonts/GoogleSans-Italic.ttf') format('truetype'),
+    url('./assets/fonts/GoogleSans-Medium.ttf') format('truetype'),
+    url('./assets/fonts/GoogleSans-MediumItalic.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
-/* @font-face {
-  font-family: 'ProductSans-Bold';
-  src: url('./assets/fonts/Product Sans Bold.ttf') format('woff2');
-   
-
-
-  font-weight: normal;
-  font-style: normal;
-} */
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
@@ -68,7 +48,3 @@ code {
     background-position: 0% 50%;
   }
 }
-
-/* url('./assets/fonts/Product Sans Bold.ttf') format('woff2'),
-url('./assets/fonts/Product Sans Italic.ttf') format('woff'),
-url('./assets/fonts/ProductSansBoldItalic.ttf') format('woff'); */

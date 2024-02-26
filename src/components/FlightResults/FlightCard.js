@@ -65,14 +65,24 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
-    alignItems: "flex-end",
+    alignItems: "center", // This ensures the button aligns properly within the container
     justifyContent: "space-between",
     position: "relative",
+    [theme.breakpoints.up('sm')]: {
+      alignItems: "flex-end", // Adjusts alignment for larger screens
+    },
   },
   button: {
     width: "100%",
     marginTop: theme.spacing(1),
     textAlign: "right",
+     [theme.breakpoints.down('sm','xs')]: {
+      padding: theme.spacing(0.5),
+      fontSize: '0.75rem',
+      width: '90%',
+       padding: '6px 8px',
+        margin: '0 auto', 
+    },
   },
   // Use breakpoints to adjust layout for larger screens
   [theme.breakpoints.up('sm')]: {
@@ -473,6 +483,7 @@ const SearchIDs = flightSearchData.SearchId;
 )}
 
     {showActions && (
+      
 <Button
   variant='contained'
   color='primary'
@@ -540,17 +551,46 @@ const SearchIDs = flightSearchData.SearchId;
   );
 };
 
-export const FlightInfoItem = ({ label, value, valueStyle, isLoading, isMobile }) => (
-  <Box flex="1 1 50%" display="flex" alignItems="center">
-    <Typography variant={isMobile ? 'body2' : 'h6'}>{label}</Typography>
-    {isLoading ? (
-      
-      <Skeleton width={90} height={30} style={{ marginLeft: 10 }} />
-    ) : (
-      <Typography variant={isMobile ? 'body2' : 'h6'} style={valueStyle}>{value}</Typography>
-    )}
-  </Box>
-);
+export const FlightInfoItem = ({ label, value, valueStyle, isLoading }) => {
+  const theme = useTheme();
+  // Define breakpoints for responsiveness
+  const isXs = useMediaQuery(theme.breakpoints.down('xs')); // Extra-small devices
+  const isSm = useMediaQuery(theme.breakpoints.between('xs', 'sm')); // Small devices
+  const isMd = useMediaQuery(theme.breakpoints.between('sm', 'md')); // Medium devices
+  // You can continue for lg and xl if needed
+
+  // Determine the typography variant based on the screen size
+  let variant;
+  if (isXs) {
+    variant = 'body2';
+  } else if (isSm) {
+    variant = 'body1';
+  } else if (isMd) {
+    variant = 'h6';
+  } else {
+    variant = 'h5'; // Default for larger than 'md'
+  }
+
+  // Adjust styles dynamically based on screen size
+  const dynamicValueStyle = {
+    ...valueStyle,
+    fontSize: isXs ? '0.75rem' : isSm ? '0.875rem' : isMd ? '1rem' : '1.25rem',
+  };
+
+  return (
+    <Box flex="1 1 50%" display="flex" alignItems="center">
+      <Typography variant={variant}>{label}</Typography>
+      {isLoading ? (
+        <Skeleton width={90} height={30} style={{ marginLeft: 10 }} />
+      ) : (
+        <Typography variant={variant} style={dynamicValueStyle}>
+          {value}
+        </Typography>
+      )}
+    </Box>
+  );
+};
+
 
 
 
