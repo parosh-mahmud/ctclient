@@ -1,29 +1,18 @@
 // AirInput.js
 import React from 'react';
-import { Box, Grid, Popover, Stack, Typography, Button, Divider, RadioGroup, FormControlLabel, Radio, TextField } from '@mui/material';
+import {
+  Box, Grid, Popover, Stack, Typography, Button, Divider, RadioGroup, FormControlLabel, Radio, TextField
+} from '@mui/material';
 import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
 import FlightLandIcon from '@mui/icons-material/FlightLand';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { LocalizationProvider, DateCalendar } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import SwapHorizontalCircleIcon from '@mui/icons-material/SwapHorizontalCircle';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 
-// const useStyles = makeStyles((theme) => ({
-//   popover: {
-//     backgroundColor: 'rgba(255,255,255,0.5)',
-//     padding: theme.spacing(2),
-//     borderRadius: theme.spacing(1),
-//     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-//     minWidth: '400px',
-//     // other styles if necessary
-//   },
-//   // other styles
-// }));
+
 
 const airports = [
   {
@@ -120,11 +109,11 @@ const AirInput = ({
                 <FlightTakeoffIcon style={{color:'#0067FF'}} />
                 <Typography sx={{fontFamily: 'Google Sans, sans-serif',}}>From</Typography>
               </Typography >
-              <Typography  style={{fontWeight:'bold',fontSize:'20px',fontFamily: 'Google Sans, sans-serif',}} >
+              <Typography  style={{fontWeight:'bold',fontSize:'20px',fontFamily: 'Google Sans, sans-serif',textAlign:'left'}} >
                 {selectedFromAirport ? `${selectedFromAirport.city} - ${selectedFromAirport.code}` : 'Select an Airport'}
               </Typography>
               <Typography sx={{
-          fontFamily: 'Google Sans, sans-serif', fontSize:'12px' // Specify the font-family name defined in @font-face
+          fontFamily: 'Google Sans, sans-serif', fontSize:'12px',textAlign:'left' // Specify the font-family name defined in @font-face
         }}>
                 {selectedFromAirport ? selectedFromAirport.name : 'Select an Airport'}
               </Typography>
@@ -315,15 +304,15 @@ const AirInput = ({
           <Box  style={paperStyle}>
              <Box onClick={handleDPopoverClick} style={{ borderRight:'none', border:'1px solid #0067FF',borderBottomLeftRadius:'5px',borderTopLeftRadius:'5px', width: '50%', height: '96px',  float: 'left',cursor:'pointer', boxSizing:'border-box' }}>
     <Box style={{display:'flex',}}>
-       <CalendarMonthIcon style={{color:'#0067FF'}}/>
-      <Typography fontFamily= 'Google Sans, sans-serif'>Travel Date</Typography>
+       <CalendarMonthIcon style={{color:'#0067FF',marginLeft:'10px'}}/>
+      <Typography marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif'>Travel Date</Typography>
 
    </Box>
     
    
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-       <Typography fontFamily= 'Google Sans, sans-serif' style={{fontSize:'22px',fontWeight:'bold'}}>{selectedDate.format('DD MMM YY')}</Typography>
-         <Typography fontFamily= 'Google Sans, sans-serif'>{dayOfWeek}</Typography>
+       <Typography  marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{fontSize:'22px',fontWeight:'bold'}}>{selectedDate.format('DD MMM YY')}</Typography>
+         <Typography  marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif'>{dayOfWeek}</Typography>
          
         
         
@@ -354,18 +343,18 @@ const AirInput = ({
 
          {/* return date */}
 
-  <Box onClick={(event) => handleRPopoverClick(event)} style={{ width: '50%', height: '96px', float: 'left', boxSizing: 'border-box', border:'1px solid #0067FF', borderTopRightRadius:'5px', borderBottomRightRadius:'5px', borderLeft:'none', cursor:'pointer' }}>
+  <Box onClick={(event) => handleRPopoverClick(event)} style={{ width: '50%', height: '96px', float: 'left', boxSizing: 'border-box', border:'1px solid #0067FF', borderTopRightRadius:'5px', borderBottomRightRadius:'5px', borderLeft:'none', cursor:'pointer',justifyContent:'center',alignItems:'center',boxSizing: 'border-box', }}>
   <Box style={{ display: 'flex' }}>
-    <CalendarMonthIcon style={{color:'#0067FF'}} />
-    <Typography fontFamily= 'Google Sans, sans-serif'>Return</Typography>
+    <CalendarMonthIcon style={{color:'#0067FF',marginLeft:"10px"}} />
+    <Typography marginLeft="10px" fontFamily= 'Google Sans, sans-serif'>Return</Typography>
   </Box>
   {returnDate ? (
     <>
-      <Typography fontFamily= 'Google Sans, sans-serif' style={{fontSize:'22px',fontWeight:'bold'}}>{returnDate.format('DD MMM YY')}</Typography>
-      <Typography fontFamily= 'Google Sans, sans-serif'>{returnDate.format('dddd')}</Typography>
+      <Typography  marginLeft="10px" fontFamily= 'Google Sans, sans-serif' style={{fontSize:'22px',fontWeight:'bold'}}>{returnDate.format('DD MMM YY')}</Typography>
+      <Typography  marginLeft="10px" fontFamily= 'Google Sans, sans-serif'>{returnDate.format('dddd')}</Typography>
     </>
   ) : (
-    <Typography fontFamily= 'Google Sans, sans-serif' style={{fontSize:'16px'}}>Tap here to add return date</Typography>
+    <Typography  marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{fontSize:'16px'}}>Tap here to add return date</Typography>
   )}
 </Box>
 
@@ -402,9 +391,9 @@ const AirInput = ({
 <Box onClick={openModal} style={{ width: '100%', height: '96px', cursor: 'pointer', border: '1px solid #0067FF', borderRadius: '5px', boxSizing: 'border-box', padding: '10px' }}>
  {(isFirstChild || journeyType !== 'multicity') && (
     <>
-      <Typography fontFamily= 'Google Sans, sans-serif'>Traveller & Class</Typography>
-      <Typography fontFamily= 'Google Sans, sans-serif' style={{ fontSize: '22px', fontWeight: 'bold' }}>{`${adults + children + infants} Person${adults + children + infants > 1 ? 's' : ''}`}</Typography>
-      <Typography fontFamily= 'Google Sans, sans-serif' style={{ fontStyle: 'italic', fontWeight: 'bold' }}>{selectedClass}</Typography>
+      <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif'>Traveller & Class</Typography>
+      <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontSize: '22px', fontWeight: 'bold' }}>{`${adults + children + infants} Person${adults + children + infants > 1 ? 's' : ''}`}</Typography>
+      <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontStyle: 'italic', fontWeight: 'bold' }}>{selectedClass}</Typography>
     </>
    
     

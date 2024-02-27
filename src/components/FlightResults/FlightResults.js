@@ -17,21 +17,7 @@ import { useLocation } from 'react-router-dom';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { selectFlightSearchParams } from '../../redux/reducers/flightSlice';
 
-const recommendedBoxStyle = {
-  width: '100%',
-  height: '48px',
-  backgroundColor: 'green',
-  display: 'flex',
-  justifyContent: 'space-around',
-  alignItems: 'center',
-  
-};
 
-const boxStyle={
-  width: '294px',
-  height:'100%',
-  backgroundColor: 'gray',
-}
 
 
 
@@ -46,10 +32,8 @@ const currentSearchParams = useSelector(selectFlightSearchParams);
 const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
 const flightSearchData = useSelector(selectFlightSearchData);
 console.log(flightSearchData)
-const flightResults = flightSearchData.Results || [];
- const outboundSegments = flightSearchData.Results;
-const inboundSegments = flightSearchData;
-console.log(outboundSegments)
+
+
  const [showSortedFlights, setShowSortedFlights] = useState(false);
   const [sortedFlights, setSortedFlights] = useState([]);
 const location = useLocation();
@@ -117,7 +101,16 @@ const location = useLocation();
   {/* Content for filter Flight */}
   <FilterComponent/>
 </Box>
-<Box sx={{width:'100%', minHeight:'80px', display:'flex', marginTop:'10px', marginBottom:'5px', backgroundColor: 'rgba(255,255,255,0.5)', border:'1px solid white', borderRadius:'5px'}}>
+<Box sx={{ width: '100%',
+  display: 'flex', // Ensure flex layout is used
+  flexWrap: 'wrap', // Allow items to wrap if needed
+  justifyContent: 'center', // Center items horizontally
+  alignItems: 'center', // Align items vertically
+  marginTop: '10px',
+  marginBottom: '5px',
+  backgroundColor: 'rgba(255,255,255,0.5)',
+  border: '1px solid white',
+  borderRadius: '5px',}}>
   <RecommendFilter flightDataArray={flightSearchData.Results} onSortFlights={handleSortFlights} />
 </Box>
 

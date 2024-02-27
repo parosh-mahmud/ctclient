@@ -37,6 +37,18 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column", // Default to column layout for mobile
     borderRadius: "5px",
+     marginBottom: theme.spacing(2),
+     [theme.breakpoints.up('sm')]: {
+      flexDirection: 'row',
+      
+    },
+  },
+   content: {
+    padding: theme.spacing(2),
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   firstBox: {
     width: "100%", // Full width on mobile devices
@@ -45,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "flex-end",
     position: "relative",
+    [theme.breakpoints.up('sm')]: {
+      width: '50%',
+    },
   },
   nestedBoxes: {
     display: "flex",
@@ -65,11 +80,13 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center", // This ensures the button aligns properly within the container
-    justifyContent: "space-between",
+    alignItems: "center", // Center items horizontally
+    justifyContent: "flex-end", // Align items to the bottom
     position: "relative",
     [theme.breakpoints.up('sm')]: {
-      alignItems: "flex-end", // Adjusts alignment for larger screens
+      alignItems: "flex-end", // Adjust alignment for larger screens
+       width: '50%',
+      marginTop: 0,
     },
   },
   button: {
@@ -122,15 +139,15 @@ const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
  
   const classes = useStyles();
  
-  const [value, setValue] = useState(0); // State to track selected tab
+
 
   const [activeTab, setActiveTab] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
 const [airlineLogoUrl, setAirlineLogoUrl] = useState(null);
 const [anchorEl, setAnchorEl] = useState(null);
-const { currentUser } = useAuthCont(); 
+
 const flightSearchData = useSelector(selectFlightSearchData);
-const airlineCode = segment?.Airline?.AirlineCode;
+
 
 
 
@@ -296,11 +313,11 @@ const SearchIDs = flightSearchData.SearchId;
 </Typography>
                 </Box>
 
-                <Box><Typography><FlightInfoItem isMobile={isMobile} isLoading={isLoading} valueStyle={{fontWeight:'bold'}}   label="Aircraft: " value={segment.Equipment ? `${segment.Equipment}` : 'N/A'} /></Typography></Box>
+                <Box><Typography variant={isMobile ? 'body2' : 'h6'}><FlightInfoItem isMobile={isMobile} isLoading={isLoading} valueStyle={{fontWeight:'bold'}}   label="Aircraft: " value={segment.Equipment ? `${segment.Equipment}` : 'N/A'} /></Typography></Box>
 
              <Box>
               <Typography variant={isMobile ? 'body2' : 'h6'} sx={{display:'flex'}}>
-                <AirlineSeatReclineNormalIcon/>
+                <AirlineSeatReclineNormalIcon style={{ fontSize: isMobile ? '1.5rem' : '2rem' }} />
                 <FlightInfoItem isMobile={isMobile} isLoading={isLoading} valueStyle={{fontWeight:'bold'}}    value={availability} />
                 </Typography>
                 
@@ -380,7 +397,7 @@ const SearchIDs = flightSearchData.SearchId;
                     )
                   : 'N/A'
               }
-              icon={<FaPlaneArrival />}
+              icon={<FaPlaneArrival style={{ fontSize: isMobile ? '1.5rem' : '2rem' }} />}
             /></Typography>
           </Box>
 
@@ -404,10 +421,10 @@ const SearchIDs = flightSearchData.SearchId;
   </div>
   <div  >
     <Box sx={{display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <FlightIcon style={{ transform: 'rotate(90deg)', fontSize:'2rem' }} />
-      <MoreHorizIcon />   
-    <MoreHorizIcon style={{ marginLeft:'-5px', }} />   
-   <CircleIcon/>
+      <FlightIcon style={{ fontSize: isMobile ? '1rem' : '1.5rem',transform: 'rotate(90deg)', }}  />
+      <MoreHorizIcon style={{ fontSize: isMobile ? '1rem' : '1.5rem' }} />   
+    <MoreHorizIcon style={{ fontSize: isMobile ? '1rem' : '1.5rem',marginLeft:'-5px', }}    />   
+   <CircleIcon style={{ fontSize: isMobile ? '1rem' : '1.5rem' }}/>
    </Box>
     
     <Box >
@@ -501,8 +518,9 @@ const SearchIDs = flightSearchData.SearchId;
         <Box className={classes.secondBox}>
           {/* Content for the second box */}
           <Typography variant={isMobile ? 'body2' : 'h6'}>
-            <Typography variant={isMobile ? 'body2' : 'h6'} fontSize='20px' fontWeight='bold'>BDT {calculateTotalAmount()} </Typography>
+            <Typography variant={isMobile ? 'body2' : 'h6'}  fontWeight='bold'>BDT {calculateTotalAmount()} </Typography>
           </Typography>
+          
           
 <Button  variant="text" style={{ textTransform: 'capitalize', fontSize: '10px' }}
       onClick={handleMenuOpen}
