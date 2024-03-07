@@ -63,10 +63,10 @@ export default function Footer() {
       height:'24px'
     }}>
       <Container>
-        <Grid container direction="column" alignItems="flex-start">
-          <Grid item>
+        <Grid container direction="column" alignItems="center">
+          <Grid item justifyContent="center" alignItems="center">
             {/* <img src={CityLogoSvg} sx={{ width: '96px', height: '48px', mb: 2 }} alt="Logo" /> */}
-            <Typography color="black">
+            <Typography sx={{color: 'white', '&:hover': { color: '#2F81F7' }, mr: 2, mb: 1,fontSize:'15px',textDecoration:'none',fontVariant:'contextual'}}>
               © Copyrights The City Flyers 2024
             </Typography>
           </Grid>
@@ -74,11 +74,11 @@ export default function Footer() {
               <Box display="flex" flexDirection="row" flexWrap="wrap" alignItems="flex-start">
               {links.map((link, index) => (
                 link.internal ? (
-                  <Link key={index} component={RouterLink} to={link.path} sx={{ color: 'black', '&:hover': { color: 'white' }, mr: 2, mb: 1 }}>
+                  <Link key={index} component={RouterLink} to={link.path} sx={{ color: 'white', '&:hover': { color: '#2F81F7' }, mr: 2, mb: 1,fontSize:'15px',textDecoration:'none',fontVariant:'contextual' }}>
                     {link.name}
                   </Link>
                 ) : (
-                  <Link key={index} href={link.path} target="_blank" rel="noopener noreferrer" sx={{ color: 'black', '&:hover': { color: 'white' }, mr: 2, mb: 1 }}>
+                  <Link key={index} href={link.path} target="_blank" rel="noopener noreferrer" sx={{ color: 'white', '&:#2F81F7': { color: 'white' }, mr: 2, mb: 1,fontSize:'20px' }}>
                     {link.name}
                   </Link>
                 )

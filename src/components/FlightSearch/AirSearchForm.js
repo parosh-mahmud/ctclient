@@ -11,7 +11,7 @@ const SearchFlight = () => {
   };
 
   return (
-    <div style={{ width: '98%',  margin: '0 auto', marginTop: '40px', }}>
+    <div style={{ width: '98%',   }}>
       <Tabs
         value={activeTab}
         onChange={handleTabChange}
@@ -26,7 +26,7 @@ const SearchFlight = () => {
          backgroundColor:'rgba(255,255,255,0.5)',
           borderTopLeftRadius:'5px',
           borderTopRightRadius:'5px',
-          border: '1px solid	white',	
+          
           margin:'auto',
         }}
         

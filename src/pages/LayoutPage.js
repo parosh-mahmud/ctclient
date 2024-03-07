@@ -7,7 +7,7 @@ const LayoutPage = ({ children }) => {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh', // Sets minimum height to full viewport height
+      minHeight: '90vh', // Sets minimum height to full viewport height
       justifyContent: 'space-between', // Spaces out the header, content, and footer
     }}>
       <DashBoardHeader />
