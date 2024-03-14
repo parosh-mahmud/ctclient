@@ -100,6 +100,7 @@ console.log(currentUser)
         height:'48px',
         justifyContent:'center',
         alignItems:'center',
+        marginBottom:'10px',
         
       }}
     >

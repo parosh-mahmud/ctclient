@@ -98,7 +98,7 @@ const AirInput = ({
         {/* item 1 */}
         <Grid item sm={12} xs={12} lg={6} md={6} direction='row'>
           <Box  style={paperStyle} >
-             <Box onClick={(event) => handlePopoverClick(event, 'from')}  style={{ border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer',borderRadius:'5px'}}>
+             <Box onClick={(event) => handlePopoverClick(event, 'from')}  style={{ border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer', overflow:'hidden',borderRadius:'5px'}}>
         <Stack direction="column"
   justifyContent="flex-start"
   alignItems="flex-start"
@@ -109,11 +109,11 @@ const AirInput = ({
                 <FlightTakeoffIcon style={{color:'#0067FF'}} />
                 <Typography sx={{fontFamily: 'Google Sans, sans-serif',}}>From</Typography>
               </Typography >
-              <Typography  style={{fontWeight:'bold',fontSize:'20px',fontFamily: 'Google Sans, sans-serif',textAlign:'left'}} >
+              <Typography textAlign="left"  style={{fontWeight:'bold',fontSize:'20px',fontFamily: 'Google Sans, sans-serif',textAlign:'left',color:'#212F3C'}} >
                 {selectedFromAirport ? `${selectedFromAirport.city} - ${selectedFromAirport.code}` : 'Select an Airport'}
               </Typography>
-              <Typography sx={{
-          fontFamily: 'Google Sans, sans-serif', fontSize:'12px',textAlign:'left' // Specify the font-family name defined in @font-face
+              <Typography textAlign="left"  sx={{
+          fontFamily: 'Google Sans, sans-serif', fontSize:'12px',textAlign:'left',whiteSpace:'nowrap', // Specify the font-family name defined in @font-face
         }}>
                 {selectedFromAirport ? selectedFromAirport.name : 'Select an Airport'}
               </Typography>
@@ -133,7 +133,8 @@ const AirInput = ({
   cursor: 'pointer'
 }}>
   <SwapHorizIcon style={{ 
-    fontSize: '45px', // Adjust to your desired icon size
+    fontSize: '45px',
+    color:"#212F3C" , // Adjust to your desired icon size
   }} />
 </Box>
 
@@ -208,7 +209,7 @@ const AirInput = ({
   </div>
 </Popover>
 
-    <Box onClick={(event) => handlePopoverClick(event, 'to')}  style={{border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer',borderRadius:'5px' }}>
+    <Box onClick={(event) => handlePopoverClick(event, 'to')}  style={{border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer',borderRadius:'5px',overflow:'hidden' }}>
                 
                  <Stack direction="column"
   justifyContent="flex-start"
@@ -218,10 +219,10 @@ const AirInput = ({
                 <FlightLandIcon style={{color:'#0067FF'}} />
                 <Typography fontFamily= 'Google Sans, sans-serif'>To</Typography>
               </Typography>
-              <Typography fontFamily= 'Google Sans, sans-serif'  style={{fontWeight:'bold',fontSize:'20px'}}>
+              <Typography fontFamily= 'Google Sans, sans-serif'  style={{fontWeight:'bold',fontSize:'23px',color:'#212F3C'}}>
                 {selectedToAirport ? `${selectedToAirport.city} - ${selectedToAirport.code}` : 'Select an Airport'}
               </Typography>
-              <Typography fontFamily= 'Google Sans, sans-serif' style={{fontSize:'12px'}}>
+              <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{fontSize:'12px',whiteSpace:'nowrap'}}>
                 {selectedToAirport ? selectedToAirport.name : 'Select an Airport'}
               </Typography>
             </Stack>
@@ -311,7 +312,7 @@ const AirInput = ({
     
    
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-       <Typography  marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{fontSize:'22px',fontWeight:'bold'}}>{selectedDate.format('DD MMM YY')}</Typography>
+       <Typography color="#212F3C"   marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{fontSize:'22px',fontWeight:'bold'}}>{selectedDate.format('DD MMM YY')}</Typography>
          <Typography  marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif'>{dayOfWeek}</Typography>
          
         
@@ -388,12 +389,12 @@ const AirInput = ({
           <Box  style={paperStyle}>
              {/* Travller class */}
            
-<Box onClick={openModal} style={{ width: '100%', height: '96px', cursor: 'pointer', border: '1px solid #0067FF', borderRadius: '5px', boxSizing: 'border-box', padding: '10px' }}>
+<Box onClick={openModal} style={{ width: '100%', height: '96px', cursor: 'pointer', border: '1px solid #0067FF', borderRadius: '5px', boxSizing: 'border-box', padding: '10px', flexWrap: 'wrap' }}>
  {(isFirstChild || journeyType !== 'multicity') && (
     <>
       <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif'>Traveller & Class</Typography>
-      <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontSize: '22px', fontWeight: 'bold' }}>{`${adults + children + infants} Person${adults + children + infants > 1 ? 's' : ''}`}</Typography>
-      <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontStyle: 'italic', fontWeight: 'bold' }}>{selectedClass}</Typography>
+      <Typography color="#212F3C"  textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontSize: '22px', fontWeight: 'bold' }}>{`${adults + children + infants} Person${adults + children + infants > 1 ? 's' : ''}`}</Typography>
+      <Typography color="#212F3C"  textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontStyle: 'italic', fontWeight: 'bold' }}>{selectedClass}</Typography>
     </>
    
     
