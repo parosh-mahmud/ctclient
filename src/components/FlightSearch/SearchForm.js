@@ -44,7 +44,8 @@ import CallSplitIcon from '@mui/icons-material/CallSplit';
 const useStyles = makeStyles((theme) => ({
 
   popover: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    // backgroundColor: 'rgba(255,255,255,0.5)',
+    background: 'transparent !important',
     padding: theme.spacing(2),
     borderRadius: theme.spacing(1),
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
@@ -266,29 +267,31 @@ function CustomIconButton({ value, selectedValue, onChange, Icon, label }) {
     setToAnchorEl(null);
   };
 
- const handleFromAirportSelect = (airport) => {
-  console.log('Selecting from airport:', airport);
-  setSelectedFromAirport(airport);
-  setFromAnchorEl(null); // Close the 'from' popover
-};
+ // Function to handle airport selection from the "From" popover
+  const handleFromAirportSelect = (airport) => {
+    setSelectedFromAirport(airport);
+    setFromAnchorEl(null); // Close the 'from' popover
+    setTimeout(() => setToAnchorEl(document.getElementById('toAirportTrigger')), 0); // Automatically trigger the 'to' popover
+  };
 
-const handleToAirportSelect = (airport) => {
-  console.log('Selecting to airport:', airport);
-  setSelectedToAirport(airport); // Assuming setSelectedToAirport updates the state in the parent component
-  setToAnchorEl(null); // Close the "To" popover
-};
+// Function to handle airport selection from the "To" popover
+  const handleToAirportSelect = (airport) => {
+    setSelectedToAirport(airport);
+    setToAnchorEl(null); // Close the 'to' popover
+    // You can automatically open the next relevant popover here, if any
+  };
 
 
-// This function should be defined in the parent component where state is managed
-const handlePopoverClick = (event, anchor) => {
-  if (anchor === 'from') {
-    setFromAnchorEl(event.currentTarget);
-    setToAnchorEl(null); // Ensure to close or reset the 'to' anchor
-  } else if (anchor === 'to') {
-    setToAnchorEl(event.currentTarget);
-    setFromAnchorEl(null); // Ensure to close or reset the 'from' anchor
-  }
-};
+  // Function to handle clicking the "From" or "To" fields to open their popovers
+  const handlePopoverClick = (event, anchor) => {
+    if (anchor === 'from') {
+      setFromAnchorEl(event.currentTarget);
+      setToAnchorEl(null);
+    } else if (anchor === 'to') {
+      setToAnchorEl(event.currentTarget);
+      setFromAnchorEl(null);
+    }
+  };
 
 
 

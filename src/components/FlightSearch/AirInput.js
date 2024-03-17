@@ -93,6 +93,7 @@ const AirInput = ({
   setInfants,
 }) => {
    
+  
   return (
     <Grid container spacing={1} style={{paddingBottom:'60px',width:'99%'}}>
         {/* item 1 */}
@@ -107,7 +108,7 @@ const AirInput = ({
                <Typography style={{fontSize:'1em',display:'flex'}}
          >
                 <FlightTakeoffIcon style={{color:'#0067FF'}} />
-                <Typography sx={{fontFamily: 'Google Sans, sans-serif',}}>From</Typography>
+                <Typography sx={{fontFamily: 'Google Sans, sans-serif',marginLeft:'10px'}}>From</Typography>
               </Typography >
               <Typography textAlign="left"  style={{fontWeight:'bold',fontSize:'20px',fontFamily: 'Google Sans, sans-serif',textAlign:'left',color:'#212F3C'}} >
                 {selectedFromAirport ? `${selectedFromAirport.city} - ${selectedFromAirport.code}` : 'Select an Airport'}
@@ -147,7 +148,12 @@ const AirInput = ({
     vertical: 'bottom',
     horizontal: 'left',
   }}
-  transitionDuration={300}
+   transitionDuration={300}
+  PaperProps={{
+    style: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+    },
+  }}
   
 >
   <div className={classes.popover}>
@@ -165,6 +171,7 @@ const AirInput = ({
       </InputAdornment>
     ),
   }}
+  autoFocus
 />
 
 {/* Conditionally render airport lists */}
@@ -217,7 +224,7 @@ const AirInput = ({
  style={{marginLeft:'10px'}}>
                <Typography style={{fontSize:'1em',display:'flex'}}>
                 <FlightLandIcon style={{color:'#0067FF'}} />
-                <Typography fontFamily= 'Google Sans, sans-serif'>To</Typography>
+                <Typography fontFamily= 'Google Sans, sans-serif' marginLeft="10px">To</Typography>
               </Typography>
               <Typography fontFamily= 'Google Sans, sans-serif'  style={{fontWeight:'bold',fontSize:'23px',color:'#212F3C'}}>
                 {selectedToAirport ? `${selectedToAirport.city} - ${selectedToAirport.code}` : 'Select an Airport'}
@@ -236,7 +243,12 @@ const AirInput = ({
         vertical: 'bottom',
         horizontal: 'left',
       }}
-      transitionDuration={300} // Optional: Set transition duration for the fade effect
+       transitionDuration={300}
+  PaperProps={{
+    style: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+    },
+  }}
     >
       <div className={classes.popover}>
        <TextField
@@ -253,6 +265,7 @@ const AirInput = ({
       </InputAdornment>
     ),
   }}
+  autoFocus
 />
 
 {/* Conditionally render airport lists */}
@@ -328,6 +341,12 @@ const AirInput = ({
     vertical: 'bottom',
     horizontal: 'left',
   }}
+   transitionDuration={300}
+  PaperProps={{
+    style: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+    },
+  }}
 >
   <div className={classes.popover}>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -367,6 +386,12 @@ const AirInput = ({
     vertical: 'bottom',
     horizontal: 'left',
   }}
+  transitionDuration={300}
+  PaperProps={{
+    style: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+    },
+  }}
 >
   <div className={classes.popover} >
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -389,13 +414,13 @@ const AirInput = ({
           <Box  style={paperStyle}>
              {/* Travller class */}
            
-<Box onClick={openModal} style={{ width: '100%', height: '96px', cursor: 'pointer', border: '1px solid #0067FF', borderRadius: '5px', boxSizing: 'border-box', padding: '10px', flexWrap: 'wrap' }}>
+<Box onClick={openModal} style={{ width: '100%', height: '96px', cursor: 'pointer', border: '1px solid #0067FF', borderRadius: '5px', boxSizing: 'border-box',  flexWrap: 'wrap' }}>
  {(isFirstChild || journeyType !== 'multicity') && (
-    <>
+    <Box sx={{marginLeft:'10px'}}>
       <Typography textAlign="left" fontFamily= 'Google Sans, sans-serif'>Traveller & Class</Typography>
       <Typography color="#212F3C"  textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontSize: '22px', fontWeight: 'bold' }}>{`${adults + children + infants} Person${adults + children + infants > 1 ? 's' : ''}`}</Typography>
       <Typography color="#212F3C"  textAlign="left" fontFamily= 'Google Sans, sans-serif' style={{ fontStyle: 'italic', fontWeight: 'bold' }}>{selectedClass}</Typography>
-    </>
+    </Box>
    
     
 
@@ -424,6 +449,13 @@ const AirInput = ({
   transformOrigin={{
     vertical: 'top',
     horizontal: 'right',
+  }}
+
+  transitionDuration={300}
+  PaperProps={{
+    style: {
+      backgroundColor: 'rgba(255,255,255,0.9)',
+    },
   }}
 >
   <Box style={{ padding: 20, minWidth: 200,boxSizing:'border-box', }}>
