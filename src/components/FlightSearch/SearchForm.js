@@ -212,8 +212,9 @@ const handleDepartureDateChange = (date) => {
   setDanchorEl(null); // Close the Popover after selecting a date
 };
 
-function CustomIconButton({ value, selectedValue, onChange, Icon, label }) {
+function CustomIconButton({ value, selectedValue, onChange, Icon, label, rotate }) {
   const isSelected = selectedValue === value; // Check if the button is selected
+  const iconStyle = rotate ? { transform: 'rotate(90deg)' } : {}; // Conditionally apply rotation
 
   return (
     <Box
@@ -221,35 +222,33 @@ function CustomIconButton({ value, selectedValue, onChange, Icon, label }) {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        marginRight: '16px', // Adjust spacing as needed
+        marginRight: '16px',
         marginBottom: '10px',
-        marginTop:'10px',
-        backgroundColor: isSelected ? '#0067FF' : 'transparent', // Change background color if selected
-        color: isSelected ? '#fff' : 'inherit', // Change text color if selected
-        padding: '6px 12px', // Add some padding
-        borderRadius: '5px', // Rounded corners
-        border: isSelected ? '1px solid #0067FF' : '1px solid transparent', // Change border color if selected
+        marginTop: '10px',
+        backgroundColor: isSelected ? '#0067FF' : 'transparent',
+        color: isSelected ? '#fff' : 'inherit',
+        padding: '6px 12px',
+        borderRadius: '5px',
+        border: isSelected ? '1px solid #0067FF' : '1px solid transparent',
         cursor: 'pointer',
         '&:hover': {
-          backgroundColor: isSelected ? '#0056cc' : '#f0f0f0', // Darker blue on hover if selected, light grey otherwise
-          borderColor: isSelected ? '#0056cc' : '#ccc', // Adjust border color on hover
+          backgroundColor: isSelected ? '#0056cc' : '#f0f0f0',
+          borderColor: isSelected ? '#0056cc' : '#ccc',
         },
-        transition: 'background-color 0.3s ease, border-color 0.3s ease', // Smooth transition for background and border color
-        
+        transition: 'background-color 0.3s ease, border-color 0.3s ease',
       }}
       onClick={() => onChange(value)}
     >
-      
-      <Icon  color={isSelected ? 'inherit' : 'action'} />
-      
+      {/* Apply the iconStyle to the Icon component */}
+      <Icon color={isSelected ? 'inherit' : 'action'} style={iconStyle} />
       
       <Typography
         variant="caption"
         sx={{
           marginLeft: '8px',
-          color: 'inherit', // Ensure the text color inherits from the Box
-          fontSize: '14px', // Adjust font size as needed
-          fontFamily:'Google Sans'
+          color: 'inherit',
+          fontSize: '14px',
+          fontFamily: 'Google Sans',
         }}
       >
         {label}
@@ -258,14 +257,33 @@ function CustomIconButton({ value, selectedValue, onChange, Icon, label }) {
   );
 }
 
+
   const handleDPopoverClick = (event) => {
   setDanchorEl(event.currentTarget);
 };
 
-   const handlePopoverClose = () => {
-    setFromAnchorEl(null);
-    setToAnchorEl(null);
-  };
+  //  const handlePopoverClose = () => {
+  //   setFromAnchorEl(null);
+  //   setToAnchorEl(null);
+  // };
+
+const handlePopoverClose = (source) => {
+  if (source === 'from') {
+    setFromAnchorEl(null); // Close the "from" popover
+    // Use a timeout to ensure the state update has been applied before attempting to open the "to" popover
+    setTimeout(() => {
+      const toElement = document.getElementById('toAirportTrigger');
+      if (toElement) {
+        handlePopoverClick({ currentTarget: toElement }, 'to');
+      }
+    }, 0);
+  } else if (source === 'to') {
+    setToAnchorEl(null); // Close the "to" popover
+  }
+  // Handle other sources if needed
+};
+
+
 
  // Function to handle airport selection from the "From" popover
   const handleFromAirportSelect = (airport) => {
@@ -429,6 +447,7 @@ useEffect(() => {
         onChange={() => handleOptionChange('return')}
         Icon={RestartAltIcon}
         label="Return"
+        rotate={true}
       />
       
         <CustomIconButton
@@ -438,6 +457,7 @@ useEffect(() => {
         onChange={() => handleOptionChange('multicity')}
         Icon={CallSplitIcon}
         label="Multi-city"
+        rotate={true}
         
       />
       

@@ -1,5 +1,5 @@
 // AirInput.js
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Box, Grid, Popover, Stack, Typography, Button, Divider, RadioGroup, FormControlLabel, Radio, TextField
 } from '@mui/material';
@@ -92,7 +92,7 @@ const AirInput = ({
   setChildren,
   setInfants,
 }) => {
-   
+   const travelDateRef = useRef(null);
   
   return (
     <Grid container spacing={1} style={{paddingBottom:'60px',width:'99%'}}>
@@ -216,7 +216,7 @@ const AirInput = ({
   </div>
 </Popover>
 
-    <Box onClick={(event) => handlePopoverClick(event, 'to')}  style={{border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer',borderRadius:'5px',overflow:'hidden' }}>
+    <Box id="toAirportTrigger" onClick={(event) => handlePopoverClick(event, 'to')}  style={{border:'1px solid #0067FF', width: 'calc(50% - 20px)',height: '96px', cursor: 'pointer',borderRadius:'5px',overflow:'hidden' }}>
                 
                  <Stack direction="column"
   justifyContent="flex-start"
@@ -312,11 +312,11 @@ const AirInput = ({
           </Box>
         </Grid>
 
-        {/* item 2 Departure and  return */}
+        {/* travel date  */}
         
         <Grid item sm={12} xs={12} lg={4} md={4}>
           <Box  style={paperStyle}>
-             <Box onClick={handleDPopoverClick} style={{ borderRight:'none', border:'1px solid #0067FF',borderBottomLeftRadius:'5px',borderTopLeftRadius:'5px', width: '50%', height: '96px',  float: 'left',cursor:'pointer', boxSizing:'border-box' }}>
+             <Box id="travelDateTrigger" ref={travelDateRef} onClick={handleDPopoverClick}  style={{ borderRight:'none', border:'1px solid #0067FF',borderBottomLeftRadius:'5px',borderTopLeftRadius:'5px', width: '50%', height: '96px',  float: 'left',cursor:'pointer', boxSizing:'border-box' }}>
     <Box style={{display:'flex',}}>
        <CalendarMonthIcon style={{color:'#0067FF',marginLeft:'10px'}}/>
       <Typography marginLeft="10px" textAlign="left" fontFamily= 'Google Sans, sans-serif'>Travel Date</Typography>
@@ -363,7 +363,7 @@ const AirInput = ({
 
          {/* return date */}
 
-  <Box onClick={(event) => handleRPopoverClick(event)} style={{ width: '50%', height: '96px', float: 'left', boxSizing: 'border-box', border:'1px solid #0067FF', borderTopRightRadius:'5px', borderBottomRightRadius:'5px', borderLeft:'none', cursor:'pointer',justifyContent:'center',alignItems:'center',boxSizing: 'border-box', }}>
+  <Box id="returnDateTrigger" onClick={(event) => handleRPopoverClick(event)} style={{ width: '50%', height: '96px', float: 'left', boxSizing: 'border-box', border:'1px solid #0067FF', borderTopRightRadius:'5px', borderBottomRightRadius:'5px', borderLeft:'none', cursor:'pointer',justifyContent:'center',alignItems:'center',boxSizing: 'border-box', }}>
   <Box style={{ display: 'flex' }}>
     <CalendarMonthIcon style={{color:'#0067FF',marginLeft:"10px"}} />
     <Typography marginLeft="10px" fontFamily= 'Google Sans, sans-serif'>Return</Typography>
@@ -440,17 +440,17 @@ const AirInput = ({
 </Box>
 
 <Popover
-  open={isModalOpen}
+ open={isModalOpen}
+  anchorEl={dAnchorEl} // Ensure this is correctly set to the button/input field
   onClose={closeModal}
   anchorOrigin={{
-    vertical: 'bottom',
-    horizontal: 'right',
+    vertical: 'center', // Adjust these values
+    horizontal: 'right', // Adjust these values
   }}
   transformOrigin={{
-    vertical: 'top',
-    horizontal: 'right',
+    vertical: 'top', // Adjust to 'top' if you want it to appear below the button/input
+    horizontal: 'right', // Aligns to the end of the anchor element
   }}
-
   transitionDuration={300}
   PaperProps={{
     style: {
@@ -473,7 +473,7 @@ const AirInput = ({
       <Button onClick={() => setChildren(children + 1)}>+</Button>
     </Box>
     <Divider style={{ margin: '8px 0' }} />
-    <Box style={{ marginBottom: 10 }}>
+    <Box style={{ marginBottom: 5}}>
       <Typography fontFamily= 'Google Sans, sans-serif'>Infants</Typography>
       <Button onClick={() => setInfants(infants - 1)}>-</Button>
       {infants}
