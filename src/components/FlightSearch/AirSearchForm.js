@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Tabs, Tab, Box } from '@mui/material';
-import Oneway from './JourneyType';
-import SearchForm from './SearchForm';
-import '../FlightSearch/style.css'
+import React, { useState } from "react";
+import { Tabs, Tab, Box } from "@mui/material";
+import Oneway from "./JourneyType";
+import SearchForm from "./SearchForm";
+import "../FlightSearch/style.css";
 const SearchFlight = () => {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -11,25 +11,24 @@ const SearchFlight = () => {
   };
 
   return (
-    <div style={{ width: '98%',   }}>
+    <div style={{ width: "98%" }}>
       <Tabs
         value={activeTab}
         onChange={handleTabChange}
         variant="scrollable"
-  scrollButtons
-  allowScrollButtonsMobile
+        scrollButtons
+        allowScrollButtonsMobile
         indicatorColor="primary"
         textColor="white"
-         sx={{
-          width: 'auto',  
+        sx={{
+          width: "auto",
           //previous was 600px
-         backgroundColor:'rgba(255,255,255,0.5)',
-          borderTopLeftRadius:'5px',
-          borderTopRightRadius:'5px',
-          
-          margin:'auto',
+          backgroundColor: "rgba(255,255,255,0.5)",
+          borderTopLeftRadius: "5px",
+          borderTopRightRadius: "5px",
+
+          margin: "auto",
         }}
-        
       >
         <Tab label="Flight" />
         {/* <Tab label="Hotel" />
@@ -39,11 +38,10 @@ const SearchFlight = () => {
         <Tab label="Cruises" />
         <Tab label="More" /> */}
       </Tabs>
-      <div  role="tabpanel" hidden={activeTab !== 0}  >
+      <div role="tabpanel" hidden={activeTab !== 0}>
         {activeTab === 0 && (
-          <Box  >
-           
-            <SearchForm  />
+          <Box>
+            <SearchForm />
           </Box>
         )}
       </div>

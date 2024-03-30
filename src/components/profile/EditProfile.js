@@ -1,6 +1,13 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, Grid, Typography, Divider } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  Box,
+  Grid,
+  Typography,
+  Divider,
+} from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
 
 const EditProfile = ({ initialProfile, onSave, onCancel }) => {
   const [profile, setProfile] = useState(initialProfile);
@@ -12,24 +19,24 @@ const EditProfile = ({ initialProfile, onSave, onCancel }) => {
 
   return (
     <Box>
-        {/* <Typography>Update profile information</Typography> */}
-       <Divider sx={{ margin: '20px 0', alignItems: 'center', display: 'flex' }}>
-  <Typography sx={{
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '18px',
-    color: '#1976d2',
-    fontWeight: 'bold',
-    marginRight: '10px',
-    backgroundColor: '#fff',
-    padding: '0 10px',
-    textTransform:'uppercase',
-    
-  }}>
-    Update profile informations
-  </Typography>
-</Divider>
-       <Grid container spacing={2}>
-        
+      {/* <Typography>Update profile information</Typography> */}
+      <Divider sx={{ margin: "20px 0", alignItems: "center", display: "flex" }}>
+        <Typography
+          sx={{
+            fontFamily: "Arial, sans-serif",
+            fontSize: "18px",
+            color: "#1976d2",
+            fontWeight: "bold",
+            marginRight: "10px",
+            backgroundColor: "#fff",
+            padding: "0 10px",
+            textTransform: "uppercase",
+          }}
+        >
+          Update profile informations
+        </Typography>
+      </Divider>
+      <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <TextField
             margin="normal"
@@ -133,10 +140,7 @@ const EditProfile = ({ initialProfile, onSave, onCancel }) => {
         >
           Save Changes
         </Button>
-        <Button
-          variant="outlined"
-          onClick={onCancel}
-        >
+        <Button variant="outlined" onClick={onCancel}>
           Cancel
         </Button>
       </Box>
