@@ -68,6 +68,24 @@ const useStyles = makeStyles((theme) => ({
       opacity: 1, // Ensure opacity stays 1 on hover
     },
   },
+
+  searchButton: {
+    position: "relative",
+    top: "-30px",
+    zIndex: 1,
+    width: "20%",
+    height: "60px",
+    textTransform: "none",
+    backgroundColor: "#0067FF",
+    fontWeight: "bold",
+    // Default font size
+    fontSize: "22px",
+    // Responsive font size using media query
+    ["@media (max-width:600px)"]: {
+      // Adjust the breakpoint as needed
+      fontSize: "16px", // Smaller font size for smaller screens
+    },
+  },
   input: {
     width: "100%",
     marginBottom: theme.spacing(1),
@@ -255,7 +273,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
     rotate,
   }) {
     const isSelected = selectedValue === value; // Check if the button is selected
-    const iconStyle = rotate ? { transform: "rotate(90deg)" } : {}; // Conditionally apply rotation
+    const iconStyle = rotate ? { transform: "rotate(270deg)" } : {}; // Conditionally apply rotation
 
     return (
       <Box
@@ -302,26 +320,26 @@ export const SearchForm = ({ searchButtonLabel }) => {
     setDanchorEl(event.currentTarget);
   };
 
-  //  const handlePopoverClose = () => {
-  //   setFromAnchorEl(null);
-  //   setToAnchorEl(null);
-  // };
-
-  const handlePopoverClose = (source) => {
-    if (source === "from") {
-      setFromAnchorEl(null); // Close the "from" popover
-      // Use a timeout to ensure the state update has been applied before attempting to open the "to" popover
-      setTimeout(() => {
-        const toElement = document.getElementById("toAirportTrigger");
-        if (toElement) {
-          handlePopoverClick({ currentTarget: toElement }, "to");
-        }
-      }, 0);
-    } else if (source === "to") {
-      setToAnchorEl(null); // Close the "to" popover
-    }
-    // Handle other sources if needed
+  const handlePopoverClose = () => {
+    setFromAnchorEl(null);
+    setToAnchorEl(null);
   };
+
+  // const handlePopoverClose = (source) => {
+  //   if (source === "from") {
+  //     setFromAnchorEl(null); // Close the "from" popover
+  //     // Use a timeout to ensure the state update has been applied before attempting to open the "to" popover
+  //     setTimeout(() => {
+  //       const toElement = document.getElementById("toAirportTrigger");
+  //       if (toElement) {
+  //         handlePopoverClick({ currentTarget: toElement }, "to");
+  //       }
+  //     }, 0);
+  //   } else if (source === "to") {
+  //     setToAnchorEl(null); // Close the "to" popover
+  //   }
+  //   // Handle other sources if needed
+  // };
 
   // Function to handle airport selection from the "From" popover
   const handleFromAirportSelect = (airport) => {
@@ -584,17 +602,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
         onClick={handleFormData}
         variant="contained"
         color="primary"
-        style={{
-          position: "relative",
-          top: "-30px",
-          zIndex: 1,
-          width: "20%",
-          height: "60px",
-          textTransform: "none",
-          backgroundColor: "#0067FF",
-          fontWeight: "bold",
-          fontSize: "22px",
-        }}
+        className={classes.searchButton}
       >
         {searchButtonLabel || "Search"}
       </Button>
