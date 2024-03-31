@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(2),
   },
   navLink: {
-    color: "gray",
+    color: "#0067FF",
 
     "&:hover": {
       color: "white",
@@ -53,7 +53,7 @@ export default function Footer() {
     <Box
       sx={{
         // backgroundColor: 'rgba(255,255,255,0.5)',
-        color: "white",
+        color: "#0067FF",
         width: "100%",
         pt: 2, // theme.spacing(2)
         pb: 2, // theme.spacing(2)
@@ -66,7 +66,7 @@ export default function Footer() {
             {/* <img src={CityLogoSvg} sx={{ width: '96px', height: '48px', mb: 2 }} alt="Logo" /> */}
             <Typography
               sx={{
-                color: "white",
+                color: "#0067FF",
                 "&:hover": { color: "#2F81F7" },
                 mr: 2,
                 mb: 1,
@@ -92,7 +92,7 @@ export default function Footer() {
                     component={RouterLink}
                     to={link.path}
                     sx={{
-                      color: "white",
+                      color: "#0067FF",
                       "&:hover": { color: "#2F81F7" },
                       mr: 2,
                       mb: 1,
@@ -110,7 +110,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     sx={{
-                      color: "white",
+                      color: "#0067FF",
                       "&:#2F81F7": { color: "white" },
                       mr: 2,
                       mb: 1,
