@@ -75,11 +75,12 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     width: "20%",
     height: "60px",
-    textTransform: "none",
+    textTransform: "capitalize",
     backgroundColor: "#0067FF",
     fontWeight: "bold",
     // Default font size
-    fontSize: "22px",
+    fontSize: "22px !important",
+
     // Responsive font size using media query
     ["@media (max-width:600px)"]: {
       // Adjust the breakpoint as needed
@@ -150,7 +151,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [returnDate, setReturnDate] = useState(null);
   const [airInputs, setAirInputs] = useState([{ id: 1 }]);
-
+  console.log(airInputs);
   const travelerCount = (type, action) => {
     // Assuming adults, children, and infants are state variables
     let newCount;
@@ -475,7 +476,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
             sx={{
               display: "flex",
               flexDirection: "row",
-              paddingLeft: "20px",
+              // paddingLeft: "20px",
             }}
             aria-label="journey-type"
             name="journey-type"
@@ -485,7 +486,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
               selectedValue={selectedOption}
               onChange={() => handleOptionChange("oneway")}
               Icon={KeyboardBackspaceIcon}
-              label="One-way"
+              label="One Way"
             />
             <CustomIconButton
               value="return"
@@ -501,7 +502,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
               selectedValue={selectedOption}
               onChange={() => handleOptionChange("multicity")}
               Icon={CallSplitIcon}
-              label="Multi-city"
+              label="Multi City"
               rotate={true}
             />
           </Box>
@@ -602,10 +603,27 @@ export const SearchForm = ({ searchButtonLabel }) => {
         onClick={handleFormData}
         variant="contained"
         color="primary"
-        className={classes.searchButton}
+        sx={{
+          position: "relative",
+          top: "-30px",
+          zIndex: 1,
+          width: "20%", // Default width for larger screens
+          height: "60px", // Default height for larger screens
+          textTransform: "capitalize",
+          backgroundColor: "#0067FF",
+          fontSize: "22px",
+
+          // Responsive design adjustments for screens with max-width of 600px
+          "@media (max-width:600px)": {
+            fontSize: "18px", // Smaller font size for smaller screens
+            width: "50%", // Adjusted width for smaller screens
+            height: "50px", // Adjusted height for smaller screens
+          },
+        }}
       >
         {searchButtonLabel || "Search"}
       </Button>
+
       <Backdrop
         open={isFetching} // Control the visibility based on the state
         style={{ zIndex: 1, color: "#fff" }}

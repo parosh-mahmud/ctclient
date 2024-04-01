@@ -16,6 +16,7 @@ import {
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
@@ -152,8 +153,7 @@ const AirInput = ({
               <Typography
                 textAlign="left"
                 sx={{
-                  fontFamily: "Google Sans, sans-serif",
-                  fontSize: "12px",
+                  fontSize: "13px",
                   textAlign: "left",
                   whiteSpace: "nowrap", // Specify the font-family name defined in @font-face
                 }}
@@ -243,18 +243,12 @@ const AirInput = ({
                           >
                             {airport.city}, {airport.country}
                           </Typography>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontSize="15px"
-                          >
+                          <Typography fontSize="15px">
                             {airport.name}
                           </Typography>
                         </Box>
                         <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
+                          <Typography fontWeight="bold">
                             {airport.code}
                           </Typography>
                         </Box>
@@ -276,24 +270,15 @@ const AirInput = ({
                         }}
                       >
                         <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
+                          <Typography fontWeight="bold">
                             {airport.city}, {airport.country}
                           </Typography>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontSize="15px"
-                          >
+                          <Typography fontSize="15px">
                             {airport.name}
                           </Typography>
                         </Box>
                         <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
+                          <Typography fontWeight="bold">
                             {airport.code}
                           </Typography>
                         </Box>
@@ -323,15 +308,9 @@ const AirInput = ({
             >
               <Typography style={{ fontSize: "1em", display: "flex" }}>
                 <FlightLandIcon style={{ color: "#0067FF" }} />
-                <Typography
-                  fontFamily="Google Sans, sans-serif"
-                  marginLeft="10px"
-                >
-                  To
-                </Typography>
+                <Typography marginLeft="10px">To</Typography>
               </Typography>
               <Typography
-                fontFamily="Google Sans, sans-serif"
                 style={{
                   fontWeight: "bold",
                   fontSize: "23px",
@@ -344,8 +323,7 @@ const AirInput = ({
               </Typography>
               <Typography
                 textAlign="left"
-                fontFamily="Google Sans, sans-serif"
-                style={{ fontSize: "12px", whiteSpace: "nowrap" }}
+                style={{ fontSize: "13px", whiteSpace: "nowrap" }}
               >
                 {selectedToAirport
                   ? selectedToAirport.name
@@ -491,17 +469,28 @@ const AirInput = ({
               boxSizing: "border-box",
             }}
           >
-            <Box style={{ display: "flex" }}>
-              <CalendarMonthIcon
+            <Box
+              style={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              {/* <CalendarMonthIcon
                 style={{ color: "#0067FF", marginLeft: "10px" }}
-              />
-              <Typography
+              /> */}
+              <Box
                 marginLeft="10px"
                 textAlign="left"
-                fontFamily="Google Sans, sans-serif"
+                alignItems="center"
+                justifyContent="center"
+                display="flex"
+                flexDirection="row"
               >
-                Travel Date
-              </Typography>
+                <Typography>Travel Date</Typography>
+
+                <KeyboardArrowDownIcon />
+              </Box>
             </Box>
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -509,16 +498,11 @@ const AirInput = ({
                 color="#212F3C"
                 marginLeft="10px"
                 textAlign="left"
-                fontFamily="Google Sans, sans-serif"
                 style={{ fontSize: "22px", fontWeight: "bold" }}
               >
                 {selectedDate.format("DD MMM YY")}
               </Typography>
-              <Typography
-                marginLeft="10px"
-                textAlign="left"
-                fontFamily="Google Sans, sans-serif"
-              >
+              <Typography fontSize="13px" marginLeft="10px" textAlign="left">
                 {dayOfWeek}
               </Typography>
             </LocalizationProvider>
@@ -572,29 +556,24 @@ const AirInput = ({
             }}
           >
             <Box style={{ display: "flex" }}>
-              <CalendarMonthIcon
+              {/* <CalendarMonthIcon
                 style={{ color: "#0067FF", marginLeft: "10px" }}
-              />
-              <Typography
-                marginLeft="10px"
-                fontFamily="Google Sans, sans-serif"
-              >
-                Return
+              /> */}
+
+              <Typography marginLeft="10px">Return</Typography>
+              <Typography>
+                <KeyboardArrowDownIcon />
               </Typography>
             </Box>
             {returnDate ? (
               <>
                 <Typography
                   marginLeft="10px"
-                  fontFamily="Google Sans, sans-serif"
                   style={{ fontSize: "22px", fontWeight: "bold" }}
                 >
                   {returnDate.format("DD MMM YY")}
                 </Typography>
-                <Typography
-                  marginLeft="10px"
-                  fontFamily="Google Sans, sans-serif"
-                >
+                <Typography marginLeft="10px">
                   {returnDate.format("dddd")}
                 </Typography>
               </>
@@ -602,8 +581,7 @@ const AirInput = ({
               <Typography
                 marginLeft="10px"
                 textAlign="left"
-                fontFamily="Google Sans, sans-serif"
-                style={{ fontSize: "16px" }}
+                style={{ fontSize: "13px" }}
               >
                 Tap here to add return date
               </Typography>
@@ -658,16 +636,10 @@ const AirInput = ({
           >
             {(isFirstChild || journeyType !== "multicity") && (
               <Box sx={{ marginLeft: "10px" }}>
-                <Typography
-                  textAlign="left"
-                  fontFamily="Google Sans, sans-serif"
-                >
-                  Traveller & Class
-                </Typography>
+                <Typography textAlign="left">Traveller & Class</Typography>
                 <Typography
                   color="#212F3C"
                   textAlign="left"
-                  fontFamily="Google Sans, sans-serif"
                   style={{ fontSize: "22px", fontWeight: "bold" }}
                 >{`${adults + children + infants} Person${
                   adults + children + infants > 1 ? "s" : ""
@@ -675,7 +647,7 @@ const AirInput = ({
                 <Typography
                   color="#212F3C"
                   textAlign="left"
-                  fontFamily="Google Sans, sans-serif"
+                  fontSize="13px"
                   style={{ fontStyle: "italic", fontWeight: "bold" }}
                 >
                   {selectedClass}
