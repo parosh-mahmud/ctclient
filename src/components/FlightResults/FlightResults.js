@@ -5,12 +5,7 @@ import { Box, Grid, useMediaQuery, useTheme } from "@mui/material";
 import LayoutPage from "../../pages/LayoutPage";
 import FlightCard from "./FlightCard";
 import { useDispatch, useSelector } from "react-redux";
-// import { setSearchID, setSelectedResultID } from '../../redux/reducers/flightSlice';
-import {
-  setSearchID,
-  selectSearchID,
-  selectResults,
-} from "..//../redux/reducers/flightSliceNew";
+
 import FilterByDate from "../filterComponent/FilterByDate";
 import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
 import FilterComponent from "../filterComponent/FilterComponent";
@@ -63,7 +58,7 @@ const FlightResults = () => {
   return (
     <LayoutPage>
       {/* first grid */}
-      <Grid container spacing={2} style={{ width: "98%", margin: "auto" }}>
+      <Grid container spacing={2} style={{ width: "90%", margin: "auto" }}>
         <Grid item xs={12}>
           <Box style={{ height: "auto", padding: "10px" }}>
             {/* First Row with Background Color */}
@@ -93,7 +88,7 @@ const FlightResults = () => {
         <Grid item xs={12}>
           <Grid container spacing={2}>
             {/* First Grid within the Second Grid */}
-            <Grid item xs={isMobile ? 12 : 9}>
+            <Grid sx={{ width: "55%" }} item xs={isMobile ? 12 : 9}>
               <Box style={{ height: "100%", padding: 16 }}>
                 {/* Content for the first Paper within the Second Grid */}
 
@@ -166,7 +161,7 @@ const FlightResults = () => {
             </Grid>
 
             {/* Second Grid within the Second Grid */}
-            <Grid item xs={false} sm={false}>
+            <Grid sx={{ width: "%" }} item xs={false} sm={false}>
               <Box style={{ height: "100%", padding: 16 }}>
                 {/* Content for the second Paper within the Second Grid */}
                 Show ad here

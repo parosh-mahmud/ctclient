@@ -150,7 +150,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const history = useHistory();
   const [isFetching, setIsFetching] = useState(false);
   const [returnDate, setReturnDate] = useState(null);
-  const [airInputs, setAirInputs] = useState([{ id: 1 }]);
+  const [airInputs, setAirInputs] = useState([{ id: 0 }]);
   const [isTravelDatePopoverOpen, setIsTravelDatePopoverOpen] = useState(false);
   const [isReturnDatePopoverOpen, setIsReturnDatePopoverOpen] = useState(false);
 
@@ -466,7 +466,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
     try {
       setIsFetching(true);
       // Dispatch the updated form data to Redux using the thunk action
-      await dispatch(fetchFlightResults(updatedFormData));
+      dispatch(fetchFlightResults(updatedFormData));
 
       // Use history.push to navigate to the FlightResults page with the form data
       history.push("/flight-results");
@@ -640,12 +640,12 @@ export const SearchForm = ({ searchButtonLabel }) => {
         {searchButtonLabel || "Search"}
       </Button>
 
-      <Backdrop
+      {/* <Backdrop
         open={isFetching} // Control the visibility based on the state
         style={{ zIndex: 1, color: "#fff" }}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      > */}
+      {/* <CircularProgress color="inherit" />
+      </Backdrop> */}
     </>
   );
 };

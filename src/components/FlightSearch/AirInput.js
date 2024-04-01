@@ -716,6 +716,7 @@ const AirInput = ({
             }}
           >
             <Box
+              onClick={closeModal}
               style={{ padding: 20, minWidth: 200, boxSizing: "border-box" }}
             >
               <Box style={{ marginBottom: 10 }}>

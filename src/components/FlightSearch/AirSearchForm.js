@@ -11,7 +11,7 @@ const SearchFlight = () => {
   };
 
   return (
-    <div style={{ width: "98%" }}>
+    <div style={{ width: "90%" }}>
       <Tabs
         value={activeTab}
         onChange={handleTabChange}

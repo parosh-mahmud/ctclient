@@ -1,23 +1,26 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 const BASE_URL = process.env.REACT_APP_API_URL;
 
 // Async thunk for fetching flight results
 export const fetchFlightResults = createAsyncThunk(
-  'flight/fetchFlightResults',
+  "flight/fetchFlightResults",
   async (searchParams, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/airSearch`, searchParams);
+      const response = await axios.post(
+        `${BASE_URL}/api/airSearch`,
+        searchParams
+      );
       return { data: response.data, searchParams }; // Return both data and searchParams
     } catch (error) {
-      return rejectWithValue(error.response?.data || 'Something went wrong');
+      return rejectWithValue(error.response?.data || "Something went wrong");
     }
   }
 );
 
 const flightSlice = createSlice({
-  name: 'flight',
+  name: "flight",
   initialState: {
     searchData: null,
     searchParams: null,
@@ -28,6 +31,10 @@ const flightSlice = createSlice({
   reducers: {
     setSearchParams: (state, action) => {
       state.searchParams = action.payload;
+    },
+    updateSearchParametersAndSetLoading: (state, action) => {
+      state.searchParams = action.payload;
+      state.isLoading = true;
     },
     resetFlightState: (state) => {
       state.searchData = null;
@@ -47,7 +54,8 @@ const flightSlice = createSlice({
         state.searchData = action.payload.data;
         state.searchParams = action.payload.searchParams; // Store the last search parameters
         state.isLoadingFlightData = false;
-        state.hasResults = !!action.payload.data && action.payload.data.length > 0;
+        state.hasResults =
+          !!action.payload.data && action.payload.data.length > 0;
       })
       .addCase(fetchFlightResults.rejected, (state, action) => {
         state.isLoadingFlightData = false;
@@ -59,16 +67,15 @@ const flightSlice = createSlice({
 
 // Actions and selectors
 export const { setSearchParams, resetFlightState } = flightSlice.actions;
-
+export const { updateSearchParametersAndSetLoading } = flightSlice.actions;
 export const selectFlightSearchData = (state) => state.flight.searchData;
 export const selectFlightSearchParams = (state) => state.flight.searchParams;
-export const selectIsLoadingFlightData = (state) => state.flight.isLoadingFlightData;
+export const selectIsLoadingFlightData = (state) =>
+  state.flight.isLoadingFlightData;
 export const selectFlightError = (state) => state.flight.error;
 export const selectHasFlightResults = (state) => state.flight.hasResults;
 
 export default flightSlice.reducer;
-
-
 
 // import { createSlice } from '@reduxjs/toolkit';
 // import axios from 'axios';

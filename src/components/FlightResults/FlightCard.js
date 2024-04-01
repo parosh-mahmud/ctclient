@@ -20,6 +20,7 @@ import { fetchAirPrice } from "../../redux/slices/airPriceSlice";
 import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
 import AirlineSeatReclineNormalIcon from "@mui/icons-material/AirlineSeatReclineNormal";
 import { setSearchIDResultID } from "../../redux/slices/searchIDResultIDSlice";
+import { selectIsLoadingFlightData } from "../../redux/reducers/flightSlice";
 
 import { useMediaQuery, useTheme } from "@mui/material";
 
@@ -120,7 +121,7 @@ export const FlightCard = ({
   flightData,
   onSelect,
   availability,
-  isLoading,
+
   showActions = true,
 }) => {
   const dispatch = useDispatch();
@@ -137,6 +138,7 @@ export const FlightCard = ({
   const [showDetails, setShowDetails] = useState(false);
   const [airlineLogoUrl, setAirlineLogoUrl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const isLoading = useSelector(selectIsLoadingFlightData);
 
   const flightSearchData = useSelector(selectFlightSearchData);
 
@@ -333,9 +335,14 @@ export const FlightCard = ({
                           variant={isMobile ? "body2" : "h6"}
                           sx={{ display: "flex" }}
                         >
-                          <AirlineSeatReclineNormalIcon
-                            style={{ fontSize: isMobile ? "1.5rem" : "2rem" }}
-                          />
+                          {isLoading ? (
+                            <Skeleton width={90} height={30} />
+                          ) : (
+                            <AirlineSeatReclineNormalIcon
+                              style={{ fontSize: isMobile ? "1.5rem" : "2rem" }}
+                            />
+                          )}
+
                           <FlightInfoItem
                             isMobile={isMobile}
                             isLoading={isLoading}
@@ -457,34 +464,37 @@ export const FlightCard = ({
                   alignItems: "center",
                 }}
               >
-                <div></div>
                 <div>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <FlightIcon
-                      style={{
-                        fontSize: isMobile ? "1rem" : "1.5rem",
-                        transform: "rotate(90deg)",
+                  {isLoading ? (
+                    <Skeleton width={90} height={30} />
+                  ) : (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                    />
-                    <MoreHorizIcon
-                      style={{ fontSize: isMobile ? "1rem" : "1.5rem" }}
-                    />
-                    <MoreHorizIcon
-                      style={{
-                        fontSize: isMobile ? "1rem" : "1.5rem",
-                        marginLeft: "-5px",
-                      }}
-                    />
-                    <CircleIcon
-                      style={{ fontSize: isMobile ? "1rem" : "1.5rem" }}
-                    />
-                  </Box>
+                    >
+                      <FlightIcon
+                        style={{
+                          fontSize: isMobile ? "1rem" : "1.5rem",
+                          transform: "rotate(90deg)",
+                        }}
+                      />
+                      <MoreHorizIcon
+                        style={{ fontSize: isMobile ? "1rem" : "1.5rem" }}
+                      />
+                      <MoreHorizIcon
+                        style={{
+                          fontSize: isMobile ? "1rem" : "1.5rem",
+                          marginLeft: "-5px",
+                        }}
+                      />
+                      <CircleIcon
+                        style={{ fontSize: isMobile ? "1rem" : "1.5rem" }}
+                      />
+                    </Box>
+                  )}
 
                   <Box>
                     {/* duration */}
@@ -602,9 +612,16 @@ export const FlightCard = ({
           <Box className={classes.secondBox}>
             {/* Content for the second box */}
             <Typography variant={isMobile ? "body2" : "h6"}>
-              <Typography variant={isMobile ? "body2" : "h6"} fontWeight="bold">
-                BDT {calculateTotalAmount()}{" "}
-              </Typography>
+              {isLoading ? (
+                <Skeleton width={90} height={30} />
+              ) : (
+                <Typography
+                  variant={isMobile ? "body2" : "h6"}
+                  fontWeight="bold"
+                >
+                  BDT {calculateTotalAmount()}
+                </Typography>
+              )}
             </Typography>
 
             <Button
@@ -653,13 +670,14 @@ export const FlightCard = ({
   );
 };
 
-export const FlightInfoItem = ({ label, value, valueStyle, isLoading }) => {
+export const FlightInfoItem = ({ label, value, valueStyle }) => {
   const theme = useTheme();
   // Define breakpoints for responsiveness
   const isXs = useMediaQuery(theme.breakpoints.down("xs")); // Extra-small devices
   const isSm = useMediaQuery(theme.breakpoints.between("xs", "sm")); // Small devices
   const isMd = useMediaQuery(theme.breakpoints.between("sm", "md")); // Medium devices
   // You can continue for lg and xl if needed
+  const isLoading = useSelector(selectIsLoadingFlightData);
 
   // Determine the typography variant based on the screen size
   let variant;
@@ -681,7 +699,11 @@ export const FlightInfoItem = ({ label, value, valueStyle, isLoading }) => {
 
   return (
     <Box flex="1 1 50%" display="flex" alignItems="center">
-      <Typography variant={variant}>{label}</Typography>
+      {isLoading ? (
+        <Skeleton width={60} height={20} style={{ marginRight: 10 }} />
+      ) : (
+        <Typography variant={variant}>{label}</Typography>
+      )}
       {isLoading ? (
         <Skeleton width={90} height={30} style={{ marginLeft: 10 }} />
       ) : (
