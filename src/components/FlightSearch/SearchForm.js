@@ -151,6 +151,13 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [returnDate, setReturnDate] = useState(null);
   const [airInputs, setAirInputs] = useState([{ id: 1 }]);
+  const [isTravelDatePopoverOpen, setIsTravelDatePopoverOpen] = useState(false);
+  const [isReturnDatePopoverOpen, setIsReturnDatePopoverOpen] = useState(false);
+
+  const handleTravelDateClick = () => {
+    setIsTravelDatePopoverOpen(!isTravelDatePopoverOpen);
+    handleDPopoverClick(); // Assuming this is your existing function to handle the popover
+  };
   console.log(airInputs);
   const travelerCount = (type, action) => {
     // Assuming adults, children, and infants are state variables
@@ -195,21 +202,21 @@ export const SearchForm = ({ searchButtonLabel }) => {
     }
   };
 
-  const [formData, setFormData] = useState({
-    AdultQuantity: 1,
-    ChildQuantity: 0,
-    InfantQuantity: 0,
-    EndUserIp: "103.124.251.147",
-    JourneyType: "1",
-    Segments: [
-      {
-        Origin: "DAC",
-        Destination: "JSR",
-        CabinClass: "1",
-        DepartureDateTime: "2023-10-20",
-      },
-    ],
-  });
+  // const [formData, setFormData] = useState({
+  //   AdultQuantity: 1,
+  //   ChildQuantity: 0,
+  //   InfantQuantity: 0,
+  //   EndUserIp: "103.124.251.147",
+  //   JourneyType: "1",
+  //   Segments: [
+  //     {
+  //       Origin: "DAC",
+  //       Destination: "JSR",
+  //       CabinClass: "1",
+  //       DepartureDateTime: "2023-10-20",
+  //     },
+  //   ],
+  // });
   const handleSwapAirports = () => {
     const temp = selectedFromAirport;
     setSelectedFromAirport(selectedToAirport);
@@ -246,10 +253,12 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const handleRPopoverClose = () => {
     setReturnDatePopoverOpen(false);
     setReturnAnchorEl(null);
+    setIsReturnDatePopoverOpen(false);
   };
 
   const handleDPopoverClose = () => {
     setDanchorEl(null);
+    setIsTravelDatePopoverOpen(false);
   };
   const openModal = () => {
     setIsModalOpen(true);
@@ -319,6 +328,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
 
   const handleDPopoverClick = (event) => {
     setDanchorEl(event.currentTarget);
+    setIsTravelDatePopoverOpen(true);
   };
 
   const handlePopoverClose = () => {
@@ -374,6 +384,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
     setReturnDatePopoverOpen(true);
     setReturnAnchorEl(event.currentTarget);
     setSelectedOption("return"); // Set selected option to 'return' when clicking on the Return div
+    setIsReturnDatePopoverOpen(true);
   };
 
   const handleSearchQueryChange = (event) => {
@@ -477,6 +488,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
               display: "flex",
               flexDirection: "row",
               // paddingLeft: "20px",
+              marginLeft: "10px",
             }}
             aria-label="journey-type"
             name="journey-type"
@@ -553,6 +565,8 @@ export const SearchForm = ({ searchButtonLabel }) => {
               setAdults={setAdults}
               setChildren={setChildren}
               setInfants={setInfants}
+              isTravelDatePopoverOpen={isTravelDatePopoverOpen}
+              isReturnDatePopoverOpen={isReturnDatePopoverOpen}
             />
           ))
         ) : (
@@ -595,6 +609,8 @@ export const SearchForm = ({ searchButtonLabel }) => {
             setAdults={setAdults}
             setChildren={setChildren}
             setInfants={setInfants}
+            isTravelDatePopoverOpen={isTravelDatePopoverOpen}
+            isReturnDatePopoverOpen={isReturnDatePopoverOpen}
           />
         )}
       </Grid>

@@ -1,5 +1,5 @@
 // AirInput.js
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Box,
   Grid,
@@ -17,6 +17,7 @@ import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
@@ -96,10 +97,10 @@ const AirInput = ({
   selectedClass,
   handleClassChange,
   classes,
-  setAdults,
-  setChildren,
-  setInfants,
+
   travelerCount,
+  isTravelDatePopoverOpen,
+  isReturnDatePopoverOpen,
 }) => {
   const travelDateRef = useRef(null);
 
@@ -487,9 +488,12 @@ const AirInput = ({
                 display="flex"
                 flexDirection="row"
               >
-                <Typography>Travel Date</Typography>
-
-                <KeyboardArrowDownIcon />
+                <Typography marginLeft="10px">Travel Date</Typography>
+                {isTravelDatePopoverOpen ? (
+                  <KeyboardArrowUpIcon style={{ fontSize: "30px" }} />
+                ) : (
+                  <KeyboardArrowDownIcon style={{ fontSize: "24px" }} />
+                )}
               </Box>
             </Box>
 
@@ -561,9 +565,11 @@ const AirInput = ({
               /> */}
 
               <Typography marginLeft="10px">Return</Typography>
-              <Typography>
-                <KeyboardArrowDownIcon />
-              </Typography>
+              {isReturnDatePopoverOpen ? (
+                <KeyboardArrowUpIcon style={{ fontSize: "30px" }} />
+              ) : (
+                <KeyboardArrowDownIcon style={{ fontSize: "24px" }} />
+              )}
             </Box>
             {returnDate ? (
               <>
