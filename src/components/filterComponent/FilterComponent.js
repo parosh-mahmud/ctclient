@@ -1,40 +1,33 @@
-import React, { useState } from 'react';
-import { Box, Typography, Menu, MenuItem, ButtonBase, useMediaQuery, useTheme } from '@mui/material';
-import TuneIcon from '@mui/icons-material/Tune';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import PriceCheckIcon from '@mui/icons-material/PriceCheck';
-import RampRightIcon from '@mui/icons-material/RampRight';
-import AirlinesIcon from '@mui/icons-material/Airlines';
-
-const FilterComponent = () => {
- const theme = useTheme();
-  const matchesSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
+import React, { useState } from "react";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+// Import icons
+import TuneIcon from "@mui/icons-material/Tune";
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import SyncIcon from "@mui/icons-material/Sync";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import AirplanemodeActiveIcon from "@mui/icons-material/AirplanemodeActive";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
+import { useSelector } from "react-redux";
+const FilterComponent = ({ onSortByPrice }) => {
+  const theme = useTheme();
+  const matchesSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const flightSearchData = useSelector(selectFlightSearchData);
   const [filters, setFilters] = useState({
-    takeOff: 'Take Off',
-    priceRange: 'Price Range',
-    refundable: 'Refundable',
-    layover: 'Layover',
-    airline: 'Airline',
+    takeOff: "Take Off",
+    priceRange: "Price Range",
+    refundable: "Refundable",
+    layover: "Layover",
+    airline: "Airline",
   });
-const boxStyle = {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap', // Allow items to wrap on small screens
-  };
-const buttonStyle = {
-    margin: matchesSmallScreen ? '5px' : '0 5px', // Adjust margin on small screens
-  };
-
-  const textStyle = {
-    marginLeft: 4,
-    marginRight: 4,
-    fontSize: matchesSmallScreen ? '0.875rem' : '1rem', // Adjust font size on small screens
-  };
 
   const [anchorEl, setAnchorEl] = useState({
     takeOff: null,
@@ -43,6 +36,15 @@ const buttonStyle = {
     layover: null,
     airline: null,
   });
+
+  // Icons mapping to the filter keys
+  const filterIcons = {
+    takeOff: <FlightTakeoffIcon />,
+    priceRange: <LocalOfferIcon />,
+    refundable: <SyncIcon />,
+    layover: <AccessTimeIcon />,
+    airline: <AirplanemodeActiveIcon />,
+  };
 
   const handleClick = (event, type) => {
     setAnchorEl({ ...anchorEl, [type]: event.currentTarget });
@@ -53,58 +55,106 @@ const buttonStyle = {
     setFilters({ ...filters, [type]: option });
   };
 
-  // Map of icons for each filter type
-  const filterIcons = {
-    takeOff: <AccessTimeIcon />,
-    priceRange: <LocalOfferIcon />,
-    refundable: <PriceCheckIcon />,
-    layover: <RampRightIcon />,
-    airline: <AirlinesIcon />,
+  const handlePriceFilterSelect = (option) => {
+    // Trigger sorting in parent component based on selected option
+    onSortByPrice(option); // "Cheapest" or "Highest"
+    // You can also close the menu here if needed or set any local states
   };
 
-  // Menu items for each filter type
-  const menuOptions = {
-    takeOff: ['Earlier Flight', 'Later Flight'],
-    priceRange: ['Cheapest', 'Highest'],
-    refundable: ['Refundable', 'Non Refundable'],
-    layover: ['Maximum', 'Minimum'],
-    airline: ['Airline 1', 'Airline 2'], // Add more airline options as needed
+  // Modify the handleClose function or create a new one specific for handling price filter selection
+  // For example, if using a new function:
+  const handlePriceOptionSelect = (option) => {
+    setFilters({
+      ...filters,
+      priceRange: option === "Cheapest" ? "Cheapest" : "Highest",
+    });
+    handleClose(); // Close the menu
+    handlePriceFilterSelect(option);
+  };
+
+  const boxStyle = {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap", // Allow items to wrap on small screens
+  };
+
+  const buttonStyle = {
+    margin: matchesSmallScreen ? "5px" : "0 5px", // Adjust margin on small screens
+  };
+
+  const menuItems = {
+    takeOff: ["Earlier flight", "Later flight"],
+    priceRange: ["Cheapest", "Highest"],
+    refundable: ["Refundable", "Non-refundable"],
+    layover: ["Maximum", "Minimum"],
+    airline: ["Any", "Airline A", "Airline B", "Airline C"],
   };
 
   return (
-    <div style={boxStyle}>
-      <Box style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box
+      sx={{
+        ...boxStyle,
+        backgroundColor: "#fff",
+        boxShadow: 1,
+        borderRadius: 2,
+        p: 2,
+      }}
+    >
+      {/* Filters icon */}
+      <IconButton color="primary" sx={{ p: "8px", ...buttonStyle }}>
         <TuneIcon />
-      </Box>
+      </IconButton>
 
-      {Object.keys(filters).map((filterType) => (
-        <Box key={filterType} style={buttonStyle}>
-          <ButtonBase onClick={(e) => handleClick(e, filterType)}>
-            {filterIcons[filterType]}
-            <Typography variant="body1" style={textStyle}>
-              {filters[filterType]}
-            </Typography>
-            <ArrowDropDownIcon />
-          </ButtonBase>
-          <Menu
-            anchorEl={anchorEl[filterType]}
-            open={Boolean(anchorEl[filterType])}
-            onClose={() => handleClose(filters[filterType], filterType)}
+      {/* Dynamic filter buttons with specific icons */}
+      {Object.keys(filters).map((filterKey) => (
+        <div key={filterKey}>
+          <Button
+            variant="outlined"
+            startIcon={filterIcons[filterKey]}
+            endIcon={<ExpandMoreIcon />}
+            sx={{
+              ...buttonStyle,
+              borderColor: "transparent",
+              textTransform: "none",
+            }}
+            onClick={(e) => handleClick(e, filterKey)}
           >
-            {menuOptions[filterType].map((option) => (
-              <MenuItem key={option} onClick={() => handleClose(option, filterType)}>
+            {filters[filterKey]}
+          </Button>
+          <Menu
+            id={`${filterKey}-menu`}
+            anchorEl={anchorEl[filterKey]}
+            keepMounted
+            open={Boolean(anchorEl[filterKey])}
+            onClose={() => handleClose(null, filterKey)}
+          >
+            {menuItems[filterKey].map((option) => (
+              <MenuItem
+                key={option}
+                onClick={() => handleClose(option, filterKey)}
+              >
                 {option}
               </MenuItem>
             ))}
           </Menu>
-        </Box>
+        </div>
       ))}
 
-      <Box style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography>More Filters</Typography>
-        <ArrowDropDownIcon />
+      {/* More Filters */}
+      <Box
+        sx={{
+          ml: "auto",
+          display: "flex",
+          alignItems: "center",
+          ...buttonStyle,
+        }}
+      >
+        <Typography sx={{ cursor: "pointer" }}>More Filters</Typography>
+        <ExpandMoreIcon />
       </Box>
-    </div>
+    </Box>
   );
 };
 

@@ -39,8 +39,22 @@ const FlightResults = () => {
   const [showSortedFlights, setShowSortedFlights] = useState(false);
   const [sortedFlights, setSortedFlights] = useState([]);
   const location = useLocation();
+
   const handleSortFlights = (sortedFlights) => {
     setSortedFlights([...sortedFlights]);
+    setShowSortedFlights(true);
+  };
+
+  const handleSortByPrice = (order) => {
+    const sortedFlights = [...flightSearchData.Results].sort((a, b) => {
+      if (order === "Cheapest") {
+        return a.price - b.price;
+      } else if (order === "Highest") {
+        return b.price - a.price;
+      }
+    });
+
+    setSortedFlights(sortedFlights);
     setShowSortedFlights(true);
   };
 
@@ -126,7 +140,7 @@ const FlightResults = () => {
                   }}
                 >
                   {/* Content for filter Flight */}
-                  <FilterComponent />
+                  <FilterComponent onSortByPrice={handleSortByPrice} />
                 </Box>
                 <Box
                   sx={{
