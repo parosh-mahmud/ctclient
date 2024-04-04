@@ -1,10 +1,11 @@
 // FlightResults.js
 import React, { useEffect, useState } from "react";
-import { Box, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Grid, useMediaQuery, useTheme } from "@mui/material";
 
 import LayoutPage from "../../pages/LayoutPage";
 import FlightCard from "./FlightCard";
 import { useDispatch, useSelector } from "react-redux";
+import { Collapse } from "@mui/material";
 
 import FilterByDate from "../filterComponent/FilterByDate";
 import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
@@ -23,6 +24,13 @@ const FlightResults = () => {
   const currentSearchParams = useSelector(selectFlightSearchParams);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // State to manage the visibility of the collapsible content
+  const [isSearchFormVisible, setIsSearchFormVisible] = useState(false);
+
+  // Function to toggle the visibility state
+  const handleToggleSearchForm = () => {
+    setIsSearchFormVisible((prevVisible) => !prevVisible);
+  };
 
   const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
   const flightSearchData = useSelector(selectFlightSearchData);
@@ -63,9 +71,25 @@ const FlightResults = () => {
           <Box style={{ height: "auto", padding: "10px" }}>
             {/* First Row with Background Color */}
             <Box sx={{ padding: 2, height: "auto" }}>
-              {/* Content for the first row */}
-              <SearchForm searchButtonLabel="Modify Search" />
+              {/* Modify Search Button */}
+              <Button variant="contained" onClick={handleToggleSearchForm}>
+                Modify Search
+              </Button>
             </Box>
+            {/* Collapsible Search Form */}
+            {/* Collapsible Search Form with Animation */}
+            <Collapse in={isSearchFormVisible}>
+              <Box
+                sx={{
+                  padding: 2,
+                  height: "auto",
+                  // Additional styling as needed
+                }}
+              >
+                {/* The content/form you want to show or hide */}
+                <SearchForm searchButtonLabel="Search" />
+              </Box>
+            </Collapse>
 
             {/* Second Row with Background Color */}
             <Box
