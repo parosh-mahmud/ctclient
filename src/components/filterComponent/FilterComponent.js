@@ -20,6 +20,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShieldIcon from "@mui/icons-material/Shield";
 import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
 import { useSelector } from "react-redux";
+import Collapse from "@mui/material/Collapse";
 
 const FilterComponent = ({
   flightDataArray,
@@ -30,6 +31,10 @@ const FilterComponent = ({
   const theme = useTheme();
   const matchesSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const flightSearchData = useSelector(selectFlightSearchData);
+  const [collapseOpen, setCollapseOpen] = useState(false); // State to manage Collapse
+  const toggleCollapse = () => {
+    setCollapseOpen(!collapseOpen);
+  };
   const [filters, setFilters] = useState({
     takeOff: "Take Off",
     priceRange: "Price Range",
@@ -57,7 +62,7 @@ const FilterComponent = ({
   const [menuItems, setMenuItems] = useState({
     takeOff: ["Earlier flight", "Later flight"],
     priceRange: ["Cheapest", "Highest"],
-    refundable: ["Refundable", "Non-refundable"],
+    refundable: ["Refundable", "Partially Refundable", "Non-refundable"],
     layover: ["Maximum", "Minimum"],
     airline: [], // Will be populated dynamically
   });
@@ -97,28 +102,27 @@ const FilterComponent = ({
   const handleClose = (option, type) => {
     setAnchorEl({ ...anchorEl, [type]: null }); // Close the menu
 
-    if (option) {
-      setSelectedFilters({ ...selectedFilters, [type]: option });
+    setSelectedFilters({ ...selectedFilters, [type]: option });
 
-      if (type === "airline") {
-        onFilterByAirline(option); // Call the new prop function
-      } else if (type === "priceRange") {
-        onSortFlights(option); // Existing sorting logic
-      }
+    // Call onSortFlights for sorting options including "Earlier flight" and "Later flight"
+    if (type === "takeOff" || type === "priceRange") {
+      onSortFlights(option);
+    } else if (type === "airline") {
+      onFilterByAirline(option);
     }
   };
+
   const boxStyle = {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     flexWrap: "wrap",
   };
 
   const buttonStyle = {
-    margin: matchesSmallScreen ? "5px" : "0 5px",
+    margin: matchesSmallScreen ? "0px" : "0 5px",
   };
-  const uniqueAirlineNames = getUniqueAirlineNames(flightDataArray);
 
   return (
     <Box
@@ -130,14 +134,37 @@ const FilterComponent = ({
         p: 2,
       }}
     >
-      {/* Filters icon */}
+      {matchesSmallScreen && (
+        <Collapse in={collapseOpen}>
+          <Box
+            sx={{
+              marginBottom: 2,
+              backgroundColor: "#f0f0f0",
+              padding: 2,
+              borderRadius: "4px",
+            }}
+          >
+            {/* Demo content inside the collapse */}
+            <Typography variant="h6">Additional Filters</Typography>
+            <Typography>
+              Here you can place additional filters or any content you want to
+              show when "More Filters" is clicked.
+            </Typography>
+          </Box>
+        </Collapse>
+      )}
+
       <IconButton color="primary" sx={{ p: "8px", ...buttonStyle }}>
         <TuneIcon />
       </IconButton>
 
-      {/* Conditionally render buttons based on screen size */}
       {Object.keys(filters).map((filterKey) => {
-        // Conditional rendering based on screen size remains the same
+        if (
+          matchesSmallScreen &&
+          !["takeOff", "priceRange"].includes(filterKey)
+        ) {
+          return null;
+        }
 
         return (
           <div key={filterKey}>
@@ -152,7 +179,6 @@ const FilterComponent = ({
               }}
               onClick={(e) => handleClick(e, filterKey)}
             >
-              {/* Display the selected filter if one exists, otherwise show the default */}
               {selectedFilters[filterKey] || filters[filterKey]}
             </Button>
             <Menu
@@ -175,14 +201,9 @@ const FilterComponent = ({
         );
       })}
 
-      {/* Always show "More Filters" */}
       <Box
-        sx={{
-          ml: "auto",
-          display: "flex",
-          alignItems: "center",
-          ...buttonStyle,
-        }}
+        sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+        onClick={toggleCollapse}
       >
         <Typography sx={{ cursor: "pointer" }}>More Filters</Typography>
         <ExpandMoreIcon />

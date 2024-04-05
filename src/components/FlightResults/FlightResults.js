@@ -59,25 +59,42 @@ const FlightResults = () => {
   //   setShowSortedFlights(true);
   // };
 
-  // Inside FlightResults component
+  flightSearchData.Results.forEach((flight) => {
+    // Accessing DepTime from the first segment's origin for each flight
+    console.log(flight.segments[0].Origin.DepTime);
+  });
 
   const handleSortFlights = (sortBy) => {
-    const sortedFlights = [...flightSearchData.Results].sort((a, b) => {
-      // Assuming each flight has a Fares array and we're interested in the first fare's BaseFare
-      const baseFareA = a.Fares[0].BaseFare;
-      const baseFareB = b.Fares[0].BaseFare;
+    let sortedFlights = [...flightSearchData.Results]; // Clone to avoid direct state mutation
+    console.log(sortedFlights);
+    switch (sortBy) {
+      case "Cheapest":
+        sortedFlights.sort((a, b) => a.Fares[0].BaseFare - b.Fares[0].BaseFare);
+        break;
+      case "Highest":
+        sortedFlights.sort((a, b) => b.Fares[0].BaseFare - a.Fares[0].BaseFare);
+        break;
+      case "Earlier flight":
+        sortedFlights.sort(
+          (a, b) =>
+            new Date(a.segments[0].Origin.DepTime).getTime() -
+            new Date(b.segments[0].Origin.DepTime).getTime()
+        );
+        break;
+      case "Later flight":
+        // Ensure descending order: later flights are listed first
+        sortedFlights.sort(
+          (a, b) =>
+            new Date(b.segments[0].Origin.DepTime).getTime() -
+            new Date(a.segments[0].Origin.DepTime).getTime()
+        );
+        break;
+      default:
+        console.log("Sort option not recognized");
+    }
 
-      if (sortBy === "Cheapest") {
-        return baseFareA - baseFareB;
-      } else if (sortBy === "Highest") {
-        return baseFareB - baseFareA;
-      }
-      return 0;
-    });
-
-    // Update state to reflect sorted flights
-    setShowSortedFlights(true);
     setSortedFlights(sortedFlights);
+    setShowSortedFlights(true);
   };
 
   const handleDateSelect = (date) => {
@@ -102,7 +119,7 @@ const FlightResults = () => {
   return (
     <LayoutPage>
       {/* first grid */}
-      <Grid container spacing={2} style={{ width: "90%", margin: "auto" }}>
+      <Grid container spacing={2} style={{ width: "90%" }}>
         <Grid item xs={12}>
           <Box style={{ height: "auto", padding: "10px" }}>
             {/* First Row with Background Color */}
@@ -148,8 +165,8 @@ const FlightResults = () => {
         <Grid item xs={12}>
           <Grid container spacing={2}>
             {/* First Grid within the Second Grid */}
-            <Grid sx={{ width: "55%" }} item xs={isMobile ? 12 : 9}>
-              <Box style={{ height: "100%", padding: 16 }}>
+            <Grid sx={{ width: "70%" }} item xs={isMobile ? 12 : 9}>
+              <Box style={{ height: "100%" }}>
                 {/* Content for the first Paper within the Second Grid */}
 
                 <Box
@@ -223,7 +240,7 @@ const FlightResults = () => {
             </Grid>
 
             {/* Second Grid within the Second Grid */}
-            <Grid sx={{ width: "%" }} item xs={false} sm={false}>
+            <Grid sx={{ width: "30%" }} item xs={false} sm={false}>
               <Box style={{ height: "100%", padding: 16 }}>
                 {/* Content for the second Paper within the Second Grid */}
                 Show ad here
