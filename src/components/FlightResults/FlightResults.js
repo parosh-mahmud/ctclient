@@ -27,6 +27,20 @@ const FlightResults = () => {
   // State to manage the visibility of the collapsible content
   const [isSearchFormVisible, setIsSearchFormVisible] = useState(false);
 
+  const handleFilterByAirline = (airlineName) => {
+    if (airlineName === "All Airlines") {
+      setShowSortedFlights(false); // Show all flights if "All Airlines" is selected
+    } else {
+      const filteredFlights = flightSearchData.Results.filter((flight) =>
+        flight.segments.some(
+          (segment) => segment.Airline.AirlineName === airlineName
+        )
+      );
+      setSortedFlights(filteredFlights);
+      setShowSortedFlights(true); // Now showing filtered flights
+    }
+  };
+
   // Function to toggle the visibility state
   const handleToggleSearchForm = () => {
     setIsSearchFormVisible((prevVisible) => !prevVisible);
@@ -40,22 +54,30 @@ const FlightResults = () => {
   const [sortedFlights, setSortedFlights] = useState([]);
   const location = useLocation();
 
-  const handleSortFlights = (sortedFlights) => {
-    setSortedFlights([...sortedFlights]);
-    setShowSortedFlights(true);
-  };
+  // const handleSortFlights = (sortedFlights) => {
+  //   setSortedFlights([...sortedFlights]);
+  //   setShowSortedFlights(true);
+  // };
 
-  const handleSortByPrice = (order) => {
+  // Inside FlightResults component
+
+  const handleSortFlights = (sortBy) => {
     const sortedFlights = [...flightSearchData.Results].sort((a, b) => {
-      if (order === "Cheapest") {
-        return a.price - b.price;
-      } else if (order === "Highest") {
-        return b.price - a.price;
+      // Assuming each flight has a Fares array and we're interested in the first fare's BaseFare
+      const baseFareA = a.Fares[0].BaseFare;
+      const baseFareB = b.Fares[0].BaseFare;
+
+      if (sortBy === "Cheapest") {
+        return baseFareA - baseFareB;
+      } else if (sortBy === "Highest") {
+        return baseFareB - baseFareA;
       }
+      return 0;
     });
 
-    setSortedFlights(sortedFlights);
+    // Update state to reflect sorted flights
     setShowSortedFlights(true);
+    setSortedFlights(sortedFlights);
   };
 
   const handleDateSelect = (date) => {
@@ -135,12 +157,14 @@ const FlightResults = () => {
                     width: "100%",
                     minHeight: "36px",
                     backgroundColor: "rgba(255,255,255,0.5)",
-                    border: "1px solid white",
-                    borderRadius: "5px",
                   }}
                 >
                   {/* Content for filter Flight */}
-                  <FilterComponent onSortByPrice={handleSortByPrice} />
+                  <FilterComponent
+                    flightDataArray={flightSearchData.Results}
+                    onSortFlights={handleSortFlights}
+                    onFilterByAirline={handleFilterByAirline}
+                  />
                 </Box>
                 <Box
                   sx={{

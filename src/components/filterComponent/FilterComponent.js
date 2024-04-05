@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Box from "@mui/material/Box";
@@ -8,6 +8,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 // Import icons
+import AirlineStopsIcon from "@mui/icons-material/AirlineStops";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import TuneIcon from "@mui/icons-material/Tune";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
@@ -15,9 +17,16 @@ import SyncIcon from "@mui/icons-material/Sync";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AirplanemodeActiveIcon from "@mui/icons-material/AirplanemodeActive";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ShieldIcon from "@mui/icons-material/Shield";
 import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
 import { useSelector } from "react-redux";
-const FilterComponent = ({ onSortByPrice }) => {
+
+const FilterComponent = ({
+  flightDataArray,
+  onSortFlights,
+  onFilterByAirline,
+}) => {
+  console.log(flightDataArray);
   const theme = useTheme();
   const matchesSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const flightSearchData = useSelector(selectFlightSearchData);
@@ -28,6 +37,13 @@ const FilterComponent = ({ onSortByPrice }) => {
     layover: "Layover",
     airline: "Airline",
   });
+  const [selectedFilters, setSelectedFilters] = useState({
+    takeOff: "",
+    priceRange: "",
+    refundable: "",
+    layover: "",
+    airline: "",
+  });
 
   const [anchorEl, setAnchorEl] = useState({
     takeOff: null,
@@ -37,60 +53,72 @@ const FilterComponent = ({ onSortByPrice }) => {
     airline: null,
   });
 
+  // Initialize menuItems without airline names
+  const [menuItems, setMenuItems] = useState({
+    takeOff: ["Earlier flight", "Later flight"],
+    priceRange: ["Cheapest", "Highest"],
+    refundable: ["Refundable", "Non-refundable"],
+    layover: ["Maximum", "Minimum"],
+    airline: [], // Will be populated dynamically
+  });
   // Icons mapping to the filter keys
   const filterIcons = {
-    takeOff: <FlightTakeoffIcon />,
+    takeOff: <AccessTimeFilledIcon />,
     priceRange: <LocalOfferIcon />,
-    refundable: <SyncIcon />,
-    layover: <AccessTimeIcon />,
+    refundable: <ShieldIcon />,
+    layover: <AirlineStopsIcon />,
     airline: <AirplanemodeActiveIcon />,
   };
 
   const handleClick = (event, type) => {
     setAnchorEl({ ...anchorEl, [type]: event.currentTarget });
   };
+  // Function to compute unique airline names
+  const getUniqueAirlineNames = (flightData) => {
+    const airlineNames = flightData
+      .flatMap((flight) =>
+        flight.segments.map((segment) => segment.Airline.AirlineName)
+      )
+      .filter((value, index, self) => self.indexOf(value) === index); // Filter for uniqueness
+    return airlineNames;
+  };
+
+  useEffect(() => {
+    // Update airline names based on the current flight data
+    const uniqueAirlineNames = getUniqueAirlineNames(flightDataArray);
+    setMenuItems((prevItems) => ({
+      ...prevItems,
+      airline: uniqueAirlineNames,
+    }));
+  }, [flightDataArray]);
+
+  console.log(flightSearchData);
 
   const handleClose = (option, type) => {
-    setAnchorEl({ ...anchorEl, [type]: null });
-    setFilters({ ...filters, [type]: option });
-  };
+    setAnchorEl({ ...anchorEl, [type]: null }); // Close the menu
 
-  const handlePriceFilterSelect = (option) => {
-    // Trigger sorting in parent component based on selected option
-    onSortByPrice(option); // "Cheapest" or "Highest"
-    // You can also close the menu here if needed or set any local states
-  };
+    if (option) {
+      setSelectedFilters({ ...selectedFilters, [type]: option });
 
-  // Modify the handleClose function or create a new one specific for handling price filter selection
-  // For example, if using a new function:
-  const handlePriceOptionSelect = (option) => {
-    setFilters({
-      ...filters,
-      priceRange: option === "Cheapest" ? "Cheapest" : "Highest",
-    });
-    handleClose(); // Close the menu
-    handlePriceFilterSelect(option);
+      if (type === "airline") {
+        onFilterByAirline(option); // Call the new prop function
+      } else if (type === "priceRange") {
+        onSortFlights(option); // Existing sorting logic
+      }
+    }
   };
-
   const boxStyle = {
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    flexWrap: "wrap", // Allow items to wrap on small screens
+    flexWrap: "wrap",
   };
 
   const buttonStyle = {
-    margin: matchesSmallScreen ? "5px" : "0 5px", // Adjust margin on small screens
+    margin: matchesSmallScreen ? "5px" : "0 5px",
   };
-
-  const menuItems = {
-    takeOff: ["Earlier flight", "Later flight"],
-    priceRange: ["Cheapest", "Highest"],
-    refundable: ["Refundable", "Non-refundable"],
-    layover: ["Maximum", "Minimum"],
-    airline: ["Any", "Airline A", "Airline B", "Airline C"],
-  };
+  const uniqueAirlineNames = getUniqueAirlineNames(flightDataArray);
 
   return (
     <Box
@@ -107,42 +135,47 @@ const FilterComponent = ({ onSortByPrice }) => {
         <TuneIcon />
       </IconButton>
 
-      {/* Dynamic filter buttons with specific icons */}
-      {Object.keys(filters).map((filterKey) => (
-        <div key={filterKey}>
-          <Button
-            variant="outlined"
-            startIcon={filterIcons[filterKey]}
-            endIcon={<ExpandMoreIcon />}
-            sx={{
-              ...buttonStyle,
-              borderColor: "transparent",
-              textTransform: "none",
-            }}
-            onClick={(e) => handleClick(e, filterKey)}
-          >
-            {filters[filterKey]}
-          </Button>
-          <Menu
-            id={`${filterKey}-menu`}
-            anchorEl={anchorEl[filterKey]}
-            keepMounted
-            open={Boolean(anchorEl[filterKey])}
-            onClose={() => handleClose(null, filterKey)}
-          >
-            {menuItems[filterKey].map((option) => (
-              <MenuItem
-                key={option}
-                onClick={() => handleClose(option, filterKey)}
-              >
-                {option}
-              </MenuItem>
-            ))}
-          </Menu>
-        </div>
-      ))}
+      {/* Conditionally render buttons based on screen size */}
+      {Object.keys(filters).map((filterKey) => {
+        // Conditional rendering based on screen size remains the same
 
-      {/* More Filters */}
+        return (
+          <div key={filterKey}>
+            <Button
+              variant="outlined"
+              startIcon={filterIcons[filterKey]}
+              endIcon={<ExpandMoreIcon />}
+              sx={{
+                ...buttonStyle,
+                borderColor: "transparent",
+                textTransform: "none",
+              }}
+              onClick={(e) => handleClick(e, filterKey)}
+            >
+              {/* Display the selected filter if one exists, otherwise show the default */}
+              {selectedFilters[filterKey] || filters[filterKey]}
+            </Button>
+            <Menu
+              id={`${filterKey}-menu`}
+              anchorEl={anchorEl[filterKey]}
+              keepMounted
+              open={Boolean(anchorEl[filterKey])}
+              onClose={() => handleClose(null, filterKey)}
+            >
+              {menuItems[filterKey].map((option) => (
+                <MenuItem
+                  key={option}
+                  onClick={() => handleClose(option, filterKey)}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+        );
+      })}
+
+      {/* Always show "More Filters" */}
       <Box
         sx={{
           ml: "auto",
