@@ -47,7 +47,7 @@ const FilterComponent = ({
     priceRange: "",
     refundable: "",
     layover: "",
-    airline: "",
+    airline: "All Airlines",
   });
 
   const [anchorEl, setAnchorEl] = useState({
@@ -90,7 +90,10 @@ const FilterComponent = ({
 
   useEffect(() => {
     // Update airline names based on the current flight data
-    const uniqueAirlineNames = getUniqueAirlineNames(flightDataArray);
+    const uniqueAirlineNames = [
+      "All Airlines",
+      ...getUniqueAirlineNames(flightDataArray),
+    ];
     setMenuItems((prevItems) => ({
       ...prevItems,
       airline: uniqueAirlineNames,
@@ -102,13 +105,22 @@ const FilterComponent = ({
   const handleClose = (option, type) => {
     setAnchorEl({ ...anchorEl, [type]: null }); // Close the menu
 
-    setSelectedFilters({ ...selectedFilters, [type]: option });
+    if (option === null && type === "airline") {
+      // Specifically for the airline filter, reset to "All Airlines" when closing without selection
+      setSelectedFilters({ ...selectedFilters, [type]: "All Airlines" });
+    } else {
+      // For other filters or when an option is selected, proceed as before
+      setSelectedFilters({
+        ...selectedFilters,
+        [type]: option || selectedFilters[type],
+      });
+    }
 
-    // Call onSortFlights for sorting options including "Earlier flight" and "Later flight"
     if (type === "takeOff" || type === "priceRange") {
       onSortFlights(option);
-    } else if (type === "airline") {
-      onFilterByAirline(option);
+    } else if (type === "airline" && option) {
+      // Apply the airline filter only if an option is selected
+      onFilterByAirline(option === "All Airlines" ? option : option);
     }
   };
 
@@ -145,11 +157,48 @@ const FilterComponent = ({
             }}
           >
             {/* Demo content inside the collapse */}
-            <Typography variant="h6">Additional Filters</Typography>
-            <Typography>
-              Here you can place additional filters or any content you want to
-              show when "More Filters" is clicked.
-            </Typography>
+            {Object.keys(filters).map((filterKey) => {
+              if (
+                matchesSmallScreen &&
+                !["refundable", "layover", "airline"].includes(filterKey)
+              ) {
+                return null;
+              }
+
+              return (
+                <div key={filterKey}>
+                  <Button
+                    variant="outlined"
+                    startIcon={filterIcons[filterKey]}
+                    endIcon={<ExpandMoreIcon />}
+                    sx={{
+                      ...buttonStyle,
+                      borderColor: "transparent",
+                      textTransform: "none",
+                    }}
+                    onClick={(e) => handleClick(e, filterKey)}
+                  >
+                    {selectedFilters[filterKey] || filters[filterKey]}
+                  </Button>
+                  <Menu
+                    id={`${filterKey}-menu`}
+                    anchorEl={anchorEl[filterKey]}
+                    keepMounted
+                    open={Boolean(anchorEl[filterKey])}
+                    onClose={() => handleClose(null, filterKey)}
+                  >
+                    {menuItems[filterKey].map((option) => (
+                      <MenuItem
+                        key={option}
+                        onClick={() => handleClose(option, filterKey)}
+                      >
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </div>
+              );
+            })}
           </Box>
         </Collapse>
       )}

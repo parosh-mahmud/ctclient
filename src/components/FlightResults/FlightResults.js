@@ -119,7 +119,7 @@ const FlightResults = () => {
   return (
     <LayoutPage>
       {/* first grid */}
-      <Grid container spacing={2} style={{ width: "90%" }}>
+      <Grid container spacing={2} style={{ width: "90%", padding: "0" }}>
         <Grid item xs={12}>
           <Box style={{ height: "auto", padding: "10px" }}>
             {/* First Row with Background Color */}
@@ -148,7 +148,7 @@ const FlightResults = () => {
             <Box
               sx={{
                 backgroundColor: "rgba(255,255,255,0.5)",
-                padding: 2,
+
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
