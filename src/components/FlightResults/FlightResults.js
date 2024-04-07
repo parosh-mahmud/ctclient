@@ -1,6 +1,13 @@
 // FlightResults.js
 import React, { useEffect, useState } from "react";
-import { Box, Button, Grid, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
 import LayoutPage from "../../pages/LayoutPage";
 import FlightCard from "./FlightCard";
@@ -18,6 +25,7 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import { selectFlightSearchParams } from "../../redux/reducers/flightSlice";
 
 const FlightResults = () => {
+  const flightSearchData = useSelector(selectFlightSearchData);
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useState({});
   const [backdropOpen, setBackdropOpen] = useState(false);
@@ -26,7 +34,19 @@ const FlightResults = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   // State to manage the visibility of the collapsible content
   const [isSearchFormVisible, setIsSearchFormVisible] = useState(false);
+  const [uniqueAirlines, setUniqueAirlines] = useState([]);
 
+  useEffect(() => {
+    if (flightSearchData?.Results?.length > 0) {
+      const airlineNames = flightSearchData.Results.flatMap((flight) =>
+        flight.segments.map((segment) => segment.Airline.AirlineName)
+      );
+      const uniqueAirlineNames = [...new Set(airlineNames)]; // Removes duplicates
+      setUniqueAirlines(uniqueAirlineNames);
+    }
+  }, [flightSearchData.Results]);
+
+  const totalFlights = flightSearchData?.Results?.length || 0;
   const handleFilterByAirline = (airlineName) => {
     if (airlineName === "All Airlines") {
       setShowSortedFlights(false); // Show all flights if "All Airlines" is selected
@@ -47,7 +67,7 @@ const FlightResults = () => {
   };
 
   const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
-  const flightSearchData = useSelector(selectFlightSearchData);
+
   console.log(flightSearchData);
 
   const [showSortedFlights, setShowSortedFlights] = useState(false);
@@ -188,8 +208,8 @@ const FlightResults = () => {
                     width: "100%",
                     display: "flex", // Ensure flex layout is used
                     flexWrap: "wrap", // Allow items to wrap if needed
-                    justifyContent: "center", // Center items horizontally
-                    alignItems: "center", // Align items vertically
+                    // justifyContent: "center", // Center items horizontally
+                    // alignItems: "center", // Align items vertically
                     marginTop: "10px",
                     marginBottom: "5px",
                     backgroundColor: "rgba(255,255,255,0.5)",
@@ -201,6 +221,20 @@ const FlightResults = () => {
                     flightDataArray={flightSearchData.Results}
                     onSortFlights={handleSortFlights}
                   />
+                  <Typography
+                    alignSelf="flex-start"
+                    sx={{
+                      color: "green",
+                      // Use a function to apply responsive font sizes based on the theme's breakpoints
+                      fontSize: {
+                        xs: "14px", // xs represents extra-small to small screens (mobile devices)
+                        sm: "18px", // sm and above represents larger screens (tablets, desktops)
+                      },
+                    }}
+                  >
+                    {totalFlights} Flight Results {uniqueAirlines.length} Unique
+                    Airlines
+                  </Typography>
                 </Box>
 
                 <Box style={{ marginTop: "10px" }}>
