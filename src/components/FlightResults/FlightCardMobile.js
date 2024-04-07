@@ -136,7 +136,7 @@ const FlightCardMobile = ({
           >
             {/* Ensure elements are in a row */}
             <Typography>
-              <FlightTakeoffIcon />
+              <FlightTakeoffIcon fontSize="8px" />
             </Typography>
             {/* Vertical Divider */}
             <Box
@@ -148,7 +148,7 @@ const FlightCardMobile = ({
               }}
             />
             <Typography>
-              <FlightIcon sx={{ transform: "rotate(180deg)" }} />
+              <FlightIcon fontSize="8px" sx={{ transform: "rotate(180deg)" }} />
             </Typography>
             <Box
               sx={{
@@ -159,7 +159,7 @@ const FlightCardMobile = ({
               }}
             />
             <Typography>
-              <FlightLandIcon />
+              <FlightLandIcon fontSize="8px" />
             </Typography>
           </Box>
 
@@ -217,7 +217,9 @@ const FlightCardMobile = ({
               </Box>
             </Box>
 
-            <Typography alignSelf="baseline">{calculateDuration()}</Typography>
+            <Typography fontSize="12px" alignSelf="baseline" marginLeft="10px">
+              {calculateDuration()}
+            </Typography>
 
             <Box display="flex" flexDirection="column">
               <Box marginLeft="10px" display="flex" flexDirection="column">
