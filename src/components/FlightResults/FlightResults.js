@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Grid,
+  Skeleton,
   Typography,
   useMediaQuery,
   useTheme,
@@ -23,7 +24,7 @@ import { fetchFlightResults } from "../../redux/reducers/flightSlice";
 import { useLocation } from "react-router-dom";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { selectFlightSearchParams } from "../../redux/reducers/flightSlice";
-
+import { selectIsLoadingFlightData } from "../../redux/reducers/flightSlice";
 const FlightResults = () => {
   const flightSearchData = useSelector(selectFlightSearchData);
   const dispatch = useDispatch();
@@ -67,6 +68,7 @@ const FlightResults = () => {
   };
 
   const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
+  const isLoading = useSelector((state) => state.flight.isLoadingFlightData);
 
   console.log(flightSearchData);
 
@@ -221,8 +223,12 @@ const FlightResults = () => {
                     flightDataArray={flightSearchData.Results}
                     onSortFlights={handleSortFlights}
                   />
+                </Box>
+                {isLoading ? (
+                  <Skeleton variant="text" width={100} height={20} />
+                ) : (
                   <Typography
-                    alignSelf="flex-start"
+                    alignSelf="baseline"
                     sx={{
                       color: "green",
                       // Use a function to apply responsive font sizes based on the theme's breakpoints
@@ -235,8 +241,7 @@ const FlightResults = () => {
                     {totalFlights} Flight Results {uniqueAirlines.length} Unique
                     Airlines
                   </Typography>
-                </Box>
-
+                )}
                 <Box style={{ marginTop: "10px" }}>
                   {/* Iterate over flight results */}
                   {showSortedFlights

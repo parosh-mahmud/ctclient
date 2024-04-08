@@ -89,6 +89,9 @@ const useStyles = makeStyles((theme) => ({
       width: "50%",
     },
   },
+  cityName: {
+    color: theme.palette.primary.main,
+  },
   nestedBoxes: {
     display: "flex",
     flexDirection: "column", // Stack nested boxes on mobile
@@ -289,7 +292,6 @@ export const FlightCard = ({
           segment={segment}
           classes={classes}
           showActions={showActions}
-          
         />
       ) : (
         // Your existing desktop layout goes here

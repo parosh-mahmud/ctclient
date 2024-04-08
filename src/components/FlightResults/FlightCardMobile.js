@@ -26,6 +26,7 @@ const FlightCardMobile = ({
   classes,
   showActions,
 }) => {
+  console.log(segment.StopQuantity);
   return (
     // Mobile layout
     <Box className={classes.container}>
@@ -52,7 +53,7 @@ const FlightCardMobile = ({
             )
           )}
           {isLoading ? (
-            <Skeleton width={90} height={30} />
+            <Skeleton width={70} height={20} />
           ) : (
             <Typography sx={{ marginLeft: "5px" }} variant="body2">
               {flightData?.segments?.[0]?.Airline?.AirlineName || "N/A"}
@@ -66,59 +67,53 @@ const FlightCardMobile = ({
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "flex-end",
+                gap: "2px", // Adding a gap between elements for spacing
               }}
             >
               {isLoading ? (
-                <Skeleton width={90} height={30} />
+                <Skeleton width={70} height={20} />
               ) : (
                 <Typography
                   sx={{
                     display: "flex",
                     flexDirection: "row",
                     color: "green",
+                    fontSize: "12px",
                   }}
                 >
-                  <FlightInfoItem
-                    isLoading={isLoading}
-                    isMobile={isMobile}
-                    value={
-                      segment.Airline ? segment.Airline.AirlineCode : "N/A"
-                    }
-                  />
+                  {segment.Airline ? segment.Airline.AirlineCode : "N/A"}
                 </Typography>
               )}
 
               {isLoading ? (
-                <Skeleton width={90} height={30} />
+                <Skeleton width={70} height={20} />
               ) : (
                 <Typography
                   sx={{
                     display: "flex",
                     flexDirection: "row",
                     color: "green",
+                    fontSize: "12px",
                   }}
                 >
-                  <FlightInfoItem
-                    isLoading={isLoading}
-                    isMobile={isMobile}
-                    value={
-                      segment.Airline ? segment.Airline.FlightNumber : "N/A"
-                    }
-                  />
+                  {segment.Airline ? segment.Airline.FlightNumber : "N/A"}
                 </Typography>
               )}
             </Box>
-
-            <Typography
-              sx={{ display: "flex", flexDirection: "row", color: "green" }}
-            >
-              Boeing{" "}
-              <FlightInfoItem
-                isMobile={isMobile}
-                isLoading={isLoading}
-                value={segment.Equipment ? `${segment.Equipment}` : "N/A"}
-              />{" "}
-            </Typography>
+            {isLoading ? (
+              <Skeleton variant="text" width={70} height={20} />
+            ) : (
+              <Typography
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  color: "green",
+                  fontSize: "12px",
+                }}
+              >
+                {`Boeing `} {segment.Equipment ? `${segment.Equipment}` : "N/A"}
+              </Typography>
+            )}
           </Box>
         </Box>
       </Box>
@@ -126,42 +121,49 @@ const FlightCardMobile = ({
         {/* Time and city code */}
 
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-              height: "210px",
-            }}
-          >
-            {/* Ensure elements are in a row */}
-            <Typography>
-              <FlightTakeoffIcon fontSize="8px" />
-            </Typography>
-            {/* Vertical Divider */}
+          {isLoading ? (
+            <Skeleton variant="rectangular" width="4px" height="210px" />
+          ) : (
             <Box
               sx={{
-                height: "50%", // Adjust as needed
-                width: "2px", // Control the thickness of your divider here
-                backgroundColor: "primary.main",
-                mx: 2, // Margin for visual spacing on either side
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                height: "210px",
               }}
-            />
-            <Typography>
-              <FlightIcon fontSize="8px" sx={{ transform: "rotate(180deg)" }} />
-            </Typography>
-            <Box
-              sx={{
-                height: "50%", // Adjust as needed
-                width: "2px", // Control the thickness of your divider here
-                backgroundColor: "primary.main",
-                mx: 2, // Margin for visual spacing on either side
-              }}
-            />
-            <Typography>
-              <FlightLandIcon fontSize="8px" />
-            </Typography>
-          </Box>
+            >
+              {/* Ensure elements are in a row */}
+              <Typography>
+                <FlightTakeoffIcon fontSize="8px" />
+              </Typography>
+              {/* Vertical Divider */}
+              <Box
+                sx={{
+                  height: "50%", // Adjust as needed
+                  width: "2px", // Control the thickness of your divider here
+                  backgroundColor: "primary.main",
+                  mx: 2, // Margin for visual spacing on either side
+                }}
+              />
+              <Typography>
+                <FlightIcon
+                  fontSize="8px"
+                  sx={{ transform: "rotate(180deg)" }}
+                />
+              </Typography>
+              <Box
+                sx={{
+                  height: "50%", // Adjust as needed
+                  width: "2px", // Control the thickness of your divider here
+                  backgroundColor: "primary.main",
+                  mx: 2, // Margin for visual spacing on either side
+                }}
+              />
+              <Typography>
+                <FlightLandIcon fontSize="8px" />
+              </Typography>
+            </Box>
+          )}
 
           {/* context box */}
           <Box
@@ -173,97 +175,147 @@ const FlightCardMobile = ({
             }}
           >
             <Box display="flex" flexDirection="column">
-              <Typography alignSelf="baseline">
-                {segment.Origin ? (
-                  <>
-                    <strong>{segment.Origin.Airport.CityName}</strong>
-                    {` (${segment.Origin.Airport.CityCode})`}
-                  </>
-                ) : (
-                  "N/A"
-                )}
-              </Typography>
+              {isLoading ? (
+                <Skeleton variant="text" width={70} height={20} />
+              ) : (
+                <Typography alignSelf="baseline">
+                  {segment.Origin ? (
+                    <>
+                      <strong className={classes.cityName}>
+                        {segment.Origin.Airport.CityName}
+                      </strong>
+                      {` (${segment.Origin.Airport.CityCode})`}
+                    </>
+                  ) : (
+                    "N/A"
+                  )}
+                </Typography>
+              )}
 
               <Box marginLeft="10px" display="flex" flexDirection="column">
-                <Typography
-                  alignSelf="baseline"
-                  fontSize="24px"
-                  fontWeight="bold"
-                >
-                  {segment.Destination
-                    ? new Date(segment.Origin.DepTime).toLocaleTimeString(
-                        "en-US",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: true,
-                        }
-                      )
-                    : "N/A"}
-                </Typography>
+                {isLoading ? (
+                  <Skeleton variant="text" width={70} height={20} />
+                ) : (
+                  <Typography
+                    alignSelf="baseline"
+                    fontSize="24px"
+                    fontWeight="bold"
+                  >
+                    {segment.Destination
+                      ? new Date(segment.Origin.DepTime).toLocaleTimeString(
+                          "en-US",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )
+                      : "N/A"}
+                  </Typography>
+                )}
 
-                <Typography alignSelf="baseline" fontSize="12px">
-                  {segment.Origin
-                    ? new Date(segment.Origin.DepTime).toLocaleDateString(
-                        "en-US",
-                        {
-                          day: "numeric",
-                          month: "short",
-                          weekday: "long",
-                        }
-                      )
-                    : "N/A"}
-                </Typography>
+                {isLoading ? (
+                  <Skeleton variant="text" width={70} height={20} />
+                ) : (
+                  <Typography alignSelf="baseline" fontSize="12px">
+                    {segment.Origin
+                      ? new Date(segment.Origin.DepTime).toLocaleDateString(
+                          "en-US",
+                          {
+                            day: "numeric",
+                            month: "short",
+                            weekday: "long",
+                          }
+                        )
+                      : "N/A"}
+                  </Typography>
+                )}
               </Box>
             </Box>
 
-            <Typography fontSize="12px" alignSelf="baseline" marginLeft="10px">
-              {calculateDuration()}
-            </Typography>
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="baseline"
+              marginLeft="10px"
+              gap="70px"
+            >
+              {isLoading ? (
+                <Skeleton variant="text" width={70} height={20} />
+              ) : (
+                <Typography fontSize="12px" alignSelf="baseline">
+                  {calculateDuration()}
+                </Typography>
+              )}
+              {/* Conditionally render "Nonstop" if StopQuantity is 0 */}
+              {isLoading ? (
+                <Skeleton variant="text" width={70} height={20} />
+              ) : (
+                <Box>
+                  {Number(segment.StopQuantity) === 0 && (
+                    <Typography fontSize="12px" alignSelf="baseline">
+                      Nonstop
+                    </Typography>
+                  )}
+                </Box>
+              )}
+            </Box>
 
             <Box display="flex" flexDirection="column">
               <Box marginLeft="10px" display="flex" flexDirection="column">
-                <Typography alignSelf="baseline" fontSize="12px">
-                  {segment.Destination
-                    ? new Date(segment.Destination.ArrTime).toLocaleDateString(
-                        "en-US",
-                        {
+                {isLoading ? (
+                  <Skeleton variant="text" width={70} height={20} />
+                ) : (
+                  <Typography alignSelf="baseline" fontSize="12px">
+                    {segment.Destination
+                      ? new Date(
+                          segment.Destination.ArrTime
+                        ).toLocaleDateString("en-US", {
                           day: "numeric",
                           month: "short",
                           weekday: "long",
-                        }
-                      )
-                    : "N/A"}
-                </Typography>
+                        })
+                      : "N/A"}
+                  </Typography>
+                )}
 
-                <Typography
-                  alignSelf="baseline"
-                  fontSize="24px"
-                  fontWeight="bold"
-                >
-                  {segment.Destination
-                    ? new Date(segment.Destination.ArrTime).toLocaleTimeString(
-                        "en-US",
-                        {
+                {isLoading ? (
+                  <Skeleton variant="text" width={70} height={20} />
+                ) : (
+                  <Typography
+                    alignSelf="baseline"
+                    fontSize="24px"
+                    fontWeight="bold"
+                  >
+                    {segment.Destination
+                      ? new Date(
+                          segment.Destination.ArrTime
+                        ).toLocaleTimeString("en-US", {
                           hour: "2-digit",
                           minute: "2-digit",
                           hour12: true, // Adjusted to use 12-hour format
-                        }
-                      )
-                    : "N/A"}
-                </Typography>
+                        })
+                      : "N/A"}
+                  </Typography>
+                )}
               </Box>
 
-              <Typography alignSelf="baseline">
-                {segment.Destination ? (
-                  <>
-                    <strong>{segment.Destination.Airport.CityName}</strong>
-                    {` (${segment.Destination.Airport.CityCode})`}
-                  </>
-                ) : (
-                  "N/A"
-                )}
-              </Typography>
+              {isLoading ? (
+                <Skeleton variant="text" width={70} height={20} />
+              ) : (
+                <Typography alignSelf="baseline">
+                  {segment.Destination ? (
+                    <>
+                      <strong className={classes.cityName}>
+                        {segment.Destination.Airport.CityName}
+                      </strong>
+                      {` (${segment.Destination.Airport.CityCode})`}
+                    </>
+                  ) : (
+                    "N/A"
+                  )}
+                </Typography>
+              )}
             </Box>
           </Box>
         </Box>
@@ -289,7 +341,12 @@ const FlightCardMobile = ({
             variant="contained"
             endIcon={<ArrowForwardIcon />}
           >
-            <span className={classes.buttonText}>Select</span>
+            <span
+              style={{ textTransform: "capitalize" }}
+              className={classes.buttonText}
+            >
+              Select
+            </span>
           </Button>
         )}
       </Box>
@@ -305,7 +362,12 @@ const FlightCardMobile = ({
             }
             onClick={handleViewDetails}
           >
-            <span className={classes.buttonText}>View Details</span>
+            <span
+              style={{ textTransform: "capitalize" }}
+              className={classes.buttonText}
+            >
+              View Details
+            </span>
           </Button>
         </Box>
       )}
