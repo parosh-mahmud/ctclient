@@ -188,7 +188,7 @@ export const FlightCard = ({
             `${BASE_URL}/api/airline/${flightData.segments[0].Airline.AirlineCode}`
           );
           setAirlineLogoUrl(response.data.logoUrl);
-          console.log("Logo URL:", response.data.logoUrl);
+          // console.log("Logo URL:", response.data.logoUrl);
         } catch (error) {
           console.error("Error fetching airline logo:", error);
         }

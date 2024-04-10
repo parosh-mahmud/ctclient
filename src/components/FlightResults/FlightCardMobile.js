@@ -26,7 +26,6 @@ const FlightCardMobile = ({
   classes,
   showActions,
 }) => {
-  console.log(segment.StopQuantity);
   return (
     // Mobile layout
     <Box className={classes.container}>
@@ -321,20 +320,20 @@ const FlightCardMobile = ({
         </Box>
       </Box>
       {/* second row end */}
+      {showActions && (
+        <Box className={classes.thirdRow}>
+          {/* Select button with total price */}
+          {isLoading ? (
+            <Skeleton width={90} height={30} />
+          ) : (
+            <Typography fontWeight="bold" alignSelf="flex-end" fontSize="18px">
+              BDT{" "}
+              {new Intl.NumberFormat("en-IN", {
+                maximumSignificantDigits: 3,
+              }).format(calculateTotalAmount())}
+            </Typography>
+          )}
 
-      <Box className={classes.thirdRow}>
-        {/* Select button with total price */}
-        {isLoading ? (
-          <Skeleton width={90} height={30} />
-        ) : (
-          <Typography fontWeight="bold" alignSelf="flex-end" fontSize="18px">
-            BDT{" "}
-            {new Intl.NumberFormat("en-IN", {
-              maximumSignificantDigits: 3,
-            }).format(calculateTotalAmount())}
-          </Typography>
-        )}
-        {showActions && (
           <Button
             onClick={handleSelect}
             className={classes.fullButton}
@@ -348,8 +347,8 @@ const FlightCardMobile = ({
               Select
             </span>
           </Button>
-        )}
-      </Box>
+        </Box>
+      )}
       {showActions && (
         <Box className={classes.fourthRow}>
           {/* View details button */}

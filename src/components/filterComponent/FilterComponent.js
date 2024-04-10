@@ -7,6 +7,8 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+
 // Import icons
 import AirlineStopsIcon from "@mui/icons-material/AirlineStops";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
@@ -154,25 +156,26 @@ const FilterComponent = ({
               backgroundColor: "#f0f0f0",
               padding: 2,
               borderRadius: "4px",
+              display: "flex", // Use flex display for horizontal layout
+              flexWrap: "wrap", // Allow items to wrap as needed
+              gap: 1, // Add some space between items
             }}
           >
-            {/* Demo content inside the collapse */}
             {Object.keys(filters).map((filterKey) => {
-              if (
-                matchesSmallScreen &&
-                !["refundable", "layover", "airline"].includes(filterKey)
-              ) {
+              if (!["refundable", "layover", "airline"].includes(filterKey)) {
                 return null;
               }
 
               return (
-                <div key={filterKey}>
+                <Box key={filterKey} sx={{ flexGrow: 1, minWidth: "50%" }}>
+                  {" "}
+                  {/* Ensure each item can grow and has a minimum width */}
                   <Button
+                    fullWidth // Button takes full width of its container
                     variant="outlined"
                     startIcon={filterIcons[filterKey]}
                     endIcon={<ExpandMoreIcon />}
                     sx={{
-                      ...buttonStyle,
                       borderColor: "transparent",
                       textTransform: "none",
                     }}
@@ -196,16 +199,17 @@ const FilterComponent = ({
                       </MenuItem>
                     ))}
                   </Menu>
-                </div>
+                </Box>
               );
             })}
           </Box>
         </Collapse>
       )}
-
-      <IconButton color="primary" sx={{ p: "8px", ...buttonStyle }}>
-        <TuneIcon />
-      </IconButton>
+      {!matchesSmallScreen && (
+        <IconButton color="primary" sx={{ p: "8px", ...buttonStyle }}>
+          <TuneIcon />
+        </IconButton>
+      )}
 
       {Object.keys(filters).map((filterKey) => {
         if (

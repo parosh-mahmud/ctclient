@@ -58,6 +58,8 @@ const FilterByDate = ({ onDateSelect }) => {
     setActiveBox(boxNumber);
     const selectedDate = new Date();
     selectedDate.setDate(selectedDate.getDate() + daysOffset);
+    console.log("Clicked Date:", selectedDate.toISOString().split("T")[0]);
+
     onDateSelect(selectedDate); // Assuming you pass the selected date to a parent component
   };
 

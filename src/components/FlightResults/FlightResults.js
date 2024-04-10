@@ -70,8 +70,6 @@ const FlightResults = () => {
   const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
   const isLoading = useSelector((state) => state.flight.isLoadingFlightData);
 
-  console.log(flightSearchData);
-
   const [showSortedFlights, setShowSortedFlights] = useState(false);
   const [sortedFlights, setSortedFlights] = useState([]);
   const location = useLocation();
@@ -83,12 +81,11 @@ const FlightResults = () => {
 
   flightSearchData.Results.forEach((flight) => {
     // Accessing DepTime from the first segment's origin for each flight
-    console.log(flight.segments[0].Origin.DepTime);
   });
 
   const handleSortFlights = (sortBy) => {
     let sortedFlights = [...flightSearchData.Results]; // Clone to avoid direct state mutation
-    console.log(sortedFlights);
+
     switch (sortBy) {
       case "Cheapest":
         sortedFlights.sort((a, b) => a.Fares[0].BaseFare - b.Fares[0].BaseFare);
@@ -112,7 +109,6 @@ const FlightResults = () => {
         );
         break;
       default:
-        console.log("Sort option not recognized");
     }
 
     setSortedFlights(sortedFlights);
