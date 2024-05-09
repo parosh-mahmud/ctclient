@@ -22,7 +22,7 @@ const FilterByDate = ({ onDateSelect }) => {
     justifyContent: "center",
     alignItems: "center",
     width: { xs: "85px", sm: "100px", md: "170px" }, // Responsive width
-    height: "70px",
+    height: "35px",
     marginRight: "5px",
     textAlign: "center",
     borderRadius: "5px",
@@ -78,7 +78,7 @@ const FilterByDate = ({ onDateSelect }) => {
         }
         disabled={activeBox === 1}
       >
-        <ArrowBackIcon />
+        <ArrowBackIcon sx={{ color: "primary.main" }} />
       </IconButton>
       {[...Array(7)].map(
         (_, index) =>
@@ -100,7 +100,7 @@ const FilterByDate = ({ onDateSelect }) => {
         }
         disabled={activeBox === 7}
       >
-        <ArrowForwardIcon />
+        <ArrowForwardIcon sx={{ color: "primary.main" }} />
       </IconButton>
     </Box>
   );

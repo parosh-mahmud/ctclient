@@ -14,7 +14,8 @@ import LayoutPage from "../../pages/LayoutPage";
 import FlightCard from "./FlightCard";
 import { useDispatch, useSelector } from "react-redux";
 import { Collapse } from "@mui/material";
-
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import FilterByDate from "../filterComponent/FilterByDate";
 import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
 import FilterComponent from "../filterComponent/FilterComponent";
@@ -25,6 +26,9 @@ import { useLocation } from "react-router-dom";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { selectFlightSearchParams } from "../../redux/reducers/flightSlice";
 import { selectIsLoadingFlightData } from "../../redux/reducers/flightSlice";
+import { KeyboardArrowDown } from "@mui/icons-material";
+import { selectFlightError } from "../../redux/reducers/flightSlice";
+
 const FlightResults = () => {
   const flightSearchData = useSelector(selectFlightSearchData);
   const dispatch = useDispatch();
@@ -70,12 +74,10 @@ const FlightResults = () => {
   const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
   const isLoading = useSelector((state) => state.flight.isLoadingFlightData);
 
-  console.log(flightSearchData);
-
   const [showSortedFlights, setShowSortedFlights] = useState(false);
   const [sortedFlights, setSortedFlights] = useState([]);
   const location = useLocation();
-
+  const error = useSelector(selectFlightError);
   // const handleSortFlights = (sortedFlights) => {
   //   setSortedFlights([...sortedFlights]);
   //   setShowSortedFlights(true);
@@ -83,12 +85,11 @@ const FlightResults = () => {
 
   flightSearchData.Results.forEach((flight) => {
     // Accessing DepTime from the first segment's origin for each flight
-    console.log(flight.segments[0].Origin.DepTime);
   });
 
   const handleSortFlights = (sortBy) => {
     let sortedFlights = [...flightSearchData.Results]; // Clone to avoid direct state mutation
-    console.log(sortedFlights);
+
     switch (sortBy) {
       case "Cheapest":
         sortedFlights.sort((a, b) => a.Fares[0].BaseFare - b.Fares[0].BaseFare);
@@ -112,7 +113,6 @@ const FlightResults = () => {
         );
         break;
       default:
-        console.log("Sort option not recognized");
     }
 
     setSortedFlights(sortedFlights);
@@ -131,6 +131,7 @@ const FlightResults = () => {
   };
 
   useEffect(() => {
+    // This effect will run once on mount and whenever the location.search changes
     const searchParams = new URLSearchParams(location.search);
     const paramsObject = Object.fromEntries(searchParams.entries());
     if (Object.keys(paramsObject).length > 0) {
@@ -141,15 +142,54 @@ const FlightResults = () => {
   return (
     <LayoutPage>
       {/* first grid */}
-      <Grid container spacing={2} style={{ width: "90%", padding: "0" }}>
+      <Grid container style={{ width: "98%", padding: "0" }}>
         <Grid item xs={12}>
-          <Box style={{ height: "auto", padding: "10px" }}>
+          <Box sx={{ height: "auto" }}>
             {/* First Row with Background Color */}
-            <Box sx={{ padding: 2, height: "auto" }}>
-              {/* Modify Search Button */}
-              <Button variant="contained" onClick={handleToggleSearchForm}>
-                Modify Search
-              </Button>
+            <Box
+              sx={{
+                marginTop: "-10px",
+                marginBottom: "10px",
+                height: "auto",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Box
+                sx={{
+                  width: { xs: "96%", md: "60%" }, // Set width to 60% of its parent
+                  display: "flex",
+                  justifyContent: "center", // Center the button horizontally
+                  backgroundColor: "primary.main",
+                  borderBottomRightRadius: "5px",
+                  borderBottomLeftRadius: "5px",
+                }}
+              >
+                <Button
+                  sx={{
+                    height: "4rem",
+                    textTransform: "none",
+                    width: "100%",
+                    fontSize: {
+                      xs: "0.875rem", // Smaller font size for mobile devices
+                      md: "1.300rem", // Larger font size for desktops
+                    },
+                  }} // Ensure the button fills the Box
+                  variant="outlined"
+                  onClick={handleToggleSearchForm}
+                  endIcon={
+                    isSearchFormVisible ? (
+                      <KeyboardArrowUpIcon sx={{ color: "white" }} />
+                    ) : (
+                      <KeyboardArrowDownIcon sx={{ color: "white" }} />
+                    )
+                  }
+                >
+                  <span style={{ color: "white" }}> Modify search</span>
+                </Button>
+              </Box>
             </Box>
             {/* Collapsible Search Form */}
             {/* Collapsible Search Form with Animation */}
@@ -210,8 +250,8 @@ const FlightResults = () => {
                     width: "100%",
                     display: "flex", // Ensure flex layout is used
                     flexWrap: "wrap", // Allow items to wrap if needed
-                    // justifyContent: "center", // Center items horizontally
-                    // alignItems: "center", // Align items vertically
+                    justifyContent: "center", // Center items horizontally
+                    alignItems: "center", // Align items vertically
                     marginTop: "10px",
                     marginBottom: "5px",
                     backgroundColor: "rgba(255,255,255,0.5)",
@@ -253,9 +293,9 @@ const FlightResults = () => {
                             availability={flight.Availabilty}
                             isLoading={loadingState}
                           />
-                          {index < sortedFlights.length - 1 && (
+                          {/* {index < sortedFlights.length - 1 && (
                             <hr style={{ margin: "10px 0" }} />
-                          )}
+                          )} */}
                         </div>
                       ))
                     : // Display unsorted flights when showSortedFlights is false
@@ -269,9 +309,9 @@ const FlightResults = () => {
                             onFetchingStart={() => setBackdropOpen(true)} // Function to open the backdrop
                             onFetchingComplete={() => setBackdropOpen(false)}
                           />
-                          {index < flightSearchData.Results.length - 1 && (
-                            <hr style={{ margin: "10px 0" }} />
-                          )}
+                          {/* {index < flightSearchData.Results.length - 1 && (
+                            // <hr style={{ margin: "10px 0" }} />
+                          )} */}
                         </div>
                       ))}
                 </Box>

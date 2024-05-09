@@ -15,18 +15,27 @@
 // const store = createStore(rootReducer);
 
 // export default store;
-import { configureStore } from '@reduxjs/toolkit';
-import thunk from 'redux-thunk';
-import storage from 'redux-persist/lib/storage'; // Import storage from redux-persist (defaults to localStorage)
-import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
-import { combineReducers } from 'redux';
+import { configureStore } from "@reduxjs/toolkit";
+import thunk from "redux-thunk";
+import storage from "redux-persist/lib/storage"; // Import storage from redux-persist (defaults to localStorage)
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import { combineReducers } from "redux";
 
 // Import your reducers
-import flightReducer from './reducers/flightSlice';
-import airPriceReducer from './slices/airPriceSlice';
-import searchIDResultIDReducer from './slices/searchIDResultIDSlice';
-import airPreBookReducer from './slices/airPreBookSlice';
-import passengerDetailsReducer from './slices/passengerDetailsSlice';
+import flightReducer from "./reducers/flightSlice";
+import airPriceReducer from "./slices/airPriceSlice";
+import searchIDResultIDReducer from "./slices/searchIDResultIDSlice";
+import airPreBookReducer from "./slices/airPreBookSlice";
+import passengerDetailsReducer from "./slices/passengerDetailsSlice";
 
 // Define the root reducer
 const rootReducer = combineReducers({
@@ -40,10 +49,10 @@ const rootReducer = combineReducers({
 
 // Define the persist configuration
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
   // You might want to specify which parts of your state should be persisted
-  // whitelist: ['flight', 'airPrice'], // Only persist these slices
+  whitelist: ["flight", "airPrice"], // Only persist these slices
 };
 
 // Wrap the root reducer with persistReducer

@@ -7,6 +7,8 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+
 // Import icons
 import AirlineStopsIcon from "@mui/icons-material/AirlineStops";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
@@ -68,8 +70,8 @@ const FilterComponent = ({
   });
   // Icons mapping to the filter keys
   const filterIcons = {
-    takeOff: <AccessTimeFilledIcon />,
-    priceRange: <LocalOfferIcon />,
+    takeOff: <AccessTimeFilledIcon fontSize="20px" />,
+    priceRange: <LocalOfferIcon fontSize="9px" />,
     refundable: <ShieldIcon />,
     layover: <AirlineStopsIcon />,
     airline: <AirplanemodeActiveIcon />,
@@ -125,15 +127,22 @@ const FilterComponent = ({
   };
 
   const boxStyle = {
+    width: matchesSmallScreen ? "auto" : "100%", // Full width on desktop
     display: "flex",
     flexDirection: "row",
-    // alignItems: "center",
-    // justifyContent: "center",
-    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: 2,
+    p: 2,
   };
 
   const buttonStyle = {
     margin: matchesSmallScreen ? "0px" : "0 5px",
+  };
+
+  const textStyle = {
+    fontSize: matchesSmallScreen ? "9px" : "16px", // Larger font size on desktop
   };
 
   return (
@@ -141,7 +150,7 @@ const FilterComponent = ({
       sx={{
         ...boxStyle,
         backgroundColor: "#fff",
-        boxShadow: 1,
+        // boxShadow: 1,
         borderRadius: 2,
         p: 2,
       }}
@@ -154,27 +163,29 @@ const FilterComponent = ({
               backgroundColor: "#f0f0f0",
               padding: 2,
               borderRadius: "4px",
+              display: "flex", // Use flex display for horizontal layout
+              flexWrap: "wrap", // Allow items to wrap as needed
+              gap: 1, // Add some space between items
             }}
           >
-            {/* Demo content inside the collapse */}
             {Object.keys(filters).map((filterKey) => {
-              if (
-                matchesSmallScreen &&
-                !["refundable", "layover", "airline"].includes(filterKey)
-              ) {
+              if (!["refundable", "layover", "airline"].includes(filterKey)) {
                 return null;
               }
 
               return (
-                <div key={filterKey}>
+                <Box key={filterKey} sx={{ flexGrow: 1, minWidth: "50%" }}>
+                  {" "}
+                  {/* Ensure each item can grow and has a minimum width */}
                   <Button
+                    fullWidth // Button takes full width of its container
                     variant="outlined"
                     startIcon={filterIcons[filterKey]}
                     endIcon={<ExpandMoreIcon />}
                     sx={{
-                      ...buttonStyle,
                       borderColor: "transparent",
                       textTransform: "none",
+                      fontSize: "9px",
                     }}
                     onClick={(e) => handleClick(e, filterKey)}
                   >
@@ -196,16 +207,17 @@ const FilterComponent = ({
                       </MenuItem>
                     ))}
                   </Menu>
-                </div>
+                </Box>
               );
             })}
           </Box>
         </Collapse>
       )}
-
-      <IconButton color="primary" sx={{ p: "8px", ...buttonStyle }}>
-        <TuneIcon />
-      </IconButton>
+      {!matchesSmallScreen && (
+        <IconButton color="primary" sx={{ p: "8px", ...buttonStyle }}>
+          <TuneIcon />
+        </IconButton>
+      )}
 
       {Object.keys(filters).map((filterKey) => {
         if (
@@ -220,11 +232,12 @@ const FilterComponent = ({
             <Button
               variant="outlined"
               startIcon={filterIcons[filterKey]}
-              endIcon={<ExpandMoreIcon />}
+              endIcon={<ExpandMoreIcon sx={{ fontSize: "9px" }} />}
               sx={{
                 ...buttonStyle,
                 borderColor: "transparent",
                 textTransform: "none",
+                fontSize: "9px",
               }}
               onClick={(e) => handleClick(e, filterKey)}
             >
@@ -254,8 +267,10 @@ const FilterComponent = ({
         sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
         onClick={toggleCollapse}
       >
-        <Typography sx={{ cursor: "pointer" }}>More Filters</Typography>
-        <ExpandMoreIcon />
+        <Typography sx={{ cursor: "pointer", fontSize: "9px" }}>
+          More filters
+        </Typography>
+        <ExpandMoreIcon sx={{ fontSize: "9px" }} />
       </Box>
     </Box>
   );

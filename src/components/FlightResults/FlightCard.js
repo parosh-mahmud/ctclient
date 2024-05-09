@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column", // Default to column layout for mobile
     borderRadius: "5px",
+    
     marginBottom: theme.spacing(2),
     [theme.breakpoints.up("sm")]: {
       flexDirection: "row",
@@ -188,7 +189,7 @@ export const FlightCard = ({
             `${BASE_URL}/api/airline/${flightData.segments[0].Airline.AirlineCode}`
           );
           setAirlineLogoUrl(response.data.logoUrl);
-          console.log("Logo URL:", response.data.logoUrl);
+          // console.log("Logo URL:", response.data.logoUrl);
         } catch (error) {
           console.error("Error fetching airline logo:", error);
         }
@@ -210,9 +211,10 @@ export const FlightCard = ({
   };
 
   const handleViewDetails = () => {
-    setShowDetails((prevShowDetails) => !prevShowDetails);
-    setActiveTab(0); // Set the default tab to open when "View Details" is clicked
+    setShowDetails((prev) => !prev); // Toggle visibility of details
+    setActiveTab("0"); // Always open Flight Details tab when toggling
   };
+
   const calculateTotalAmount = () => {
     if (flightData && flightData.Fares && flightData.Fares[0]) {
       const baseFare = flightData.Fares[0].BaseFare || 0;
@@ -295,7 +297,7 @@ export const FlightCard = ({
         />
       ) : (
         // Your existing desktop layout goes here
-        <div className={classes.container}>
+        <Box sx={{ boxShadow: 3 }} className={classes.container}>
           <Box className={classes.firstBox}>
             {/* Content for the first box */}
             <div style={{ display: "flex" }}>
@@ -650,8 +652,12 @@ export const FlightCard = ({
 
             {showActions && (
               <Button
-                variant="contained"
+                sx={{
+                  textTransform: "capitalize",
+                }}
+                // variant="contained"
                 color="primary"
+                backgroundColor="rgba(255,255,255,0.5)"
                 onClick={handleViewDetails}
                 className={classes.button}
                 style={{ justifyContent: "flex-end" }}
@@ -663,7 +669,7 @@ export const FlightCard = ({
                   )
                 }
               >
-                View Details
+                {showDetails ? "Hide Details" : "View Details"}
               </Button>
             )}
           </Box>
@@ -715,15 +721,11 @@ export const FlightCard = ({
               </Button>
             </Box>
           )}
-        </div>
+        </Box>
       )}
       {/* Additional content shown when View Details button is clicked */}
       {showDetails && (
-        <TabComponent
-          activeTab={activeTab}
-          handleTabChange={handleTabChange}
-          segment={flightData.segments[0]}
-        />
+        <TabComponent activeTab={activeTab} handleTabChange={handleTabChange} />
       )}
     </TabContext>
   );

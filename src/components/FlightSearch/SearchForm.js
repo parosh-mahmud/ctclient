@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     borderRadius: theme.spacing(1),
     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-    minWidth: "400px",
+    minWidth: "300px",
     transition: "opacity 0.3s ease-in-out", // Add transition for opacity
     opacity: 1, // Start with opacity 1 for the fade-in effect
 
@@ -316,7 +316,10 @@ export const SearchForm = ({ searchButtonLabel }) => {
           sx={{
             marginLeft: "8px",
             color: "inherit",
-            fontSize: "14px",
+            fontSize: {
+              xs: "9px", // Smaller font size for extra small screens
+              sm: "14px", // Larger font size for small screens and up
+            },
             fontFamily: "Google Sans",
           }}
         >
@@ -335,22 +338,6 @@ export const SearchForm = ({ searchButtonLabel }) => {
     setFromAnchorEl(null);
     setToAnchorEl(null);
   };
-
-  // const handlePopoverClose = (source) => {
-  //   if (source === "from") {
-  //     setFromAnchorEl(null); // Close the "from" popover
-  //     // Use a timeout to ensure the state update has been applied before attempting to open the "to" popover
-  //     setTimeout(() => {
-  //       const toElement = document.getElementById("toAirportTrigger");
-  //       if (toElement) {
-  //         handlePopoverClick({ currentTarget: toElement }, "to");
-  //       }
-  //     }, 0);
-  //   } else if (source === "to") {
-  //     setToAnchorEl(null); // Close the "to" popover
-  //   }
-  //   // Handle other sources if needed
-  // };
 
   // Function to handle airport selection from the "From" popover
   const handleFromAirportSelect = (airport) => {
@@ -470,8 +457,6 @@ export const SearchForm = ({ searchButtonLabel }) => {
 
       // Use history.push to navigate to the FlightResults page with the form data
       history.push("/flight-results");
-    } catch (error) {
-      console.error("Error dispatching thunk action:", error.message);
     } finally {
       // Set the backdrop to be invisible, regardless of success or failure
       setIsFetching(false);

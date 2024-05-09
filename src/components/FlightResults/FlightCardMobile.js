@@ -9,6 +9,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
+import AirplanemodeActiveIcon from "@mui/icons-material/AirplanemodeActive";
 
 import { FlightInfoItem } from "./FlightCard";
 const FlightCardMobile = ({
@@ -29,7 +30,7 @@ const FlightCardMobile = ({
   console.log(segment.StopQuantity);
   return (
     // Mobile layout
-    <Box className={classes.container}>
+    <Box sx={{ boxShadow: 4, padding: 1 }} className={classes.container}>
       <Box className={classes.firstRow}>
         {/* Airline logo and name */}
 
@@ -60,7 +61,14 @@ const FlightCardMobile = ({
             </Typography>
           )}
         </Box>
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Box
               sx={{
@@ -100,20 +108,29 @@ const FlightCardMobile = ({
                 </Typography>
               )}
             </Box>
-            {isLoading ? (
-              <Skeleton variant="text" width={70} height={20} />
-            ) : (
-              <Typography
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  color: "green",
-                  fontSize: "12px",
-                }}
-              >
-                {`Boeing `} {segment.Equipment ? `${segment.Equipment}` : "N/A"}
-              </Typography>
-            )}
+            <Box>
+              {isLoading ? (
+                <Skeleton variant="text" width={70} height={20} />
+              ) : (
+                <Typography
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    color: "green",
+                    fontSize: "12px",
+                  }}
+                >
+                  {segment.Equipment ? `${segment.Equipment}` : "N/A"}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          {/* icon box */}
+          <Box sx={{ marginLeft: 1 }}>
+            <Typography sx={{ color: "primary.main" }}>
+              <AirplanemodeActiveIcon />
+            </Typography>
           </Box>
         </Box>
       </Box>
@@ -133,7 +150,7 @@ const FlightCardMobile = ({
               }}
             >
               {/* Ensure elements are in a row */}
-              <Typography>
+              <Typography sx={{ color: "primary.main" }}>
                 <FlightTakeoffIcon fontSize="8px" />
               </Typography>
               {/* Vertical Divider */}
@@ -145,7 +162,7 @@ const FlightCardMobile = ({
                   mx: 2, // Margin for visual spacing on either side
                 }}
               />
-              <Typography>
+              <Typography sx={{ color: "primary.main" }}>
                 <FlightIcon
                   fontSize="8px"
                   sx={{ transform: "rotate(180deg)" }}
@@ -159,7 +176,7 @@ const FlightCardMobile = ({
                   mx: 2, // Margin for visual spacing on either side
                 }}
               />
-              <Typography>
+              <Typography sx={{ color: "primary.main" }}>
                 <FlightLandIcon fontSize="8px" />
               </Typography>
             </Box>
@@ -340,6 +357,7 @@ const FlightCardMobile = ({
             className={classes.fullButton}
             variant="contained"
             endIcon={<ArrowForwardIcon />}
+            sx={{ backgroundColor: "primary.main" }}
           >
             <span
               style={{ textTransform: "capitalize" }}

@@ -1,29 +1,39 @@
 {
   "files": {
-    "main.css": "/static/css/main.53518e35.css",
-    "main.js": "/static/js/main.0da9933e.js",
+    "main.css": "/static/css/main.16ee6536.css",
+    "main.js": "/static/js/main.6cd4fa1e.js",
+    "static/js/905.37be09d6.chunk.js": "/static/js/905.37be09d6.chunk.js",
+    "static/js/767.8c230538.chunk.js": "/static/js/767.8c230538.chunk.js",
+    "static/js/582.81b337c5.chunk.js": "/static/js/582.81b337c5.chunk.js",
     "static/js/498.08e1e2c8.chunk.js": "/static/js/498.08e1e2c8.chunk.js",
     "static/js/703.f2c60403.chunk.js": "/static/js/703.f2c60403.chunk.js",
-    "static/js/513.c0d15d14.chunk.js": "/static/js/513.c0d15d14.chunk.js",
-    "static/media/GoogleLogo.png": "/static/media/GoogleLogo.7e2e80ea7f011480566d.png",
-    "static/media/Product Sans Bold.ttf": "/static/media/Product Sans Bold.53df38d5491afbeb42a5.ttf",
+    "static/js/513.30111e64.chunk.js": "/static/js/513.30111e64.chunk.js",
+    "static/media/GoogleSans-Italic.ttf": "/static/media/GoogleSans-Italic.40bb50bd202405745006.ttf",
+    "static/media/GoogleSans-MediumItalic.ttf": "/static/media/GoogleSans-MediumItalic.56d4f777a7997e5a10b3.ttf",
+    "static/media/GoogleSans-BoldItalic.ttf": "/static/media/GoogleSans-BoldItalic.d282e9c31d0f894a7f06.ttf",
+    "static/media/GoogleSans-Regular.ttf": "/static/media/GoogleSans-Regular.bec0591b6a291c3ca895.ttf",
+    "static/media/GoogleSans-Medium.ttf": "/static/media/GoogleSans-Medium.963c3e555aaada9ef8a9.ttf",
+    "static/media/GoogleSans-Bold.ttf": "/static/media/GoogleSans-Bold.d907e4bf3e32637a636e.ttf",
     "static/media/poppins-devanagari-400-normal.woff": "/static/media/poppins-devanagari-400-normal.0e11b62db931f85340d4.woff",
-    "static/media/Product Sans Regular.ttf": "/static/media/Product Sans Regular.d165384076551a756b3c.ttf",
     "static/media/poppins-devanagari-400-normal.woff2": "/static/media/poppins-devanagari-400-normal.64d5f06ee726edd58ca3.woff2",
     "static/media/code1.png": "/static/media/code1.4e74d7e0bad1da451c21.png",
     "static/media/poppins-latin-400-normal.woff": "/static/media/poppins-latin-400-normal.cda9c93f49237f11c766.woff",
     "static/media/poppins-latin-400-normal.woff2": "/static/media/poppins-latin-400-normal.405055dd680fa1dcdfa2.woff2",
     "static/media/poppins-latin-ext-400-normal.woff": "/static/media/poppins-latin-ext-400-normal.8cc52669c8e8a6735699.woff",
+    "static/media/headerlogo.svg": "/static/media/headerlogo.5092eda67a7bd2f2bd2cdccdca4ec021.svg",
     "static/media/poppins-latin-ext-400-normal.woff2": "/static/media/poppins-latin-ext-400-normal.4f38b4331448d2313adc.woff2",
     "index.html": "/index.html",
-    "main.53518e35.css.map": "/static/css/main.53518e35.css.map",
-    "main.0da9933e.js.map": "/static/js/main.0da9933e.js.map",
+    "main.16ee6536.css.map": "/static/css/main.16ee6536.css.map",
+    "main.6cd4fa1e.js.map": "/static/js/main.6cd4fa1e.js.map",
+    "905.37be09d6.chunk.js.map": "/static/js/905.37be09d6.chunk.js.map",
+    "767.8c230538.chunk.js.map": "/static/js/767.8c230538.chunk.js.map",
+    "582.81b337c5.chunk.js.map": "/static/js/582.81b337c5.chunk.js.map",
     "498.08e1e2c8.chunk.js.map": "/static/js/498.08e1e2c8.chunk.js.map",
     "703.f2c60403.chunk.js.map": "/static/js/703.f2c60403.chunk.js.map",
-    "513.c0d15d14.chunk.js.map": "/static/js/513.c0d15d14.chunk.js.map"
+    "513.30111e64.chunk.js.map": "/static/js/513.30111e64.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.53518e35.css",
-    "static/js/main.0da9933e.js"
+    "static/css/main.16ee6536.css",
+    "static/js/main.6cd4fa1e.js"
   ]
 }

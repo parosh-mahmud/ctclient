@@ -261,7 +261,7 @@ const DashBoardHeader = () => {
                 textTransform: "capitalize", // Capitalizes the button text
                 display: "block", // Ensures the button is always displayed
                 mx: "auto", // Centers the button on smaller screens
-                backgroundColor: "#0067FF",
+                backgroundColor: "primary.main",
                 whiteSpace: "nowrap", // Prevents the text from wrapping
                 overflow: "hidden", // Keeps the content within the button
                 textOverflow: "ellipsis", // Adds an ellipsis if the text overflows
