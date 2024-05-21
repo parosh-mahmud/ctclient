@@ -17,23 +17,18 @@ import {
   Icon,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
-// import { fetchFlightResults } from '..//../redux/actions/newFlightAction';
-
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-
-import fetchAirports from "../../services/api";
-import { makeStyles } from "@mui/styles";
-
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";
-
-import "..//../index.css";
-import "@fontsource/poppins";
 import { fetchFlightResults } from "../../redux/reducers/flightSlice";
-import "./style.css";
-import AirInput from "./AirInput";
+import fetchAirports from "../../services/api";
+import { makeStyles } from "@mui/styles";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CallSplitIcon from "@mui/icons-material/CallSplit";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import AirInput from "./AirInput";
+import "./style.css";
+import "@fontsource/poppins";
 
 // First airport object from the airports array
 const airports = [
@@ -49,26 +44,22 @@ const airports = [
     country: "Bangladesh",
     name: "Jashore Airport",
   },
-
-  // You can add more airport data as needed.
+  // Add more airport data as needed.
 ];
 
 const useStyles = makeStyles((theme) => ({
   popover: {
-    // backgroundColor: 'rgba(255,255,255,0.5)',
     background: "transparent !important",
     padding: theme.spacing(2),
     borderRadius: theme.spacing(1),
     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
     minWidth: "300px",
-    transition: "opacity 0.3s ease-in-out", // Add transition for opacity
-    opacity: 1, // Start with opacity 1 for the fade-in effect
-
+    transition: "opacity 0.3s ease-in-out",
+    opacity: 1,
     "&:hover": {
-      opacity: 1, // Ensure opacity stays 1 on hover
+      opacity: 1,
     },
   },
-
   searchButton: {
     position: "relative",
     top: "-30px",
@@ -78,13 +69,9 @@ const useStyles = makeStyles((theme) => ({
     textTransform: "capitalize",
     backgroundColor: "#0067FF",
     fontWeight: "bold",
-    // Default font size
     fontSize: "22px !important",
-
-    // Responsive font size using media query
     ["@media (max-width:600px)"]: {
-      // Adjust the breakpoint as needed
-      fontSize: "16px", // Smaller font size for smaller screens
+      fontSize: "16px",
     },
   },
   input: {
@@ -105,21 +92,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const gridContainerStyle = {
-  // borderRadius: '10px', // Border radius of 10px
-  backgroundColor: "rgba(255,255,255,0.5)", // Background
-  overflow: "hidden", // Optional: To ensure children elements don't overflow outside the border radius
-  // padding: '50px',
-  // marginTop: '5px',
-  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)", // Custom box-shadow to replace Paper's default shadow
+  backgroundColor: "rgba(255,255,255,0.5)",
+  overflow: "hidden",
+  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
   margin: "0",
-
   borderBottomLeftRadius: "5px",
   borderBottomRightRadius: "5px",
 };
 
 const paperStyle = {
-  paddingLeft: "10px", // Ensure there's no extra padding interfering with the border-radius
-  margin: 0, // Ensure there's no margin interfering with the border-radius
+  paddingLeft: "10px",
+  margin: 0,
   display: "flex",
   alignItems: "center",
 };
@@ -131,14 +114,13 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const [searchedAirports, setSearchedAirports] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
-  const [fromAnchorEl, setFromAnchorEl] = useState(null); // Separate state for "From" Popover
+  const [fromAnchorEl, setFromAnchorEl] = useState(null);
   const [toAnchorEl, setToAnchorEl] = useState(null);
   const classes = useStyles();
-  const [selectedDate, setSelectedDate] = useState(dayjs().add(3, "day")); // Default date: current date + 3 days
+  const [selectedDate, setSelectedDate] = useState(dayjs().add(3, "day"));
   const [dayOfWeek, setDayOfWeek] = useState(selectedDate.format("dddd"));
   const [dAnchorEl, setDanchorEl] = useState(null);
   const [returnAnchorEl, setReturnAnchorEl] = useState(null);
-  // const [returnDate, setReturnDate] = useState(dayjs().add(7, 'day')); // Default return date: current date + 7 days
   const [returnDayOfWeek, setReturnDayOfWeek] = useState("");
   const [returnDatePopoverOpen, setReturnDatePopoverOpen] = useState(false);
   const [adults, setAdults] = useState(1);
@@ -156,13 +138,10 @@ export const SearchForm = ({ searchButtonLabel }) => {
 
   const handleTravelDateClick = () => {
     setIsTravelDatePopoverOpen(!isTravelDatePopoverOpen);
-    handleDPopoverClick(); // Assuming this is your existing function to handle the popover
+    handleDPopoverClick();
   };
-  console.log(airInputs);
-  const travelerCount = (type, action) => {
-    // Assuming adults, children, and infants are state variables
-    let newCount;
 
+  const travelerCount = (type, action) => {
     if (action === "increment" && adults + children + infants < 10) {
       switch (type) {
         case "adults":
@@ -172,7 +151,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
           setChildren(children + 1);
           break;
         case "infants":
-          if (infants < adults) setInfants(infants + 1); // Infants can't exceed adults
+          if (infants < adults) setInfants(infants + 1);
           break;
         default:
           break;
@@ -180,9 +159,8 @@ export const SearchForm = ({ searchButtonLabel }) => {
     } else if (action === "decrement") {
       switch (type) {
         case "adults":
-          newCount = adults > 1 ? adults - 1 : adults; // Ensuring adults don't go below 1
-          setAdults(newCount);
-          if (infants > newCount) setInfants(newCount); // Adjust infants if they exceed adults
+          setAdults(adults > 1 ? adults - 1 : adults);
+          if (infants > adults - 1) setInfants(adults - 1);
           break;
         case "children":
           setChildren(children > 0 ? children - 1 : children);
@@ -202,21 +180,6 @@ export const SearchForm = ({ searchButtonLabel }) => {
     }
   };
 
-  // const [formData, setFormData] = useState({
-  //   AdultQuantity: 1,
-  //   ChildQuantity: 0,
-  //   InfantQuantity: 0,
-  //   EndUserIp: "103.124.251.147",
-  //   JourneyType: "1",
-  //   Segments: [
-  //     {
-  //       Origin: "DAC",
-  //       Destination: "JSR",
-  //       CabinClass: "1",
-  //       DepartureDateTime: "2023-10-20",
-  //     },
-  //   ],
-  // });
   const handleSwapAirports = () => {
     const temp = selectedFromAirport;
     setSelectedFromAirport(selectedToAirport);
@@ -232,24 +195,16 @@ export const SearchForm = ({ searchButtonLabel }) => {
   };
 
   const handleReturnDateChange = (date) => {
-    // Close the return date popover after selecting a date
     setReturnAnchorEl(null);
-
-    // Update the return date with the selected date from the return calendar
     setReturnDate(date);
-
-    // Get the day of the week for the selected return date
     const dayOfWeek = date.format("dddd");
-
-    // Update the state with the day of the week for the return date
     setReturnDayOfWeek(dayOfWeek);
-
-    // You can perform additional actions with the selected return date if needed
   };
 
   const handleClassChange = (event) => {
     setSelectedClass(event.target.value);
   };
+
   const handleRPopoverClose = () => {
     setReturnDatePopoverOpen(false);
     setReturnAnchorEl(null);
@@ -260,6 +215,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
     setDanchorEl(null);
     setIsTravelDatePopoverOpen(false);
   };
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -271,7 +227,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const handleDepartureDateChange = (date) => {
     setSelectedDate(date);
     setDayOfWeek(date.format("dddd"));
-    setDanchorEl(null); // Close the Popover after selecting a date
+    setDanchorEl(null);
   };
 
   function CustomIconButton({
@@ -282,8 +238,8 @@ export const SearchForm = ({ searchButtonLabel }) => {
     label,
     rotate,
   }) {
-    const isSelected = selectedValue === value; // Check if the button is selected
-    const iconStyle = rotate ? { transform: "rotate(270deg)" } : {}; // Conditionally apply rotation
+    const isSelected = selectedValue === value;
+    const iconStyle = rotate ? { transform: "rotate(270deg)" } : {};
 
     return (
       <Box
@@ -294,6 +250,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
           marginRight: "16px",
           marginBottom: "10px",
           marginTop: "10px",
+          justifyContent: "center",
           backgroundColor: isSelected ? "#0067FF" : "transparent",
           color: isSelected ? "#fff" : "inherit",
           padding: "6px 12px",
@@ -308,17 +265,15 @@ export const SearchForm = ({ searchButtonLabel }) => {
         }}
         onClick={() => onChange(value)}
       >
-        {/* Apply the iconStyle to the Icon component */}
         <Icon color={isSelected ? "inherit" : "action"} style={iconStyle} />
-
         <Typography
           variant="caption"
           sx={{
             marginLeft: "8px",
             color: "inherit",
             fontSize: {
-              xs: "9px", // Smaller font size for extra small screens
-              sm: "14px", // Larger font size for small screens and up
+              xs: "10px",
+              sm: "14px",
             },
             fontFamily: "Google Sans",
           }}
@@ -339,24 +294,20 @@ export const SearchForm = ({ searchButtonLabel }) => {
     setToAnchorEl(null);
   };
 
-  // Function to handle airport selection from the "From" popover
   const handleFromAirportSelect = (airport) => {
     setSelectedFromAirport(airport);
-    setFromAnchorEl(null); // Close the 'from' popover
+    setFromAnchorEl(null);
     setTimeout(
       () => setToAnchorEl(document.getElementById("toAirportTrigger")),
       0
-    ); // Automatically trigger the 'to' popover
+    );
   };
 
-  // Function to handle airport selection from the "To" popover
   const handleToAirportSelect = (airport) => {
     setSelectedToAirport(airport);
-    setToAnchorEl(null); // Close the 'to' popover
-    // You can automatically open the next relevant popover here, if any
+    setToAnchorEl(null);
   };
 
-  // Function to handle clicking the "From" or "To" fields to open their popovers
   const handlePopoverClick = (event, anchor) => {
     if (anchor === "from") {
       setFromAnchorEl(event.currentTarget);
@@ -370,31 +321,28 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const handleRPopoverClick = (event) => {
     setReturnDatePopoverOpen(true);
     setReturnAnchorEl(event.currentTarget);
-    setSelectedOption("return"); // Set selected option to 'return' when clicking on the Return div
+    setSelectedOption("return");
     setIsReturnDatePopoverOpen(true);
   };
 
   const handleSearchQueryChange = (event) => {
     const { value } = event.target;
-    setSearchQuery(value); // Update the searchQuery state as you type
+    setSearchQuery(value);
     console.log(`Search query: ${value}`);
   };
 
   const open = Boolean(anchorEl);
 
-  const [journeyType, setJourneyType] = useState("oneway"); // Keep track of the journey type
+  const [journeyType, setJourneyType] = useState("oneway");
 
   const handleOptionChange = (newValue) => {
-    setJourneyType(newValue); // or setSelectedOption(newValue) if using selectedOption
+    setJourneyType(newValue);
     setSelectedOption(newValue);
     if (newValue === "multicity") {
-      // Logic for initializing multi-city inputs
       if (airInputs.length < 2) {
-        // Ensure there's at least two inputs for multi-city
         setAirInputs([{ id: 1 }, { id: 2 }]);
       }
     } else {
-      // Reset to default for one-way and return, ensuring at least one input
       setAirInputs([{ id: 1 }]);
     }
   };
@@ -403,62 +351,51 @@ export const SearchForm = ({ searchButtonLabel }) => {
     try {
       const airportData = await fetchAirports(searchQuery);
       console.log("API response:", airportData);
-      // Update state or perform actions with the fetched airport data
-
-      // Update searchedAirports with the fetched data
       setSearchedAirports(airportData);
     } catch (error) {
       console.error(error.message);
     }
   };
+
   useEffect(() => {
     if (!searchQuery) {
-      // If searchQuery is empty, clear the searchedAirports and return to stop useEffect
       setSearchedAirports([]);
       return;
     }
-
-    // Only fetch data when searchQuery is not empty
     handleFetchAirports();
   }, [searchQuery]);
 
   const handleFormData = async () => {
-    // Create a new object to hold the updated form data
     let updatedFormData = {
-      AdultQuantity: adults, // Assuming you have a state for adults
-      ChildQuantity: children, // Assuming you have a state for children
-      InfantQuantity: infants, // Assuming you have a state for infants
-      EndUserIp: "103.124.251.147", // This can be dynamically obtained or kept static as in your example
-      JourneyType: selectedOption === "oneway" ? "1" : "2", // '1' for one-way, '2' for return
+      AdultQuantity: adults,
+      ChildQuantity: children,
+      InfantQuantity: infants,
+      EndUserIp: "103.124.251.147",
+      JourneyType: selectedOption === "oneway" ? "1" : "2",
       Segments: [
         {
           Origin: selectedFromAirport.code,
           Destination: selectedToAirport.code,
-          CabinClass: selectedClass === "Economy" ? "1" : "2", // Assuming '1' for Economy and '2' for Business class
+          CabinClass: selectedClass === "Economy" ? "1" : "2",
           DepartureDateTime: selectedDate.format("YYYY-MM-DD"),
         },
       ],
     };
-
-    // If the journey type is 'return', add the return segment to the formData
+    console.log(updatedFormData);
     if (selectedOption === "return") {
       updatedFormData.Segments.push({
         Origin: selectedToAirport.code,
         Destination: selectedFromAirport.code,
-        CabinClass: selectedClass === "Economy" ? "1" : "2", // Same assumption as above
+        CabinClass: selectedClass === "Economy" ? "1" : "2",
         DepartureDateTime: returnDate.format("YYYY-MM-DD"),
       });
     }
 
     try {
       setIsFetching(true);
-      // Dispatch the updated form data to Redux using the thunk action
       dispatch(fetchFlightResults(updatedFormData));
-
-      // Use history.push to navigate to the FlightResults page with the form data
       history.push("/flight-results");
     } finally {
-      // Set the backdrop to be invisible, regardless of success or failure
       setIsFetching(false);
     }
   };
@@ -466,14 +403,15 @@ export const SearchForm = ({ searchButtonLabel }) => {
   return (
     <>
       <Grid container style={gridContainerStyle}>
-        {/* First Inner Grid */}
         <Grid item>
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
-              // paddingLeft: "20px",
               marginLeft: "10px",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
             }}
             aria-label="journey-type"
             name="journey-type"
@@ -493,7 +431,6 @@ export const SearchForm = ({ searchButtonLabel }) => {
               label="Return"
               rotate={true}
             />
-
             <CustomIconButton
               value="multicity"
               selectedValue={selectedOption}
@@ -505,11 +442,10 @@ export const SearchForm = ({ searchButtonLabel }) => {
           </Box>
         </Grid>
 
-        {/* Second Inner Grid (Container for items 1, 2, and 3) */}
         {selectedOption === "multicity" ? (
           airInputs.map((input, index) => (
             <AirInput
-              isFirstChild={index === 0} // This will be true for the first AirInput
+              isFirstChild={index === 0}
               journeyType={journeyType}
               canRemove={airInputs.length > 1 && index !== 0}
               key={input.id}
@@ -546,7 +482,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
               infants={infants}
               selectedClass={selectedClass}
               handleClassChange={handleClassChange}
-              classes={classes} // If you're using makeStyles or similar for styling
+              classes={classes}
               setAdults={setAdults}
               setChildren={setChildren}
               setInfants={setInfants}
@@ -590,7 +526,7 @@ export const SearchForm = ({ searchButtonLabel }) => {
             infants={infants}
             selectedClass={selectedClass}
             handleClassChange={handleClassChange}
-            classes={classes} // If you're using makeStyles or similar for styling
+            classes={classes}
             setAdults={setAdults}
             setChildren={setChildren}
             setInfants={setInfants}
@@ -608,31 +544,142 @@ export const SearchForm = ({ searchButtonLabel }) => {
           position: "relative",
           top: "-30px",
           zIndex: 1,
-          width: "20%", // Default width for larger screens
-          height: "60px", // Default height for larger screens
+          width: "20%",
+          height: "60px",
           textTransform: "capitalize",
           backgroundColor: "#0067FF",
           fontSize: "22px",
-
-          // Responsive design adjustments for screens with max-width of 600px
           "@media (max-width:600px)": {
-            fontSize: "18px", // Smaller font size for smaller screens
-            width: "50%", // Adjusted width for smaller screens
-            height: "50px", // Adjusted height for smaller screens
+            fontSize: "18px",
+            width: "50%",
+            height: "50px",
           },
         }}
       >
         {searchButtonLabel || "Search"}
       </Button>
-
-      {/* <Backdrop
-        open={isFetching} // Control the visibility based on the state
-        style={{ zIndex: 1, color: "#fff" }}
-      > */}
-      {/* <CircularProgress color="inherit" />
-      </Backdrop> */}
     </>
   );
 };
 
 export default SearchForm;
+
+
+// import React, { useEffect, useState } from "react";
+// import { Grid, Box, Button, Typography } from "@mui/material";
+// import { useDispatch } from "react-redux";
+// import { useHistory } from "react-router-dom";
+// import dayjs from "dayjs";
+// import { fetchFlightResults } from "../../redux/reducers/flightSlice";
+// import AirInput from "./AirInput";
+// import JourneyTypeSelector from "./JourneyTypeSelector";
+// import useStyles from "./styles";
+
+// const airports = [
+//   {
+//     code: "DAC",
+//     city: "Dhaka",
+//     country: "Bangladesh",
+//     name: "Hazrat Shahjalal International Airport",
+//   },
+//   {
+//     code: "JSR",
+//     city: "Jashore",
+//     country: "Bangladesh",
+//     name: "Jashore Airport",
+//   },
+//   // Add more airport data as needed.
+// ];
+
+// export const SearchForm = ({ searchButtonLabel }) => {
+//   const [selectedOption, setSelectedOption] = useState("oneway");
+//   const [selectedFromAirport, setSelectedFromAirport] = useState(airports[0]);
+//   const [selectedToAirport, setSelectedToAirport] = useState(airports[1]);
+//   const [searchQuery, setSearchQuery] = useState("");
+//   const [selectedDate, setSelectedDate] = useState(dayjs().add(3, "day"));
+//   const [returnDate, setReturnDate] = useState(null);
+//   const [adults, setAdults] = useState(1);
+//   const [children, setChildren] = useState(0);
+//   const [infants, setInfants] = useState(0);
+//   const [selectedClass, setSelectedClass] = useState("Economy");
+//   const dispatch = useDispatch();
+//   const history = useHistory();
+//   const [isFetching, setIsFetching] = useState(false);
+//   const classes = useStyles();
+
+//   const handleFormData = async () => {
+//     const updatedFormData = {
+//       AdultQuantity: adults,
+//       ChildQuantity: children,
+//       InfantQuantity: infants,
+//       EndUserIp: "103.124.251.147",
+//       JourneyType: selectedOption === "oneway" ? "1" : "2",
+//       Segments: [
+//         {
+//           Origin: selectedFromAirport.code,
+//           Destination: selectedToAirport.code,
+//           CabinClass: selectedClass === "Economy" ? "1" : "2",
+//           DepartureDateTime: selectedDate.format("YYYY-MM-DD"),
+//         },
+//       ],
+//     };
+//     if (selectedOption === "return") {
+//       updatedFormData.Segments.push({
+//         Origin: selectedToAirport.code,
+//         Destination: selectedFromAirport.code,
+//         CabinClass: selectedClass === "Economy" ? "1" : "2",
+//         DepartureDateTime: returnDate.format("YYYY-MM-DD"),
+//       });
+//     }
+
+//     try {
+//       setIsFetching(true);
+//       await dispatch(fetchFlightResults(updatedFormData));
+//       history.push("/flight-results");
+//     } finally {
+//       setIsFetching(false);
+//     }
+//   };
+
+//   return (
+//     <>
+//       <Grid container className={classes.gridContainer}>
+//         <JourneyTypeSelector
+//           selectedOption={selectedOption}
+//           setSelectedOption={setSelectedOption}
+//         />
+//         <AirInput
+//           selectedOption={selectedOption}
+//           selectedFromAirport={selectedFromAirport}
+//           setSelectedFromAirport={setSelectedFromAirport}
+//           selectedToAirport={selectedToAirport}
+//           setSelectedToAirport={setSelectedToAirport}
+//           searchQuery={searchQuery}
+//           setSearchQuery={setSearchQuery}
+//           selectedDate={selectedDate}
+//           setSelectedDate={setSelectedDate}
+//           returnDate={returnDate}
+//           setReturnDate={setReturnDate}
+//           adults={adults}
+//           setAdults={setAdults}
+//           children={children}
+//           setChildren={setChildren}
+//           infants={infants}
+//           setInfants={setInfants}
+//           selectedClass={selectedClass}
+//           setSelectedClass={setSelectedClass}
+//         />
+//       </Grid>
+//       <Button
+//         onClick={handleFormData}
+//         variant="contained"
+//         color="primary"
+//         className={classes.searchButton}
+//       >
+//         {searchButtonLabel || "Search"}
+//       </Button>
+//     </>
+//   );
+// };
+
+// export default SearchForm;

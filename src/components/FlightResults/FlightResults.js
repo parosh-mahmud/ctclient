@@ -1,4 +1,3 @@
-// FlightResults.js
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -8,53 +7,61 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Backdrop,
+  CircularProgress,
+  Collapse,
 } from "@mui/material";
-
 import LayoutPage from "../../pages/LayoutPage";
 import FlightCard from "./FlightCard";
 import { useDispatch, useSelector } from "react-redux";
-import { Collapse } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import FilterByDate from "../filterComponent/FilterByDate";
-import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
 import FilterComponent from "../filterComponent/FilterComponent";
 import SearchForm from "../FlightSearch/SearchForm";
 import RecommendFilter from "../filterComponent/RecommendFilter";
-import { fetchFlightResults } from "../../redux/reducers/flightSlice";
+
+import {
+  fetchFlightResults,
+  selectFlightSearchData,
+  selectFlightSearchParams,
+  selectIsLoadingFlightData,
+  selectFlightError,
+  setSearchParams,
+} from "../../redux/reducers/flightSlice";
 import { useLocation } from "react-router-dom";
-import { Backdrop, CircularProgress } from "@mui/material";
-import { selectFlightSearchParams } from "../../redux/reducers/flightSlice";
-import { selectIsLoadingFlightData } from "../../redux/reducers/flightSlice";
-import { KeyboardArrowDown } from "@mui/icons-material";
-import { selectFlightError } from "../../redux/reducers/flightSlice";
 
 const FlightResults = () => {
   const flightSearchData = useSelector(selectFlightSearchData);
   const dispatch = useDispatch();
-  const [searchParams, setSearchParams] = useState({});
-  const [backdropOpen, setBackdropOpen] = useState(false);
   const currentSearchParams = useSelector(selectFlightSearchParams);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // State to manage the visibility of the collapsible content
+
   const [isSearchFormVisible, setIsSearchFormVisible] = useState(false);
   const [uniqueAirlines, setUniqueAirlines] = useState([]);
+  const [showSortedFlights, setShowSortedFlights] = useState(false);
+  const [sortedFlights, setSortedFlights] = useState([]);
+  const [backdropOpen, setBackdropOpen] = useState(false);
+  const [selectedRefundable, setSelectedRefundable] = useState("All");
+
+  console.log(flightSearchData);
 
   useEffect(() => {
     if (flightSearchData?.Results?.length > 0) {
       const airlineNames = flightSearchData.Results.flatMap((flight) =>
         flight.segments.map((segment) => segment.Airline.AirlineName)
       );
-      const uniqueAirlineNames = [...new Set(airlineNames)]; // Removes duplicates
+      const uniqueAirlineNames = [...new Set(airlineNames)];
       setUniqueAirlines(uniqueAirlineNames);
     }
   }, [flightSearchData.Results]);
 
   const totalFlights = flightSearchData?.Results?.length || 0;
+
   const handleFilterByAirline = (airlineName) => {
     if (airlineName === "All Airlines") {
-      setShowSortedFlights(false); // Show all flights if "All Airlines" is selected
+      setShowSortedFlights(false);
     } else {
       const filteredFlights = flightSearchData.Results.filter((flight) =>
         flight.segments.some(
@@ -62,33 +69,25 @@ const FlightResults = () => {
         )
       );
       setSortedFlights(filteredFlights);
-      setShowSortedFlights(true); // Now showing filtered flights
+      setShowSortedFlights(true);
     }
   };
 
-  // Function to toggle the visibility state
   const handleToggleSearchForm = () => {
     setIsSearchFormVisible((prevVisible) => !prevVisible);
   };
 
-  const loadingState = useSelector((state) => state.flight.isLoadingFlightData);
-  const isLoading = useSelector((state) => state.flight.isLoadingFlightData);
-
-  const [showSortedFlights, setShowSortedFlights] = useState(false);
-  const [sortedFlights, setSortedFlights] = useState([]);
-  const location = useLocation();
+  const isLoading = useSelector(selectIsLoadingFlightData);
   const error = useSelector(selectFlightError);
-  // const handleSortFlights = (sortedFlights) => {
-  //   setSortedFlights([...sortedFlights]);
-  //   setShowSortedFlights(true);
-  // };
-
-  flightSearchData.Results.forEach((flight) => {
-    // Accessing DepTime from the first segment's origin for each flight
-  });
+  const location = useLocation();
 
   const handleSortFlights = (sortBy) => {
-    let sortedFlights = [...flightSearchData.Results]; // Clone to avoid direct state mutation
+    let sortedFlights = [...flightSearchData.Results];
+
+    console.log(
+      "Before sorting:",
+      sortedFlights.map((flight) => flight.segments[0].Origin.DepTime)
+    );
 
     switch (sortBy) {
       case "Cheapest":
@@ -97,41 +96,102 @@ const FlightResults = () => {
       case "Highest":
         sortedFlights.sort((a, b) => b.Fares[0].BaseFare - a.Fares[0].BaseFare);
         break;
-      case "Earlier flight":
-        sortedFlights.sort(
-          (a, b) =>
+      case "Earlier Flight":
+        sortedFlights.sort((a, b) => {
+          console.log(
+            `Comparing ${a.segments[0].Origin.DepTime} with ${b.segments[0].Origin.DepTime}`
+          );
+          return (
             new Date(a.segments[0].Origin.DepTime).getTime() -
             new Date(b.segments[0].Origin.DepTime).getTime()
-        );
+          );
+        });
         break;
-      case "Later flight":
-        // Ensure descending order: later flights are listed first
-        sortedFlights.sort(
-          (a, b) =>
+      case "Later Flight":
+        sortedFlights.sort((a, b) => {
+          console.log(
+            `Comparing ${a.segments[0].Origin.DepTime} with ${b.segments[0].Origin.DepTime}`
+          );
+          return (
             new Date(b.segments[0].Origin.DepTime).getTime() -
             new Date(a.segments[0].Origin.DepTime).getTime()
-        );
+          );
+        });
         break;
       default:
     }
+
+    console.log(
+      "After sorting:",
+      sortedFlights.map((flight) => flight.segments[0].Origin.DepTime)
+    );
 
     setSortedFlights(sortedFlights);
     setShowSortedFlights(true);
   };
 
+  const handleFilterByRefundable = (refundStatus) => {
+    setSelectedRefundable(refundStatus);
+    let filteredFlights;
+    switch (refundStatus) {
+      case "Refundable":
+        filteredFlights = flightSearchData.Results.filter((flight) => {
+          const isRefundable = flight.IsRefundable;
+          console.log(
+            `Flight ID ${flight.ResultID} is refundable: ${isRefundable}`
+          );
+          return isRefundable === true;
+        });
+        break;
+      case "Partially Refundable":
+        // Assuming partially refundable means IsRefundable === true
+        filteredFlights = flightSearchData.Results.filter((flight) => {
+          const isRefundable = flight.IsRefundable;
+          console.log(
+            `Flight ID ${flight.ResultID} is partially refundable: ${isRefundable}`
+          );
+          return isRefundable === true;
+        });
+        break;
+      case "Non-refundable":
+        filteredFlights = flightSearchData.Results.filter((flight) => {
+          const isRefundable = flight.IsRefundable;
+          console.log(
+            `Flight ID ${flight.ResultID} is non-refundable: ${isRefundable}`
+          );
+          return isRefundable === false;
+        });
+        break;
+      default:
+        filteredFlights = flightSearchData.Results;
+    }
+    setSortedFlights(filteredFlights);
+    setShowSortedFlights(true);
+  };
+
   const handleDateSelect = (date) => {
-    const formattedDate = date.toISOString().split("T")[0];
+    console.log(date);
+    const formattedDate =
+      date.getUTCFullYear() +
+      "-" +
+      ("0" + (date.getUTCMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + date.getUTCDate()).slice(-2);
 
     const updatedSearchParams = {
-      ...currentSearchParams, // Use the actual current search parameters
-      departureDate: formattedDate,
+      ...currentSearchParams,
+      Segments: [
+        {
+          ...currentSearchParams.Segments[0],
+          DepartureDateTime: formattedDate + "T00:00:00Z",
+        },
+      ],
     };
-
+    dispatch(setSearchParams(updatedSearchParams));
     dispatch(fetchFlightResults(updatedSearchParams));
   };
 
   useEffect(() => {
-    // This effect will run once on mount and whenever the location.search changes
     const searchParams = new URLSearchParams(location.search);
     const paramsObject = Object.fromEntries(searchParams.entries());
     if (Object.keys(paramsObject).length > 0) {
@@ -139,13 +199,19 @@ const FlightResults = () => {
     }
   }, [dispatch, location.search]);
 
+  const handleFetchingStart = () => {
+    setBackdropOpen(true);
+  };
+
+  const handleFetchingComplete = () => {
+    setBackdropOpen(false);
+  };
+
   return (
     <LayoutPage>
-      {/* first grid */}
       <Grid container style={{ width: "98%", padding: "0" }}>
         <Grid item xs={12}>
           <Box sx={{ height: "auto" }}>
-            {/* First Row with Background Color */}
             <Box
               sx={{
                 marginTop: "-10px",
@@ -159,9 +225,9 @@ const FlightResults = () => {
             >
               <Box
                 sx={{
-                  width: { xs: "96%", md: "60%" }, // Set width to 60% of its parent
+                  width: { xs: "96%", md: "60%" },
                   display: "flex",
-                  justifyContent: "center", // Center the button horizontally
+                  justifyContent: "center",
                   backgroundColor: "primary.main",
                   borderBottomRightRadius: "5px",
                   borderBottomLeftRadius: "5px",
@@ -173,10 +239,10 @@ const FlightResults = () => {
                     textTransform: "none",
                     width: "100%",
                     fontSize: {
-                      xs: "0.875rem", // Smaller font size for mobile devices
-                      md: "1.300rem", // Larger font size for desktops
+                      xs: "0.875rem",
+                      md: "1.300rem",
                     },
-                  }} // Ensure the button fills the Box
+                  }}
                   variant="outlined"
                   onClick={handleToggleSearchForm}
                   endIcon={
@@ -187,30 +253,23 @@ const FlightResults = () => {
                     )
                   }
                 >
-                  <span style={{ color: "white" }}> Modify search</span>
+                  <span style={{ color: "white" }}>Modify search</span>
                 </Button>
               </Box>
             </Box>
-            {/* Collapsible Search Form */}
-            {/* Collapsible Search Form with Animation */}
             <Collapse in={isSearchFormVisible}>
               <Box
                 sx={{
                   padding: 2,
                   height: "auto",
-                  // Additional styling as needed
                 }}
               >
-                {/* The content/form you want to show or hide */}
                 <SearchForm searchButtonLabel="Search" />
               </Box>
             </Collapse>
-
-            {/* Second Row with Background Color */}
             <Box
               sx={{
                 backgroundColor: "rgba(255,255,255,0.5)",
-
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -218,19 +277,13 @@ const FlightResults = () => {
               }}
             >
               <FilterByDate onDateSelect={handleDateSelect} />
-              {/* Content for the second row */}
             </Box>
           </Box>
         </Grid>
-
-        {/* Second Grid */}
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            {/* First Grid within the Second Grid */}
             <Grid sx={{ width: "70%" }} item xs={isMobile ? 12 : 9}>
               <Box style={{ height: "100%" }}>
-                {/* Content for the first Paper within the Second Grid */}
-
                 <Box
                   sx={{
                     width: "100%",
@@ -238,20 +291,20 @@ const FlightResults = () => {
                     backgroundColor: "rgba(255,255,255,0.5)",
                   }}
                 >
-                  {/* Content for filter Flight */}
                   <FilterComponent
                     flightDataArray={flightSearchData.Results}
                     onSortFlights={handleSortFlights}
                     onFilterByAirline={handleFilterByAirline}
+                    onFilterByRefundable={handleFilterByRefundable}
                   />
                 </Box>
                 <Box
                   sx={{
                     width: "100%",
-                    display: "flex", // Ensure flex layout is used
-                    flexWrap: "wrap", // Allow items to wrap if needed
-                    justifyContent: "center", // Center items horizontally
-                    alignItems: "center", // Align items vertically
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    alignItems: "center",
                     marginTop: "10px",
                     marginBottom: "5px",
                     backgroundColor: "rgba(255,255,255,0.5)",
@@ -271,10 +324,9 @@ const FlightResults = () => {
                     alignSelf="baseline"
                     sx={{
                       color: "green",
-                      // Use a function to apply responsive font sizes based on the theme's breakpoints
                       fontSize: {
-                        xs: "14px", // xs represents extra-small to small screens (mobile devices)
-                        sm: "18px", // sm and above represents larger screens (tablets, desktops)
+                        xs: "14px",
+                        sm: "18px",
                       },
                     }}
                   >
@@ -283,47 +335,35 @@ const FlightResults = () => {
                   </Typography>
                 )}
                 <Box style={{ marginTop: "10px" }}>
-                  {/* Iterate over flight results */}
                   {showSortedFlights
-                    ? // Display sorted flights when showSortedFlights is true
-                      sortedFlights.map((flight, index) => (
+                    ? sortedFlights.map((flight) => (
                         <div key={flight.ResultID}>
                           <FlightCard
                             flightData={flight}
                             availability={flight.Availabilty}
-                            isLoading={loadingState}
+                            isLoading={isLoading}
+                            onFetchingStart={handleFetchingStart}
+                            onFetchingComplete={handleFetchingComplete}
                           />
-                          {/* {index < sortedFlights.length - 1 && (
-                            <hr style={{ margin: "10px 0" }} />
-                          )} */}
                         </div>
                       ))
-                    : // Display unsorted flights when showSortedFlights is false
-                      flightSearchData?.Results &&
-                      flightSearchData.Results.map((flight, index) => (
+                    : flightSearchData?.Results &&
+                      flightSearchData.Results.map((flight) => (
                         <div key={flight.ResultID}>
                           <FlightCard
                             flightData={flight}
                             availability={flight.Availabilty}
-                            isLoading={loadingState}
-                            onFetchingStart={() => setBackdropOpen(true)} // Function to open the backdrop
-                            onFetchingComplete={() => setBackdropOpen(false)}
+                            isLoading={isLoading}
+                            onFetchingStart={handleFetchingStart}
+                            onFetchingComplete={handleFetchingComplete}
                           />
-                          {/* {index < flightSearchData.Results.length - 1 && (
-                            // <hr style={{ margin: "10px 0" }} />
-                          )} */}
                         </div>
                       ))}
                 </Box>
               </Box>
             </Grid>
-
-            {/* Second Grid within the Second Grid */}
             <Grid sx={{ width: "30%" }} item xs={false} sm={false}>
-              <Box style={{ height: "100%", padding: 16 }}>
-                {/* Content for the second Paper within the Second Grid */}
-                Show ad here
-              </Box>
+              <Box style={{ height: "100%", padding: 16 }}>Show ad here</Box>
             </Grid>
           </Grid>
         </Grid>
@@ -332,7 +372,7 @@ const FlightResults = () => {
         sx={{
           color: "#fff",
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          position: "fixed", // Ensures it's positioned relative to the viewport
+          position: "fixed",
           top: 0,
           left: 0,
           width: "100vw",

@@ -33,10 +33,12 @@ const flightSlice = createSlice({
   reducers: {
     setSearchParams: (state, action) => {
       state.searchParams = action.payload;
+      console.log("Search Params:", state.searchParams); // Logging searchParams here
     },
     updateSearchParametersAndSetLoading: (state, action) => {
       state.searchParams = action.payload;
-      state.isLoading = true;
+      state.isLoadingFlightData = true;
+      console.log("Updated Search Params and set loading:", state.searchParams); // Logging searchParams here
     },
     resetFlightState: (state) => {
       state.searchData = null;
@@ -58,7 +60,6 @@ const flightSlice = createSlice({
         state.isLoadingFlightData = false;
         state.hasResults = action.payload.data?.Results?.length > 0;
       })
-
       .addCase(fetchFlightResults.rejected, (state, action) => {
         state.isLoadingFlightData = false;
         state.error = action.payload;

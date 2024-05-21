@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column", // Default to column layout for mobile
     borderRadius: "5px",
-    
+
     marginBottom: theme.spacing(2),
     [theme.breakpoints.up("sm")]: {
       flexDirection: "row",
@@ -219,7 +219,9 @@ export const FlightCard = ({
     if (flightData && flightData.Fares && flightData.Fares[0]) {
       const baseFare = flightData.Fares[0].BaseFare || 0;
       const tax = flightData.Fares[0].Tax || 0;
-      return baseFare + tax;
+      const discount = flightData.Fares[0].Discount || 0;
+      const totalFare = flightData.TotalFare || 0;
+      return totalFare + discount;
     } else {
       return 0; // or any default value you want to return when data is not available
     }

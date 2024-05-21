@@ -1,4 +1,5 @@
 // AirInput.js
+
 import React, { useRef, useState } from "react";
 import {
   Box,
@@ -97,7 +98,6 @@ const AirInput = ({
   selectedClass,
   handleClassChange,
   classes,
-
   travelerCount,
   isTravelDatePopoverOpen,
   isReturnDatePopoverOpen,
@@ -106,7 +106,6 @@ const AirInput = ({
 
   return (
     <Grid container spacing={1} style={{ paddingBottom: "60px", width: "99%" }}>
-      {/* item 1 */}
       <Grid item sm={12} xs={12} lg={6} md={6} direction="row">
         <Box style={paperStyle}>
           <Box
@@ -156,7 +155,7 @@ const AirInput = ({
                 sx={{
                   fontSize: "13px",
                   textAlign: "left",
-                  whiteSpace: "nowrap", // Specify the font-family name defined in @font-face
+                  whiteSpace: "nowrap",
                 }}
               >
                 {selectedFromAirport
@@ -166,16 +165,15 @@ const AirInput = ({
             </Stack>
           </Box>
 
-          {/* <Divider orientation="vertical" flexItem  /> */}
           <Box
             onClick={handleSwapAirports}
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: "40px", // Adjust the width as needed
-              height: "40px", // Adjust the height as needed
-              position: "relative", // Optional, if you need to position it relative to something
+              width: "40px",
+              height: "40px",
+              position: "relative",
               zIndex: 1,
               cursor: "pointer",
             }}
@@ -183,7 +181,7 @@ const AirInput = ({
             <SwapHorizIcon
               style={{
                 fontSize: "45px",
-                color: "#212F3C", // Adjust to your desired icon size
+                color: "#212F3C",
               }}
             />
           </Box>
@@ -221,7 +219,6 @@ const AirInput = ({
                 autoFocus
               />
 
-              {/* Conditionally render airport lists */}
               {searchQuery === ""
                 ? airports.map((airport, index) => (
                     <div
@@ -365,7 +362,6 @@ const AirInput = ({
                 autoFocus
               />
 
-              {/* Conditionally render airport lists */}
               {searchQuery === ""
                 ? airports.map((airport, index) => (
                     <div
@@ -450,8 +446,6 @@ const AirInput = ({
         </Box>
       </Grid>
 
-      {/* travel date  */}
-
       <Grid item sm={12} xs={12} lg={4} md={4}>
         <Box style={paperStyle}>
           <Box
@@ -477,9 +471,6 @@ const AirInput = ({
                 flexDirection: "row",
               }}
             >
-              {/* <CalendarMonthIcon
-                style={{ color: "#0067FF", marginLeft: "10px" }}
-              /> */}
               <Box
                 marginLeft="10px"
                 textAlign="left"
@@ -515,7 +506,7 @@ const AirInput = ({
           <Popover
             open={Boolean(dAnchorEl)}
             anchorEl={dAnchorEl}
-            onClose={handleDPopoverClose} // Close the Popover when it is clicked outside
+            onClose={handleDPopoverClose}
             anchorOrigin={{
               vertical: "bottom",
               horizontal: "left",
@@ -539,8 +530,6 @@ const AirInput = ({
             </div>
           </Popover>
 
-          {/* return date */}
-
           <Box
             id="returnDateTrigger"
             onClick={(event) => handleRPopoverClick(event)}
@@ -560,10 +549,6 @@ const AirInput = ({
             }}
           >
             <Box style={{ display: "flex" }}>
-              {/* <CalendarMonthIcon
-                style={{ color: "#0067FF", marginLeft: "10px" }}
-              /> */}
-
               <Typography marginLeft="10px">Return</Typography>
               {isReturnDatePopoverOpen ? (
                 <KeyboardArrowUpIcon style={{ fontSize: "30px" }} />
@@ -612,8 +597,8 @@ const AirInput = ({
             <div className={classes.popover}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DateCalendar
-                  value={returnDate} // Use the returnDate state variable as the value for the DateCalendar
-                  onChange={handleReturnDateChange} // Call handleReturnDateChange when the user selects a return date
+                  value={returnDate}
+                  onChange={handleReturnDateChange}
                   renderInput={(props) => <TextField {...props} />}
                   adapter={AdapterDayjs}
                 />
@@ -623,11 +608,8 @@ const AirInput = ({
         </Box>
       </Grid>
 
-      {/* item 3 */}
       <Grid item sm={12} xs={12} lg={2} md={2}>
         <Box style={paperStyle}>
-          {/* Travller class */}
-
           <Box
             onClick={openModal}
             style={{
@@ -661,7 +643,6 @@ const AirInput = ({
               </Box>
             )}
 
-            {/* Conditionally show "Add Another City" and "Remove" for multi-city inputs */}
             {journeyType === "multicity" && !isFirstChild && (
               <Box
                 sx={{
@@ -698,15 +679,15 @@ const AirInput = ({
 
           <Popover
             open={isModalOpen}
-            anchorEl={dAnchorEl} // Ensure this is correctly set to the button/input field
+            anchorEl={dAnchorEl}
             onClose={closeModal}
             anchorOrigin={{
-              vertical: "center", // Adjust these values
-              horizontal: "right", // Adjust these values
+              vertical: "center",
+              horizontal: "right",
             }}
             transformOrigin={{
-              vertical: "top", // Adjust to 'top' if you want it to appear below the button/input
-              horizontal: "right", // Aligns to the end of the anchor element
+              vertical: "top",
+              horizontal: "right",
             }}
             transitionDuration={300}
             PaperProps={{
@@ -716,7 +697,6 @@ const AirInput = ({
             }}
           >
             <Box
-              onClick={closeModal}
               style={{ padding: 20, minWidth: 200, boxSizing: "border-box" }}
             >
               <Box style={{ marginBottom: 10 }}>
@@ -793,3 +773,87 @@ const AirInput = ({
 };
 
 export default AirInput;
+
+// import React from "react";
+// import { Box, Grid, Popover, Typography, TextField } from "@mui/material";
+// import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+// import useStyles from "./styles";
+// import AirportSelector from "./AirportSelector";
+// import DateSelector from "./DateSelector";
+// import TravelerClassSelector from "./TravelerClassSelector";
+
+// const AirInput = ({
+//   selectedOption,
+//   selectedFromAirport,
+//   setSelectedFromAirport,
+//   selectedToAirport,
+//   setSelectedToAirport,
+//   searchQuery,
+//   setSearchQuery,
+//   selectedDate,
+//   setSelectedDate,
+//   returnDate,
+//   setReturnDate,
+//   adults,
+//   setAdults,
+//   children,
+//   setChildren,
+//   infants,
+//   setInfants,
+//   selectedClass,
+//   setSelectedClass,
+// }) => {
+//   const classes = useStyles();
+
+//   const handleSwapAirports = () => {
+//     const temp = selectedFromAirport;
+//     setSelectedFromAirport(selectedToAirport);
+//     setSelectedToAirport(temp);
+//   };
+
+//   return (
+//     <Grid container spacing={1} style={{ paddingBottom: "60px", width: "99%" }}>
+//       <AirportSelector
+//         selectedAirport={selectedFromAirport}
+//         setSelectedAirport={setSelectedFromAirport}
+//         searchQuery={searchQuery}
+//         setSearchQuery={setSearchQuery}
+//         label="From"
+//         swapAirports={handleSwapAirports}
+//       />
+//       <AirportSelector
+//         selectedAirport={selectedToAirport}
+//         setSelectedAirport={setSelectedToAirport}
+//         searchQuery={searchQuery}
+//         setSearchQuery={setSearchQuery}
+//         label="To"
+//       />
+//       <DateSelector
+//         selectedDate={selectedDate}
+//         setSelectedDate={setSelectedDate}
+//         label="Travel Date"
+//       />
+//       {selectedOption === "return" && (
+//         <DateSelector
+//           selectedDate={returnDate}
+//           setSelectedDate={setReturnDate}
+//           label="Return Date"
+//         />
+//       )}
+//       <TravelerClassSelector
+//         adults={adults}
+//         setAdults={setAdults}
+//         children={children}
+//         setChildren={setChildren}
+//         infants={infants}
+//         setInfants={setInfants}
+//         selectedClass={selectedClass}
+//         setSelectedClass={setSelectedClass}
+//       />
+//     </Grid>
+//   );
+// };
+
+// export default AirInput;

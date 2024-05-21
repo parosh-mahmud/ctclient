@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Typography,
@@ -8,20 +8,25 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useDispatch } from "react-redux";
-import { setFlightSearchData } from "../../redux/slices/flightSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSearchParams,
+  fetchFlightResults,
+  selectFlightSearchParams,
+} from "../../redux/reducers/flightSlice";
 
 const FilterByDate = ({ onDateSelect }) => {
   const dispatch = useDispatch();
-  const theme = useTheme(); // Using theme for consistent styling
+  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // Enhanced styling for responsiveness and visual feedback
+
+  const currentSearchParams = useSelector(selectFlightSearchParams);
   const boxStyle = (isActive) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    width: { xs: "85px", sm: "100px", md: "170px" }, // Responsive width
+    width: { xs: "85px", sm: "100px", md: "170px" },
     height: "35px",
     marginRight: "5px",
     textAlign: "center",
@@ -41,64 +46,120 @@ const FilterByDate = ({ onDateSelect }) => {
 
   const formatDate = (date) => {
     const options = { month: "short", day: "numeric" };
-    return new Date(date).toLocaleDateString("en-US", options);
+    return date.toLocaleDateString("en-US", options);
   };
-
-  const getCurrentDate = () => formatDate(new Date());
 
   const [activeBox, setActiveBox] = useState(3);
-
-  const getRelativeDate = (daysOffset) => {
-    const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() + daysOffset);
-    return formatDate(currentDate);
-  };
-
-  const handleBoxClick = (boxNumber, daysOffset) => {
-    setActiveBox(boxNumber);
-    const selectedDate = new Date();
-    selectedDate.setDate(selectedDate.getDate() + daysOffset);
-    onDateSelect(selectedDate); // Assuming you pass the selected date to a parent component
-  };
+  const [dates, setDates] = useState([]);
 
   useEffect(() => {
-    setActiveBox(3);
-    // Assuming you might want to fetch or dispatch something on component mount
-  }, [dispatch]);
-  // Determine the range of dates to display based on activeBox and isMobile
+    if (currentSearchParams && currentSearchParams.Segments) {
+      const departureDate = new Date(
+        currentSearchParams.Segments[0].DepartureDateTime
+      );
+      departureDate.setHours(0, 0, 0, 0); // Normalize departure date
+
+      const newDates = [];
+      for (let i = -3; i <= 3; i++) {
+        const date = new Date(departureDate);
+        date.setDate(departureDate.getDate() + i);
+        newDates.push(date);
+      }
+
+      setDates(newDates);
+
+      const initialActiveBox = 3; // Center box
+
+      setActiveBox(initialActiveBox);
+    }
+  }, [currentSearchParams]);
+
+  const handleBoxClick = (boxNumber) => {
+    setActiveBox(boxNumber);
+    const selectedDate = dates[boxNumber];
+    onDateSelect(selectedDate);
+
+    const newSearchParams = {
+      ...currentSearchParams,
+      Segments: [
+        {
+          ...currentSearchParams.Segments[0],
+          DepartureDateTime: selectedDate.toISOString(),
+        },
+      ],
+    };
+    dispatch(setSearchParams(newSearchParams));
+    dispatch(fetchFlightResults(newSearchParams));
+  };
+
+  const scrollRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: -100, // Adjust this value based on your needs
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({
+        left: 100, // Adjust this value based on your needs
+        behavior: "smooth",
+      });
+    }
+  };
+
   const visibleDates = isMobile
-    ? [activeBox - 1, activeBox, activeBox + 1]
-    : [...Array(7).keys()];
+    ? dates.slice(
+        Math.max(0, activeBox - 1),
+        Math.min(dates.length, activeBox + 2)
+      )
+    : dates;
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", overflowX: "auto" }}>
+    <Box sx={{ display: "flex", alignItems: "center" }}>
       <IconButton
-        onClick={() =>
-          handleBoxClick(Math.max(activeBox - 1, 1), activeBox - 3)
-        }
-        disabled={activeBox === 1}
+        onClick={() => {
+          scrollLeft();
+          handleBoxClick(Math.max(activeBox - 1, 0));
+        }}
+        disabled={activeBox === 0}
       >
         <ArrowBackIcon sx={{ color: "primary.main" }} />
       </IconButton>
-      {[...Array(7)].map(
-        (_, index) =>
-          visibleDates.includes(index + 1) && (
+      <Box
+        ref={scrollRef}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          overflowX: "auto",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {visibleDates.map((date, index) => {
+          const boxIndex = isMobile
+            ? index + Math.max(0, activeBox - 1)
+            : index;
+          return (
             <Box
-              key={index}
-              onClick={() => handleBoxClick(index + 1, index - 2)}
-              sx={boxStyle(activeBox === index + 1)}
+              key={boxIndex}
+              onClick={() => handleBoxClick(boxIndex)}
+              sx={boxStyle(activeBox === boxIndex)}
             >
-              <Typography variant="body2">
-                {getRelativeDate(index - 2)}
-              </Typography>
+              <Typography variant="body2">{formatDate(date)}</Typography>
             </Box>
-          )
-      )}
+          );
+        })}
+      </Box>
       <IconButton
-        onClick={() =>
-          handleBoxClick(Math.min(activeBox + 1, 7), activeBox - 1)
-        }
-        disabled={activeBox === 7}
+        onClick={() => {
+          scrollRight();
+          handleBoxClick(Math.min(activeBox + 1, dates.length - 1));
+        }}
+        disabled={activeBox === dates.length - 1}
       >
         <ArrowForwardIcon sx={{ color: "primary.main" }} />
       </IconButton>

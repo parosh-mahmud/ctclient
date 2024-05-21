@@ -1,283 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { useTheme } from "@mui/material/styles";
-// import useMediaQuery from "@mui/material/useMediaQuery";
-// import Box from "@mui/material/Box";
-// import Button from "@mui/material/Button";
-// import IconButton from "@mui/material/IconButton";
-// import Menu from "@mui/material/Menu";
-// import MenuItem from "@mui/material/MenuItem";
-// import Typography from "@mui/material/Typography";
-// import Grid from "@mui/material/Grid";
-
-// // Import icons
-// import AirlineStopsIcon from "@mui/icons-material/AirlineStops";
-// import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
-// import TuneIcon from "@mui/icons-material/Tune";
-// import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
-// import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-// import SyncIcon from "@mui/icons-material/Sync";
-// import AccessTimeIcon from "@mui/icons-material/AccessTime";
-// import AirplanemodeActiveIcon from "@mui/icons-material/AirplanemodeActive";
-// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-// import ShieldIcon from "@mui/icons-material/Shield";
-// import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
-// import { useSelector } from "react-redux";
-// import Collapse from "@mui/material/Collapse";
-
-// const FilterComponent = ({
-//   flightDataArray,
-//   onSortFlights,
-//   onFilterByAirline,
-// }) => {
-//   console.log(flightDataArray);
-//   const theme = useTheme();
-//   const matchesSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-//   const flightSearchData = useSelector(selectFlightSearchData);
-//   const [collapseOpen, setCollapseOpen] = useState(false); // State to manage Collapse
-//   const toggleCollapse = () => {
-//     setCollapseOpen(!collapseOpen);
-//   };
-//   const [filters, setFilters] = useState({
-//     takeOff: "Take Off",
-//     priceRange: "Price Range",
-//     refundable: "Refundable",
-//     layover: "Layover",
-//     airline: "Airline",
-//   });
-//   const [selectedFilters, setSelectedFilters] = useState({
-//     takeOff: "",
-//     priceRange: "",
-//     refundable: "",
-//     layover: "",
-//     airline: "All Airlines",
-//   });
-
-//   const [anchorEl, setAnchorEl] = useState({
-//     takeOff: null,
-//     priceRange: null,
-//     refundable: null,
-//     layover: null,
-//     airline: null,
-//   });
-
-//   // Initialize menuItems without airline names
-//   const [menuItems, setMenuItems] = useState({
-//     takeOff: ["Earlier flight", "Later flight"],
-//     priceRange: ["Cheapest", "Highest"],
-//     refundable: ["Refundable", "Partially Refundable", "Non-refundable"],
-//     layover: ["Maximum", "Minimum"],
-//     airline: [], // Will be populated dynamically
-//   });
-//   // Icons mapping to the filter keys
-//   const filterIcons = {
-//     takeOff: <AccessTimeFilledIcon fontSize="20px" />,
-//     priceRange: <LocalOfferIcon fontSize="9px" />,
-//     refundable: <ShieldIcon />,
-//     layover: <AirlineStopsIcon />,
-//     airline: <AirplanemodeActiveIcon />,
-//   };
-
-//   const handleClick = (event, type) => {
-//     setAnchorEl({ ...anchorEl, [type]: event.currentTarget });
-//   };
-//   // Function to compute unique airline names
-//   const getUniqueAirlineNames = (flightData) => {
-//     const airlineNames = flightData
-//       .flatMap((flight) =>
-//         flight.segments.map((segment) => segment.Airline.AirlineName)
-//       )
-//       .filter((value, index, self) => self.indexOf(value) === index); // Filter for uniqueness
-//     return airlineNames;
-//   };
-
-//   useEffect(() => {
-//     // Update airline names based on the current flight data
-//     const uniqueAirlineNames = [
-//       "All Airlines",
-//       ...getUniqueAirlineNames(flightDataArray),
-//     ];
-//     setMenuItems((prevItems) => ({
-//       ...prevItems,
-//       airline: uniqueAirlineNames,
-//     }));
-//   }, [flightDataArray]);
-
-//   console.log(flightSearchData);
-
-//   const handleClose = (option, type) => {
-//     setAnchorEl({ ...anchorEl, [type]: null }); // Close the menu
-
-//     if (option === null && type === "airline") {
-//       // Specifically for the airline filter, reset to "All Airlines" when closing without selection
-//       setSelectedFilters({ ...selectedFilters, [type]: "All Airlines" });
-//     } else {
-//       // For other filters or when an option is selected, proceed as before
-//       setSelectedFilters({
-//         ...selectedFilters,
-//         [type]: option || selectedFilters[type],
-//       });
-//     }
-
-//     if (type === "takeOff" || type === "priceRange") {
-//       onSortFlights(option);
-//     } else if (type === "airline" && option) {
-//       // Apply the airline filter only if an option is selected
-//       onFilterByAirline(option === "All Airlines" ? option : option);
-//     }
-//   };
-
-//   const boxStyle = {
-//     width: matchesSmallScreen ? "auto" : "100%", // Full width on desktop
-//     display: "flex",
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "center",
-//     backgroundColor: "#fff",
-//     borderRadius: 2,
-//     p: 2,
-//   };
-
-//   const buttonStyle = {
-//     margin: matchesSmallScreen ? "0px" : "0 5px",
-//   };
-
-//   const textStyle = {
-//     fontSize: matchesSmallScreen ? "9px" : "16px", // Larger font size on desktop
-//   };
-
-//   return (
-//     <Box
-//       sx={{
-//         ...boxStyle,
-//         backgroundColor: "#fff",
-//         // boxShadow: 1,
-//         borderRadius: 2,
-//         p: 2,
-//       }}
-//     >
-//       {matchesSmallScreen && (
-//         <Collapse in={collapseOpen}>
-//           <Box
-//             sx={{
-//               marginBottom: 2,
-//               backgroundColor: "#f0f0f0",
-//               padding: 2,
-//               borderRadius: "4px",
-//               display: "flex", // Use flex display for horizontal layout
-//               flexWrap: "wrap", // Allow items to wrap as needed
-//               gap: 1, // Add some space between items
-//             }}
-//           >
-//             {Object.keys(filters).map((filterKey) => {
-//               if (!["refundable", "layover", "airline"].includes(filterKey)) {
-//                 return null;
-//               }
-
-//               return (
-//                 <Box key={filterKey} sx={{ flexGrow: 1, minWidth: "50%" }}>
-//                   {" "}
-//                   {/* Ensure each item can grow and has a minimum width */}
-//                   <Button
-//                     fullWidth // Button takes full width of its container
-//                     variant="outlined"
-//                     startIcon={filterIcons[filterKey]}
-//                     endIcon={<ExpandMoreIcon />}
-//                     sx={{
-//                       borderColor: "transparent",
-//                       textTransform: "none",
-//                       fontSize: "9px",
-//                     }}
-//                     onClick={(e) => handleClick(e, filterKey)}
-//                   >
-//                     {selectedFilters[filterKey] || filters[filterKey]}
-//                   </Button>
-//                   <Menu
-//                     id={`${filterKey}-menu`}
-//                     anchorEl={anchorEl[filterKey]}
-//                     keepMounted
-//                     open={Boolean(anchorEl[filterKey])}
-//                     onClose={() => handleClose(null, filterKey)}
-//                   >
-//                     {menuItems[filterKey].map((option) => (
-//                       <MenuItem
-//                         key={option}
-//                         onClick={() => handleClose(option, filterKey)}
-//                       >
-//                         {option}
-//                       </MenuItem>
-//                     ))}
-//                   </Menu>
-//                 </Box>
-//               );
-//             })}
-//           </Box>
-//         </Collapse>
-//       )}
-//       {!matchesSmallScreen && (
-//         <IconButton color="primary" sx={{ p: "8px", ...buttonStyle }}>
-//           <TuneIcon />
-//         </IconButton>
-//       )}
-
-//       {Object.keys(filters).map((filterKey) => {
-//         if (
-//           matchesSmallScreen &&
-//           !["takeOff", "priceRange"].includes(filterKey)
-//         ) {
-//           return null;
-//         }
-
-//         return (
-//           <div key={filterKey}>
-//             <Button
-//               variant="outlined"
-//               startIcon={filterIcons[filterKey]}
-//               endIcon={<ExpandMoreIcon sx={{ fontSize: "9px" }} />}
-//               sx={{
-//                 ...buttonStyle,
-//                 borderColor: "transparent",
-//                 textTransform: "none",
-//                 fontSize: "9px",
-//               }}
-//               onClick={(e) => handleClick(e, filterKey)}
-//             >
-//               {selectedFilters[filterKey] || filters[filterKey]}
-//             </Button>
-//             <Menu
-//               id={`${filterKey}-menu`}
-//               anchorEl={anchorEl[filterKey]}
-//               keepMounted
-//               open={Boolean(anchorEl[filterKey])}
-//               onClose={() => handleClose(null, filterKey)}
-//             >
-//               {menuItems[filterKey].map((option) => (
-//                 <MenuItem
-//                   key={option}
-//                   onClick={() => handleClose(option, filterKey)}
-//                 >
-//                   {option}
-//                 </MenuItem>
-//               ))}
-//             </Menu>
-//           </div>
-//         );
-//       })}
-
-//       <Box
-//         sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-//         onClick={toggleCollapse}
-//       >
-//         <Typography sx={{ cursor: "pointer", fontSize: "9px" }}>
-//           More filters
-//         </Typography>
-//         <ExpandMoreIcon sx={{ fontSize: "9px" }} />
-//       </Box>
-//     </Box>
-//   );
-// };
-
-// export default FilterComponent;
-
 import React, { useState, useEffect } from "react";
 import {
   Grid,
@@ -295,29 +15,39 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShieldIcon from "@mui/icons-material/Shield";
 import AirlineStopsIcon from "@mui/icons-material/AirlineStops";
 import AirplanemodeActiveIcon from "@mui/icons-material/AirplanemodeActive";
+import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
+import AirlinesIcon from "@mui/icons-material/Airlines";
 
 function HorizontalBoxes({
   flightDataArray,
   onSortFlights,
   onFilterByAirline,
+  onFilterByRefundable,
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Define styles inside the component using theme
-  const stylesForText = {
-    fontSize: "14px",
-    whiteSpace: "nowrap",
-    [theme.breakpoints.up("md")]: {
-      fontSize: "20px", // Larger font size on desktop
+  const iconSize = isMobile ? 16 : 18;
+  const iconStyle = {
+    fontSize: iconSize,
+    color: theme.palette.primary.main,
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
+  const marginForMoreSort = {
+    [theme.breakpoints.up("xs")]: {
+      marginLeft: "25px",
     },
   };
 
-  const stylesForIcon = {
-    fontSize: "14px",
-    color: "primary.main",
+  const stylesForText = {
+    fontSize: "12px",
+    color: "black",
+    whiteSpace: "nowrap",
     [theme.breakpoints.up("md")]: {
-      fontSize: "20px", // Larger icon size on desktop
+      fontSize: "14px",
     },
   };
 
@@ -330,6 +60,14 @@ function HorizontalBoxes({
     airlines: null,
   });
 
+  const [selectedSort, setSelectedSort] = useState({
+    takeOff: "Take off",
+    price: "Price range",
+    refundable: "Refundable",
+    layover: "Layover",
+    airlines: "Airlines",
+  });
+
   const handleClick = (menu) => (event) => {
     setAnchorEls({ ...anchorEls, [menu]: event.currentTarget });
   };
@@ -338,14 +76,20 @@ function HorizontalBoxes({
     setAnchorEls({ ...anchorEls, [menu]: null });
   };
 
-  const handleSortSelection = (criteria) => {
+  const handleSortSelection = (criteria, menu) => {
     onSortFlights(criteria);
-    handleClose(criteria)();
+    setSelectedSort({ ...selectedSort, [menu]: criteria });
+    handleClose(menu)();
   };
 
-  const handleFilterSelection = (criteria) => {
-    onFilterByAirline(criteria);
-    handleClose(criteria)();
+  const handleFilterSelection = (criteria, menu) => {
+    if (menu === "refundable") {
+      onFilterByRefundable(criteria);
+    } else {
+      onFilterByAirline(criteria);
+    }
+    setSelectedSort({ ...selectedSort, [menu]: criteria });
+    handleClose(menu)();
   };
 
   const [uniqueAirlines, setUniqueAirlines] = useState([]);
@@ -359,151 +103,257 @@ function HorizontalBoxes({
     setUniqueAirlines(["All Airlines", ...airlineSet]);
   }, [flightDataArray]);
 
+  const isMenuOpen = (menu) => Boolean(anchorEls[menu]);
+
   return (
-    <Grid container spacing={1} justifyContent="center" alignItems="center">
-      <Grid item xs={3} md="auto">
-        <IconButton
-          sx={stylesForIcon}
-          onClick={handleClick("filters")}
-          size="large"
-        >
-          <TuneIcon />
+    <Grid container justifyContent="space-between" alignItems="center" mt={1}>
+      <Grid item xs={2} sm={3} md="auto">
+        <IconButton onClick={handleClick("filters")}>
+          <TuneIcon sx={iconStyle} />
         </IconButton>
       </Grid>
-      <Grid item xs={3} md="auto">
-        <IconButton
-          sx={stylesForIcon}
-          onClick={handleClick("takeOff")}
-          size="large"
-        >
-          <FlightTakeoffIcon />
-          <Typography sx={stylesForText}>Take Off</Typography>
-          <ExpandMoreIcon />
+      <Grid item xs={3} sm={1} md="auto">
+        <IconButton onClick={handleClick("takeOff")}>
+          <AccessTimeFilledIcon sx={{ ...iconStyle }} />
+          <Typography style={{ textTransform: "none" }} sx={stylesForText}>
+            {selectedSort.takeOff}
+          </Typography>
+          <ExpandMoreIcon
+            fontSize={isMobile ? "small" : "medium"}
+            style={{
+              transform: isMenuOpen("takeOff")
+                ? "rotate(180deg)"
+                : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}
+          />
         </IconButton>
         <Menu
           id="takeoff-menu"
           anchorEl={anchorEls.takeOff}
-          open={Boolean(anchorEls.takeOff)}
+          open={isMenuOpen("takeOff")}
           onClose={handleClose("takeOff")}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
         >
-          <MenuItem onClick={() => handleSortSelection("Earlier Flight")}>
+          <MenuItem
+            onClick={() => handleSortSelection("Earlier Flight", "takeOff")}
+          >
             Earlier Flight
           </MenuItem>
-          <MenuItem onClick={() => handleSortSelection("Later Flight")}>
+          <MenuItem
+            onClick={() => handleSortSelection("Later Flight", "takeOff")}
+          >
             Later Flight
           </MenuItem>
         </Menu>
       </Grid>
       <Grid item xs={3} md="auto">
-        <IconButton
-          sx={stylesForIcon}
-          onClick={handleClick("price")}
-          size="large"
-        >
-          <LocalOfferIcon />
-          <Typography sx={stylesForText}>Price Range</Typography>
-          <ExpandMoreIcon />
+        <IconButton onClick={handleClick("price")}>
+          <LocalOfferIcon sx={iconStyle} />
+          <Typography style={{ textTransform: "none" }} sx={stylesForText}>
+            {selectedSort.price}
+          </Typography>
+          <ExpandMoreIcon
+            fontSize={isMobile ? "small" : "medium"}
+            style={{
+              transform: isMenuOpen("price")
+                ? "rotate(180deg)"
+                : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}
+          />
         </IconButton>
         <Menu
           id="price-menu"
           anchorEl={anchorEls.price}
-          open={Boolean(anchorEls.price)}
+          open={isMenuOpen("price")}
           onClose={handleClose("price")}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
         >
-          <MenuItem onClick={() => handleSortSelection("Cheapest")}>
+          <MenuItem onClick={() => handleSortSelection("Cheapest", "price")}>
             Cheapest
           </MenuItem>
-          <MenuItem onClick={() => handleSortSelection("Highest")}>
+          <MenuItem onClick={() => handleSortSelection("Highest", "price")}>
             Highest
           </MenuItem>
         </Menu>
       </Grid>
-      <Grid item xs={3} md="none" sx={{ display: { xs: "block", md: "none" } }}>
+      <Grid
+        item
+        xs={4}
+        sm={1}
+        md="none"
+        sx={{
+          display: {
+            xs: "block",
+            md: "none",
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        }}
+      >
         <IconButton
-          sx={stylesForIcon}
-          size="large"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
           onClick={() => setShowMore(!showMore)}
+          sx={marginForMoreSort}
         >
-          <ExpandMoreIcon />
-          <Typography sx={stylesForText}>More Filters</Typography>
+          <Typography style={{ textTransform: "none" }} sx={stylesForText}>
+            More sorts
+          </Typography>
+          <ArrowRightAltIcon
+            style={{ rotate: "90deg" }}
+            fontSize={isMobile ? "small" : "large"}
+          />
         </IconButton>
       </Grid>
-      {/* Conditional items */}
       {(showMore || !isMobile) && (
         <>
           <Grid item xs={4} md="auto">
-            <IconButton
-              sx={stylesForIcon}
-              onClick={handleClick("refundable")}
-              size="large"
-            >
-              <ShieldIcon />
-              <Typography sx={stylesForText}>Refundable</Typography>
-              <ExpandMoreIcon />
+            <IconButton onClick={handleClick("refundable")}>
+              <ShieldIcon sx={iconStyle} />
+              <Typography sx={stylesForText}>
+                {selectedSort.refundable}
+              </Typography>
+              <ExpandMoreIcon
+                fontSize={isMobile ? "small" : "medium"}
+                style={{
+                  transform: isMenuOpen("refundable")
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
+                  transition: "transform 0.2s",
+                }}
+              />
             </IconButton>
             <Menu
               id="refundable-menu"
               anchorEl={anchorEls.refundable}
-              open={Boolean(anchorEls.refundable)}
+              open={isMenuOpen("refundable")}
               onClose={handleClose("refundable")}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
             >
-              <MenuItem onClick={() => handleFilterSelection("Refundable")}>
+              <MenuItem
+                onClick={() =>
+                  handleFilterSelection("Refundable", "refundable")
+                }
+              >
                 Refundable
               </MenuItem>
               <MenuItem
-                onClick={() => handleFilterSelection("Partially Refundable")}
+                onClick={() =>
+                  handleFilterSelection("Partially Refundable", "refundable")
+                }
               >
                 Partially Refundable
               </MenuItem>
-              <MenuItem onClick={() => handleFilterSelection("Non-refundable")}>
+              <MenuItem
+                onClick={() =>
+                  handleFilterSelection("Non-refundable", "refundable")
+                }
+              >
                 Non-refundable
               </MenuItem>
             </Menu>
           </Grid>
           <Grid item xs={4} md="auto">
-            <IconButton
-              sx={stylesForIcon}
-              onClick={handleClick("layover")}
-              size="large"
-            >
-              <AirlineStopsIcon />
-              <Typography sx={stylesForText}>Layover</Typography>
-              <ExpandMoreIcon />
+            <IconButton onClick={handleClick("layover")}>
+              <AirlineStopsIcon sx={iconStyle} />
+              <Typography sx={stylesForText}>{selectedSort.layover}</Typography>
+              <ExpandMoreIcon
+                fontSize={isMobile ? "small" : "medium"}
+                style={{
+                  transform: isMenuOpen("layover")
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
+                  transition: "transform 0.2s",
+                }}
+              />
             </IconButton>
             <Menu
               id="layover-menu"
               anchorEl={anchorEls.layover}
-              open={Boolean(anchorEls.layover)}
+              open={isMenuOpen("layover")}
               onClose={handleClose("layover")}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
             >
-              <MenuItem onClick={() => handleSortSelection("Maximum")}>
+              <MenuItem
+                onClick={() => handleSortSelection("Maximum", "layover")}
+              >
                 Maximum
               </MenuItem>
-              <MenuItem onClick={() => handleSortSelection("Minimum")}>
+              <MenuItem
+                onClick={() => handleSortSelection("Minimum", "layover")}
+              >
                 Minimum
               </MenuItem>
             </Menu>
           </Grid>
           <Grid item xs={4} md="auto">
-            <IconButton
-              sx={stylesForIcon}
-              onClick={handleClick("airlines")}
-              size="large"
-            >
-              <AirplanemodeActiveIcon />
-              <Typography sx={stylesForText}>Airlines</Typography>
-              <ExpandMoreIcon />
+            <IconButton onClick={handleClick("airlines")}>
+              <AirlinesIcon sx={iconStyle} />
+              <Typography sx={stylesForText}>
+                {selectedSort.airlines}
+              </Typography>
+              <ExpandMoreIcon
+                fontSize={isMobile ? "small" : "medium"}
+                style={{
+                  transform: isMenuOpen("airlines")
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
+                  transition: "transform 0.2s",
+                }}
+              />
             </IconButton>
             <Menu
               id="airlines-menu"
               anchorEl={anchorEls.airlines}
-              open={Boolean(anchorEls.airlines)}
+              open={isMenuOpen("airlines")}
               onClose={handleClose("airlines")}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
             >
               {uniqueAirlines.map((airline) => (
                 <MenuItem
                   key={airline}
-                  onClick={() => handleFilterSelection(airline)}
+                  onClick={() => handleFilterSelection(airline, "airlines")}
                 >
                   {airline}
                 </MenuItem>
