@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
-import Oneway from "./JourneyType";
+
 import SearchForm from "./SearchForm";
-// import "../FlightSearch/style.css";
+import "../FlightSearch/style.css";
 const SearchFlight = () => {
   const [activeTab, setActiveTab] = useState(0);
 

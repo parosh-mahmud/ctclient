@@ -1,162 +1,109 @@
-import React, { useState } from "react";
+// TravelerClassSelector.js
+
+import React from "react";
 import {
   Box,
-  Popover,
   Typography,
   Button,
   Divider,
   RadioGroup,
   FormControlLabel,
   Radio,
+  Popover,
 } from "@mui/material";
-import useStyles from "./styles";
 
 const TravelerClassSelector = ({
+  isOpen,
+  anchorEl,
+  onClose,
   adults,
-  setAdults,
   children,
-  setChildren,
   infants,
-  setInfants,
+  travelerCount,
   selectedClass,
-  setSelectedClass,
+  handleClassChange,
 }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const classes = useStyles();
-  const open = Boolean(anchorEl);
-
-  const handlePopoverClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
-
-  const travelerCount = (type, action) => {
-    if (action === "increment" && adults + children + infants < 10) {
-      switch (type) {
-        case "adults":
-          if (adults < 9) setAdults(adults + 1);
-          break;
-        case "children":
-          setChildren(children + 1);
-          break;
-        case "infants":
-          if (infants < adults) setInfants(infants + 1);
-          break;
-        default:
-          break;
-      }
-    } else if (action === "decrement") {
-      switch (type) {
-        case "adults":
-          setAdults(adults > 1 ? adults - 1 : adults);
-          if (infants > adults - 1) setInfants(adults - 1);
-          break;
-        case "children":
-          setChildren(children > 0 ? children - 1 : children);
-          break;
-        case "infants":
-          setInfants(infants > 0 ? infants - 1 : infants);
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
   return (
-    <>
-      <Box onClick={handlePopoverClick} className={classes.travelerBox}>
-        <Typography>Traveller & Class</Typography>
-        <Box className={classes.travelerInfo}>
-          <Typography className={classes.travelerCount}>{`${
-            adults + children + infants
-          } Person${adults + children + infants > 1 ? "s" : ""}`}</Typography>
-          <Typography className={classes.travelClass}>
-            {selectedClass}
-          </Typography>
-        </Box>
-      </Box>
-
-      <Popover
-        open={open}
-        anchorEl={anchorEl}
-        onClose={handlePopoverClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transitionDuration={300}
-        PaperProps={{
-          style: {
-            backgroundColor: "rgba(255,255,255,0.9)",
-          },
-        }}
-      >
-        <Box className={classes.popoverContent}>
-          <Box className={classes.travelerSelector}>
-            <Typography>Adults</Typography>
-            <Button onClick={() => travelerCount("adults", "decrement")}>
-              -
-            </Button>
-            {adults}
-            <Button onClick={() => travelerCount("adults", "increment")}>
-              +
-            </Button>
-          </Box>
-          <Divider />
-          <Box className={classes.travelerSelector}>
-            <Typography>Children</Typography>
-            <Button onClick={() => travelerCount("children", "decrement")}>
-              -
-            </Button>
-            {children}
-            <Button onClick={() => travelerCount("children", "increment")}>
-              +
-            </Button>
-          </Box>
-          <Divider />
-          <Box className={classes.travelerSelector}>
-            <Typography>Infants</Typography>
-            <Button onClick={() => travelerCount("infants", "decrement")}>
-              -
-            </Button>
-            {infants}
-            <Button onClick={() => travelerCount("infants", "increment")}>
-              +
-            </Button>
-          </Box>
-          <Divider />
-          <RadioGroup
-            row
-            aria-label="class"
-            name="class"
-            value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
-          >
-            <FormControlLabel
-              value="Economy"
-              control={<Radio />}
-              label="Economy"
-            />
-            <FormControlLabel
-              value="Business"
-              control={<Radio />}
-              label="Business"
-            />
-          </RadioGroup>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handlePopoverClose}
-          >
-            Done
+    <Popover
+      open={isOpen}
+      anchorEl={anchorEl}
+      onClose={onClose}
+      anchorOrigin={{
+        vertical: "center",
+        horizontal: "right",
+      }}
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      transitionDuration={300}
+      PaperProps={{
+        style: {
+          backgroundColor: "rgba(255,255,255,0.9)",
+        },
+      }}
+    >
+      <Box style={{ padding: 20, minWidth: 200, boxSizing: "border-box" }}>
+        <Box style={{ marginBottom: 10 }}>
+          <Typography fontFamily="Google Sans, sans-serif">Adults</Typography>
+          <Button onClick={() => travelerCount("adults", "decrement")}>
+            -
+          </Button>
+          {adults}
+          <Button onClick={() => travelerCount("adults", "increment")}>
+            +
           </Button>
         </Box>
-      </Popover>
-    </>
+        <Divider style={{ margin: "8px 0" }} />
+        <Box style={{ marginBottom: 10 }}>
+          <Typography fontFamily="Google Sans, sans-serif">Children</Typography>
+          <Button onClick={() => travelerCount("children", "decrement")}>
+            -
+          </Button>
+          {children}
+          <Button onClick={() => travelerCount("children", "increment")}>
+            +
+          </Button>
+        </Box>
+        <Box style={{ marginBottom: 10 }}>
+          <Typography fontFamily="Google Sans, sans-serif">Infants</Typography>
+          <Button onClick={() => travelerCount("infants", "decrement")}>
+            -
+          </Button>
+          {infants}
+          <Button onClick={() => travelerCount("infants", "increment")}>
+            +
+          </Button>
+        </Box>
+        <Divider style={{ margin: "8px 0" }} />
+        <RadioGroup
+          row
+          aria-label="class"
+          name="class"
+          value={selectedClass}
+          onChange={handleClassChange}
+        >
+          <FormControlLabel
+            value="Economy"
+            control={<Radio />}
+            label="Economy"
+          />
+          <FormControlLabel
+            value="Business"
+            control={<Radio />}
+            label="Business"
+          />
+        </RadioGroup>
+        <Button
+          fontFamily="Google Sans, sans-serif"
+          variant="contained"
+          color="primary"
+          onClick={onClose}
+        >
+          Done
+        </Button>
+      </Box>
+    </Popover>
   );
 };
 

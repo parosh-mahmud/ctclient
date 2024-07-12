@@ -1,14 +1,13 @@
-import React from "react";
 import { Box, Typography } from "@mui/material";
 
-const CustomIconButton = ({
+export function CustomIconButton({
   value,
   selectedValue,
   onChange,
   Icon,
   label,
   rotate,
-}) => {
+}) {
   const isSelected = selectedValue === value;
   const iconStyle = rotate ? { transform: "rotate(270deg)" } : {};
 
@@ -53,6 +52,4 @@ const CustomIconButton = ({
       </Typography>
     </Box>
   );
-};
-
-export default CustomIconButton;
+}

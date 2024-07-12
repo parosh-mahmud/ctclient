@@ -1,0 +1,210 @@
+
+
+.container {
+    width: 100%;
+padding-left: 2px;
+padding-right: 2px;
+    box-sizing: border-box;
+    
+}
+.container div {
+    padding: 0;
+    margin: 0;
+    /* Optionally remove margin as well */
+}
+.flight-card {
+    display: grid;
+grid-template-columns: 1fr 2fr 2fr 1fr 2fr 1fr 3fr 3fr;
+     grid-template-rows: repeat(4, auto);
+  
+    
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.grid-item {
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+       
+}
+
+.logo {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+    justify-content: flex-start;
+    align-items: flex-start;
+    
+    
+}
+
+.flight-number {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: block;
+    text-align: left;
+   
+    
+    
+    
+}
+
+.aircraft-model {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.airline-name {
+    grid-column: 1 / 3;
+    grid-row: 3 / 4;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.departure-city {
+    grid-column: 3 / 5;
+    grid-row: 1 / 2;
+    position: relative;
+    white-space: nowrap;
+    text-align: left;
+    
+    /* Add some padding for better spacing */
+}
+
+.city-name {
+    position: absolute;
+    bottom: 20px;
+    /* Adjust as necessary to avoid overlap */
+    left: 0;
+    width: 100%;
+}
+
+.city-code {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+.blank {
+    grid-column: 5 / 6;
+    grid-row: 1 / 4;
+}
+
+.arrival-city {
+    grid-column: 6 / 8;
+    grid-row: 1 / 2;
+    display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    
+        justify-content: flex-end;
+        white-space: nowrap;
+    
+        text-align: right;
+}
+
+.departure-time {
+    grid-column: 3 / 5;
+    grid-row: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    
+}
+
+.itinerary-icon {
+    grid-column: 5 / 6;
+    grid-row: 2 / 3;
+    padding-left: 10px;
+}
+
+.arrival-time {
+    grid-column: 6 / 8;
+    grid-row: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.departure-airport {
+    grid-column: 3 / 5;
+    grid-row: 3 / 4;
+   white-space: nowrap;
+    justify-content: flex-end;
+    align-items: flex-start;
+    text-align: right;
+}
+
+.arrival-airport {
+    grid-column: 6 / 8;
+    grid-row: 3 / 4;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.price {
+    grid-column: 8 / 10;
+    grid-row: 1 / 2;
+   
+}
+
+.seat-option {
+    grid-column: 8 / 10;
+    grid-row: 2 / 3;
+  
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+   
+    justify-content: center;
+   
+    text-align: right;
+}
+.button-container {
+    display: flex;
+    width: 100%;
+    
+}
+.select-button {
+    grid-column: 8 / 10;
+    grid-row: 3 / 4;
+   
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .flight-card {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .logo,
+    .airline-name {
+        grid-column: 1 / 6;
+    }
+
+    .flight-number,
+    .aircraft-model,
+    .departure-city,
+    .arrival-city,
+    .departure-time,
+    .arrival-time,
+    .departure-airport,
+    .arrival-airport,
+    .price,
+    .seat-option,
+    .select-button {
+        grid-column: span 3;
+    }
+}

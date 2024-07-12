@@ -1,8 +1,8 @@
-import React from 'react';
-import { Grid, Box, Typography, Button, TextField } from '@mui/material';
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
-import { selectAirPriceData } from '../../redux/slices/airPriceSlice';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { Grid, Box, Typography, Button, TextField } from "@mui/material";
+import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
+import { selectAirPriceData } from "../../redux/slices/airPriceSlice";
+import { useSelector } from "react-redux";
 
 const AirPriceShow = () => {
   const airPriceData = useSelector(selectAirPriceData);
@@ -16,7 +16,13 @@ const AirPriceShow = () => {
       let totalFare = 0;
 
       fares.forEach((fare) => {
-        totalFare += fare.BaseFare + fare.Tax + fare.OtherCharges + fare.ServiceFee + fare.Discount - fare.Discount;
+        totalFare +=
+          fare.BaseFare +
+          fare.Tax +
+          fare.OtherCharges +
+          fare.ServiceFee +
+          fare.Discount -
+          fare.Discount;
       });
 
       return totalFare;
@@ -26,23 +32,34 @@ const AirPriceShow = () => {
   };
 
   const boxStyle = {
-    width: '100%',
-    height: '30px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    border: '1px solid white', // Add any additional styling you need
+    width: "100%",
+    height: "30px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    border: "1px solid white", // Add any additional styling you need
   };
 
   const customStyle = {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   };
 
   return (
-    <Box container sx={{ padding: '10px', borderRadius: '5px', border: '1px solid white' }}>
-      <Box sx={{ height: '50px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography sx={{ fontWeight: 'bold', fontSize: '20px' }}>Fare Summary</Typography>
-        <KeyboardArrowDown />
+    <Box
+      container
+      sx={{ padding: "10px", borderRadius: "5px", border: "1px solid white" }}
+    >
+      <Box
+        sx={{
+          height: "50px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography sx={{ fontWeight: "bold", fontSize: "20px" }}>
+          Fare Summary
+        </Typography>
       </Box>
 
       {/* Conditional rendering for each Box if airPriceData.Results exists */}
@@ -76,14 +93,40 @@ const AirPriceShow = () => {
         <Typography style={customStyle}>{calculateTotalFare()}</Typography>
       </Box>
       {/* promo code box */}
-      <Box sx={{ height: '80px', backgroundColor: 'blue', padding: '10px' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start', color: 'white' }}>
-          <Typography>Apply Promo</Typography>
+      <Box
+        sx={{
+          height: "80px",
+          backgroundColor: "primary.main",
+          padding: "10px",
+        }}
+      >
+        <Box
+          sx={{ display: "flex", justifyContent: "flex-start", color: "white" }}
+        >
+          <Typography>Apply promo</Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <TextField variant="standard" placeholder="Enter your Promo Code" />
-          <Button variant="contained">Apply</Button>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <TextField
+            InputProps={{
+              sx: {
+                "& .MuiInputBase-input::placeholder": {
+                  color: "white", // Change this to your desired placeholder color
+                },
+              },
+            }}
+            variant="standard"
+            placeholder="Enter your promo code"
+          />
+          <Button sx={{ backgroundColor: "white" }} variant="contained">
+            <Typography sx={{ color: "primary.main" }}>Apply</Typography>
+          </Button>
         </Box>
       </Box>
     </Box>

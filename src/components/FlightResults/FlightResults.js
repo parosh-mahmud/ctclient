@@ -37,15 +37,13 @@ const FlightResults = () => {
   const currentSearchParams = useSelector(selectFlightSearchParams);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  console.log(currentSearchParams);
   const [isSearchFormVisible, setIsSearchFormVisible] = useState(false);
   const [uniqueAirlines, setUniqueAirlines] = useState([]);
   const [showSortedFlights, setShowSortedFlights] = useState(false);
   const [sortedFlights, setSortedFlights] = useState([]);
   const [backdropOpen, setBackdropOpen] = useState(false);
   const [selectedRefundable, setSelectedRefundable] = useState("All");
-
-  console.log(flightSearchData);
 
   useEffect(() => {
     if (flightSearchData?.Results?.length > 0) {
@@ -84,47 +82,26 @@ const FlightResults = () => {
   const handleSortFlights = (sortBy) => {
     let sortedFlights = [...flightSearchData.Results];
 
-    console.log(
-      "Before sorting:",
-      sortedFlights.map((flight) => flight.segments[0].Origin.DepTime)
-    );
-
-    switch (sortBy) {
-      case "Cheapest":
-        sortedFlights.sort((a, b) => a.Fares[0].BaseFare - b.Fares[0].BaseFare);
-        break;
-      case "Highest":
-        sortedFlights.sort((a, b) => b.Fares[0].BaseFare - a.Fares[0].BaseFare);
-        break;
-      case "Earlier Flight":
-        sortedFlights.sort((a, b) => {
-          console.log(
-            `Comparing ${a.segments[0].Origin.DepTime} with ${b.segments[0].Origin.DepTime}`
-          );
+    sortedFlights.sort((a, b) => {
+      switch (sortBy) {
+        case "Cheapest":
+          return a.Fares[0].BaseFare - b.Fares[0].BaseFare;
+        case "Highest":
+          return b.Fares[0].BaseFare - a.Fares[0].BaseFare;
+        case "Earlier Flight":
           return (
             new Date(a.segments[0].Origin.DepTime).getTime() -
             new Date(b.segments[0].Origin.DepTime).getTime()
           );
-        });
-        break;
-      case "Later Flight":
-        sortedFlights.sort((a, b) => {
-          console.log(
-            `Comparing ${a.segments[0].Origin.DepTime} with ${b.segments[0].Origin.DepTime}`
-          );
+        case "Later Flight":
           return (
             new Date(b.segments[0].Origin.DepTime).getTime() -
             new Date(a.segments[0].Origin.DepTime).getTime()
           );
-        });
-        break;
-      default:
-    }
-
-    console.log(
-      "After sorting:",
-      sortedFlights.map((flight) => flight.segments[0].Origin.DepTime)
-    );
+        default:
+          return 0;
+      }
+    });
 
     setSortedFlights(sortedFlights);
     setShowSortedFlights(true);
@@ -135,32 +112,19 @@ const FlightResults = () => {
     let filteredFlights;
     switch (refundStatus) {
       case "Refundable":
-        filteredFlights = flightSearchData.Results.filter((flight) => {
-          const isRefundable = flight.IsRefundable;
-          console.log(
-            `Flight ID ${flight.ResultID} is refundable: ${isRefundable}`
-          );
-          return isRefundable === true;
-        });
+        filteredFlights = flightSearchData.Results.filter(
+          (flight) => flight.IsRefundable === true
+        );
         break;
       case "Partially Refundable":
-        // Assuming partially refundable means IsRefundable === true
-        filteredFlights = flightSearchData.Results.filter((flight) => {
-          const isRefundable = flight.IsRefundable;
-          console.log(
-            `Flight ID ${flight.ResultID} is partially refundable: ${isRefundable}`
-          );
-          return isRefundable === true;
-        });
+        filteredFlights = flightSearchData.Results.filter(
+          (flight) => flight.IsRefundable === true
+        );
         break;
       case "Non-refundable":
-        filteredFlights = flightSearchData.Results.filter((flight) => {
-          const isRefundable = flight.IsRefundable;
-          console.log(
-            `Flight ID ${flight.ResultID} is non-refundable: ${isRefundable}`
-          );
-          return isRefundable === false;
-        });
+        filteredFlights = flightSearchData.Results.filter(
+          (flight) => flight.IsRefundable === false
+        );
         break;
       default:
         filteredFlights = flightSearchData.Results;
@@ -170,20 +134,13 @@ const FlightResults = () => {
   };
 
   const handleDateSelect = (date) => {
-    console.log(date);
-    const formattedDate =
-      date.getUTCFullYear() +
-      "-" +
-      ("0" + (date.getUTCMonth() + 1)).slice(-2) +
-      "-" +
-      ("0" + date.getUTCDate()).slice(-2);
-
+    const formattedDate = date.toISOString().split("T")[0];
     const updatedSearchParams = {
       ...currentSearchParams,
       Segments: [
         {
           ...currentSearchParams.Segments[0],
-          DepartureDateTime: formattedDate + "T00:00:00Z",
+          DepartureDateTime: `${formattedDate}T00:00:00Z`,
         },
       ],
     };
@@ -206,6 +163,28 @@ const FlightResults = () => {
   const handleFetchingComplete = () => {
     setBackdropOpen(false);
   };
+
+  const filterFlightsByLowestBaseFare = (flights) => {
+    const flightMap = new Map();
+
+    flights.forEach((flight) => {
+      const flightNumber = flight.segments[0].Airline.FlightNumber;
+      const currentFlight = flightMap.get(flightNumber);
+
+      if (
+        !currentFlight ||
+        flight.Fares[0].BaseFare < currentFlight.Fares[0].BaseFare
+      ) {
+        flightMap.set(flightNumber, flight);
+      }
+    });
+
+    return Array.from(flightMap.values());
+  };
+
+  const filteredFlights = filterFlightsByLowestBaseFare(
+    showSortedFlights ? sortedFlights : flightSearchData?.Results || []
+  );
 
   return (
     <LayoutPage>
@@ -334,31 +313,19 @@ const FlightResults = () => {
                     Airlines
                   </Typography>
                 )}
-                <Box style={{ marginTop: "10px" }}>
-                  {showSortedFlights
-                    ? sortedFlights.map((flight) => (
-                        <div key={flight.ResultID}>
-                          <FlightCard
-                            flightData={flight}
-                            availability={flight.Availabilty}
-                            isLoading={isLoading}
-                            onFetchingStart={handleFetchingStart}
-                            onFetchingComplete={handleFetchingComplete}
-                          />
-                        </div>
-                      ))
-                    : flightSearchData?.Results &&
-                      flightSearchData.Results.map((flight) => (
-                        <div key={flight.ResultID}>
-                          <FlightCard
-                            flightData={flight}
-                            availability={flight.Availabilty}
-                            isLoading={isLoading}
-                            onFetchingStart={handleFetchingStart}
-                            onFetchingComplete={handleFetchingComplete}
-                          />
-                        </div>
-                      ))}
+                <Box>
+                  {filteredFlights.map((flight) => (
+                    <div key={flight.ResultID}>
+                      <FlightCard
+                        flightData={flight}
+                        availability={flight.Availabilty}
+                        isLoading={isLoading}
+                        onFetchingStart={handleFetchingStart}
+                        onFetchingComplete={handleFetchingComplete}
+                        showActions={true}
+                      />
+                    </div>
+                  ))}
                 </Box>
               </Box>
             </Grid>

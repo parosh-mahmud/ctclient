@@ -1,116 +1,31 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  Grid,
-  Paper,
-  Typography,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Button,
-  Stack,
-  Popover,
-  TextField,
-  Box,
-  CircularProgress,
-  Backdrop,
-  IconButton,
-  Icon,
-} from "@mui/material";
-import { useDispatch } from "react-redux";
+import { Grid, Button, Box } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";
-import { fetchFlightResults } from "../../redux/reducers/flightSlice";
+import {
+  fetchFlightResults,
+  setFromAirport,
+  setToAirport,
+  selectFromAirport,
+  selectToAirport,
+  setSearchParams,
+  selectFlightSearchParams,
+} from "../../redux/reducers/flightSlice";
 import fetchAirports from "../../services/api";
-import { makeStyles } from "@mui/styles";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CallSplitIcon from "@mui/icons-material/CallSplit";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import AirInput from "./AirInput";
 import "./style.css";
 import "@fontsource/poppins";
-
-// First airport object from the airports array
-const airports = [
-  {
-    code: "DAC",
-    city: "Dhaka",
-    country: "Bangladesh",
-    name: "Hazrat Shahjalal International Airport",
-  },
-  {
-    code: "JSR",
-    city: "Jashore",
-    country: "Bangladesh",
-    name: "Jashore Airport",
-  },
-  // Add more airport data as needed.
-];
-
-const useStyles = makeStyles((theme) => ({
-  popover: {
-    background: "transparent !important",
-    padding: theme.spacing(2),
-    borderRadius: theme.spacing(1),
-    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-    minWidth: "300px",
-    transition: "opacity 0.3s ease-in-out",
-    opacity: 1,
-    "&:hover": {
-      opacity: 1,
-    },
-  },
-  searchButton: {
-    position: "relative",
-    top: "-30px",
-    zIndex: 1,
-    width: "20%",
-    height: "60px",
-    textTransform: "capitalize",
-    backgroundColor: "#0067FF",
-    fontWeight: "bold",
-    fontSize: "22px !important",
-    ["@media (max-width:600px)"]: {
-      fontSize: "16px",
-    },
-  },
-  input: {
-    width: "100%",
-    marginBottom: theme.spacing(1),
-    padding: theme.spacing(0.5),
-    border: "1px solid #ccc",
-    borderRadius: theme.spacing(0.5),
-  },
-  airportItem: {
-    cursor: "pointer",
-    backgroundColor: "rgba(255,255,255,0.5)",
-    marginBottom: theme.spacing(1),
-    "&:hover": {
-      color: theme.palette.primary.main,
-    },
-  },
-}));
-
-const gridContainerStyle = {
-  backgroundColor: "rgba(255,255,255,0.5)",
-  overflow: "hidden",
-  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
-  margin: "0",
-  borderBottomLeftRadius: "5px",
-  borderBottomRightRadius: "5px",
-};
-
-const paperStyle = {
-  paddingLeft: "10px",
-  margin: 0,
-  display: "flex",
-  alignItems: "center",
-};
+import { CustomIconButton } from "./CustomIconButton";
+import useStyles, { gridContainerStyle, paperStyle } from "./styles"; // Importing styles
 
 export const SearchForm = ({ searchButtonLabel }) => {
   const [selectedOption, setSelectedOption] = useState("oneway");
-  const [selectedFromAirport, setSelectedFromAirport] = useState(airports[0]);
-  const [selectedToAirport, setSelectedToAirport] = useState(airports[1]);
+  const selectedFromAirport = useSelector(selectFromAirport);
+  const selectedToAirport = useSelector(selectToAirport);
   const [searchedAirports, setSearchedAirports] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
@@ -135,12 +50,23 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const [airInputs, setAirInputs] = useState([{ id: 0 }]);
   const [isTravelDatePopoverOpen, setIsTravelDatePopoverOpen] = useState(false);
   const [isReturnDatePopoverOpen, setIsReturnDatePopoverOpen] = useState(false);
+  const searchParams = useSelector(selectFlightSearchParams);
 
   const handleTravelDateClick = () => {
     setIsTravelDatePopoverOpen(!isTravelDatePopoverOpen);
     handleDPopoverClick();
   };
-
+  useEffect(() => {
+    if (searchParams.AdultQuantity) {
+      setAdults(searchParams.AdultQuantity);
+    }
+    if (searchParams.ChildQuantity) {
+      setChildren(searchParams.ChildQuantity);
+    }
+    if (searchParams.InfantQuantity) {
+      setInfants(searchParams.InfantQuantity);
+    }
+  }, [searchParams]);
   const travelerCount = (type, action) => {
     if (action === "increment" && adults + children + infants < 10) {
       switch (type) {
@@ -181,9 +107,8 @@ export const SearchForm = ({ searchButtonLabel }) => {
   };
 
   const handleSwapAirports = () => {
-    const temp = selectedFromAirport;
-    setSelectedFromAirport(selectedToAirport);
-    setSelectedToAirport(temp);
+    dispatch(setFromAirport(selectedToAirport));
+    dispatch(setToAirport(selectedFromAirport));
   };
 
   const handleAddCity = () => {
@@ -226,63 +151,25 @@ export const SearchForm = ({ searchButtonLabel }) => {
 
   const handleDepartureDateChange = (date) => {
     setSelectedDate(date);
-    setDayOfWeek(date.format("dddd"));
-    setDanchorEl(null);
+    handleDPopoverClose();
+    const updatedSearchParams = {
+      ...searchParams,
+      Segments: [
+        {
+          ...searchParams.Segments?.[0],
+          DepartureDateTime: date.format("YYYY-MM-DD"),
+        },
+      ],
+    };
+
+    dispatch(setSearchParams(updatedSearchParams));
   };
 
-  function CustomIconButton({
-    value,
-    selectedValue,
-    onChange,
-    Icon,
-    label,
-    rotate,
-  }) {
-    const isSelected = selectedValue === value;
-    const iconStyle = rotate ? { transform: "rotate(270deg)" } : {};
-
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          marginRight: "16px",
-          marginBottom: "10px",
-          marginTop: "10px",
-          justifyContent: "center",
-          backgroundColor: isSelected ? "#0067FF" : "transparent",
-          color: isSelected ? "#fff" : "inherit",
-          padding: "6px 12px",
-          borderRadius: "5px",
-          border: isSelected ? "1px solid #0067FF" : "1px solid transparent",
-          cursor: "pointer",
-          "&:hover": {
-            backgroundColor: isSelected ? "#0056cc" : "#f0f0f0",
-            borderColor: isSelected ? "#0056cc" : "#ccc",
-          },
-          transition: "background-color 0.3s ease, border-color 0.3s ease",
-        }}
-        onClick={() => onChange(value)}
-      >
-        <Icon color={isSelected ? "inherit" : "action"} style={iconStyle} />
-        <Typography
-          variant="caption"
-          sx={{
-            marginLeft: "8px",
-            color: "inherit",
-            fontSize: {
-              xs: "10px",
-              sm: "14px",
-            },
-            fontFamily: "Google Sans",
-          }}
-        >
-          {label}
-        </Typography>
-      </Box>
-    );
-  }
+  useEffect(() => {
+    if (searchParams?.Segments?.[0]?.DepartureDateTime) {
+      setSelectedDate(dayjs(searchParams.Segments[0].DepartureDateTime));
+    }
+  }, [searchParams]);
 
   const handleDPopoverClick = (event) => {
     setDanchorEl(event.currentTarget);
@@ -292,11 +179,12 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const handlePopoverClose = () => {
     setFromAnchorEl(null);
     setToAnchorEl(null);
+    setSearchQuery(""); // Reset search query
   };
 
   const handleFromAirportSelect = (airport) => {
-    setSelectedFromAirport(airport);
-    setFromAnchorEl(null);
+    dispatch(setFromAirport(airport));
+    handlePopoverClose();
     setTimeout(
       () => setToAnchorEl(document.getElementById("toAirportTrigger")),
       0
@@ -304,11 +192,11 @@ export const SearchForm = ({ searchButtonLabel }) => {
   };
 
   const handleToAirportSelect = (airport) => {
-    setSelectedToAirport(airport);
-    setToAnchorEl(null);
+    dispatch(setToAirport(airport));
+    handlePopoverClose();
   };
-
   const handlePopoverClick = (event, anchor) => {
+    setSearchQuery(""); // Reset search query
     if (anchor === "from") {
       setFromAnchorEl(event.currentTarget);
       setToAnchorEl(null);
@@ -328,7 +216,6 @@ export const SearchForm = ({ searchButtonLabel }) => {
   const handleSearchQueryChange = (event) => {
     const { value } = event.target;
     setSearchQuery(value);
-    console.log(`Search query: ${value}`);
   };
 
   const open = Boolean(anchorEl);
@@ -563,123 +450,3 @@ export const SearchForm = ({ searchButtonLabel }) => {
 };
 
 export default SearchForm;
-
-
-// import React, { useEffect, useState } from "react";
-// import { Grid, Box, Button, Typography } from "@mui/material";
-// import { useDispatch } from "react-redux";
-// import { useHistory } from "react-router-dom";
-// import dayjs from "dayjs";
-// import { fetchFlightResults } from "../../redux/reducers/flightSlice";
-// import AirInput from "./AirInput";
-// import JourneyTypeSelector from "./JourneyTypeSelector";
-// import useStyles from "./styles";
-
-// const airports = [
-//   {
-//     code: "DAC",
-//     city: "Dhaka",
-//     country: "Bangladesh",
-//     name: "Hazrat Shahjalal International Airport",
-//   },
-//   {
-//     code: "JSR",
-//     city: "Jashore",
-//     country: "Bangladesh",
-//     name: "Jashore Airport",
-//   },
-//   // Add more airport data as needed.
-// ];
-
-// export const SearchForm = ({ searchButtonLabel }) => {
-//   const [selectedOption, setSelectedOption] = useState("oneway");
-//   const [selectedFromAirport, setSelectedFromAirport] = useState(airports[0]);
-//   const [selectedToAirport, setSelectedToAirport] = useState(airports[1]);
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [selectedDate, setSelectedDate] = useState(dayjs().add(3, "day"));
-//   const [returnDate, setReturnDate] = useState(null);
-//   const [adults, setAdults] = useState(1);
-//   const [children, setChildren] = useState(0);
-//   const [infants, setInfants] = useState(0);
-//   const [selectedClass, setSelectedClass] = useState("Economy");
-//   const dispatch = useDispatch();
-//   const history = useHistory();
-//   const [isFetching, setIsFetching] = useState(false);
-//   const classes = useStyles();
-
-//   const handleFormData = async () => {
-//     const updatedFormData = {
-//       AdultQuantity: adults,
-//       ChildQuantity: children,
-//       InfantQuantity: infants,
-//       EndUserIp: "103.124.251.147",
-//       JourneyType: selectedOption === "oneway" ? "1" : "2",
-//       Segments: [
-//         {
-//           Origin: selectedFromAirport.code,
-//           Destination: selectedToAirport.code,
-//           CabinClass: selectedClass === "Economy" ? "1" : "2",
-//           DepartureDateTime: selectedDate.format("YYYY-MM-DD"),
-//         },
-//       ],
-//     };
-//     if (selectedOption === "return") {
-//       updatedFormData.Segments.push({
-//         Origin: selectedToAirport.code,
-//         Destination: selectedFromAirport.code,
-//         CabinClass: selectedClass === "Economy" ? "1" : "2",
-//         DepartureDateTime: returnDate.format("YYYY-MM-DD"),
-//       });
-//     }
-
-//     try {
-//       setIsFetching(true);
-//       await dispatch(fetchFlightResults(updatedFormData));
-//       history.push("/flight-results");
-//     } finally {
-//       setIsFetching(false);
-//     }
-//   };
-
-//   return (
-//     <>
-//       <Grid container className={classes.gridContainer}>
-//         <JourneyTypeSelector
-//           selectedOption={selectedOption}
-//           setSelectedOption={setSelectedOption}
-//         />
-//         <AirInput
-//           selectedOption={selectedOption}
-//           selectedFromAirport={selectedFromAirport}
-//           setSelectedFromAirport={setSelectedFromAirport}
-//           selectedToAirport={selectedToAirport}
-//           setSelectedToAirport={setSelectedToAirport}
-//           searchQuery={searchQuery}
-//           setSearchQuery={setSearchQuery}
-//           selectedDate={selectedDate}
-//           setSelectedDate={setSelectedDate}
-//           returnDate={returnDate}
-//           setReturnDate={setReturnDate}
-//           adults={adults}
-//           setAdults={setAdults}
-//           children={children}
-//           setChildren={setChildren}
-//           infants={infants}
-//           setInfants={setInfants}
-//           selectedClass={selectedClass}
-//           setSelectedClass={setSelectedClass}
-//         />
-//       </Grid>
-//       <Button
-//         onClick={handleFormData}
-//         variant="contained"
-//         color="primary"
-//         className={classes.searchButton}
-//       >
-//         {searchButtonLabel || "Search"}
-//       </Button>
-//     </>
-//   );
-// };
-
-// export default SearchForm;

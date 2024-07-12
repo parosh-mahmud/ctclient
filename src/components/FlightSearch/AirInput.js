@@ -1,63 +1,21 @@
-// AirInput.js
-
-import React, { useRef, useState } from "react";
-import {
-  Box,
-  Grid,
-  Popover,
-  Stack,
-  Typography,
-  Button,
-  Divider,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  TextField,
-} from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
 import FlightLandIcon from "@mui/icons-material/FlightLand";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import InputAdornment from "@mui/material/InputAdornment";
-import SearchIcon from "@mui/icons-material/Search";
-
-const airports = [
-  {
-    code: "DAC",
-    city: "Dhaka",
-    country: "Bangladesh",
-    name: "Hazrat Shahjalal International Airport",
-  },
-  {
-    code: "JSR",
-    city: "Jashore",
-    country: "Bangladesh",
-    name: "Jashore Airport",
-  },
-  {
-    code: "CXB",
-    city: "Coxs Bazar",
-    country: "Bangladesh",
-    name: "Coxs Bazar Airport",
-  },
-  {
-    code: "CGP",
-    city: "Chittagong",
-    country: "Bangladesh",
-    name: "Shah Amanat International Airport",
-  },
-  {
-    code: "SPD",
-    city: "Saidpur",
-    country: "Bangladesh",
-    name: "Saidpur Airport",
-  },
-  // Add more airports as needed.
-];
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import FromAirportPopover from "./FromAirportPopover";
+import ToAirportPopover from "./ToAirportPopover";
+import TravelDatePopover from "./TravelDatePopover";
+import ReturnDatePopover from "./ReturnDatePopover";
+import TravelerClassPopover from "./TravelerClassPopover";
+import { selectFlightSearchParams } from "../../redux/reducers/flightSlice";
+import { useSelector } from "react-redux";
+import dayjs from "dayjs";
+import useStyles from "./styles";
 
 const AirInput = ({
   isFirstChild,
@@ -103,6 +61,17 @@ const AirInput = ({
   isReturnDatePopoverOpen,
 }) => {
   const travelDateRef = useRef(null);
+  const searchParams = useSelector(selectFlightSearchParams);
+  console.log(searchParams.AdultQuantity);
+  console.log(searchParams);
+  const styles = useStyles();
+  // Effect to update selectedDate from searchParams
+  useEffect(() => {
+    if (searchParams.DepartureDateTime) {
+      const parsedDate = dayjs(searchParams.DepartureDateTime);
+      handleDepartureDateChange(parsedDate);
+    }
+  }, [searchParams]);
 
   return (
     <Grid container spacing={1} style={{ paddingBottom: "60px", width: "99%" }}>
@@ -126,11 +95,11 @@ const AirInput = ({
               style={{ marginLeft: "10px" }}
             >
               <Typography style={{ fontSize: "1em", display: "flex" }}>
-                <FlightTakeoffIcon style={{ color: "#0067FF" }} />
+                {/* <FlightTakeoffIcon style={{ color: "#0067FF" }} /> */}
                 <Typography
                   sx={{
                     fontFamily: "Google Sans, sans-serif",
-                    marginLeft: "10px",
+                    // marginLeft: "10px",
                   }}
                 >
                   From
@@ -140,7 +109,7 @@ const AirInput = ({
                 textAlign="left"
                 style={{
                   fontWeight: "bold",
-                  fontSize: "20px",
+                  fontSize: "1rem",
                   fontFamily: "Google Sans, sans-serif",
                   textAlign: "left",
                   color: "#212F3C",
@@ -186,105 +155,15 @@ const AirInput = ({
             />
           </Box>
 
-          <Popover
-            open={Boolean(fromAnchorEl)}
-            anchorEl={fromAnchorEl}
-            onClose={handlePopoverClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            transitionDuration={300}
-            PaperProps={{
-              style: {
-                backgroundColor: "rgba(255,255,255,0.9)",
-              },
-            }}
-          >
-            <div className={classes.popover}>
-              <TextField
-                type="text"
-                placeholder="Type to search"
-                variant="standard"
-                value={searchQuery}
-                onChange={handleSearchQueryChange}
-                className={classes.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                autoFocus
-              />
-
-              {searchQuery === ""
-                ? airports.map((airport, index) => (
-                    <div
-                      key={`${airport.code}-${index}`}
-                      onClick={() => handleFromAirportSelect(airport)}
-                      className={classes.airportItem}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
-                            {airport.city}, {airport.country}
-                          </Typography>
-                          <Typography fontSize="15px">
-                            {airport.name}
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography fontWeight="bold">
-                            {airport.code}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </div>
-                  ))
-                : searchedAirports.map((airport, index) => (
-                    <div
-                      key={`${airport.code}-${index}`}
-                      onClick={() => handleFromAirportSelect(airport)}
-                      className={classes.airportItem}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box>
-                          <Typography fontWeight="bold">
-                            {airport.city}, {airport.country}
-                          </Typography>
-                          <Typography fontSize="15px">
-                            {airport.name}
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography fontWeight="bold">
-                            {airport.code}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </div>
-                  ))}
-            </div>
-          </Popover>
+          <FromAirportPopover
+            fromAnchorEl={fromAnchorEl}
+            handlePopoverClose={handlePopoverClose}
+            searchQuery={searchQuery}
+            handleSearchQueryChange={handleSearchQueryChange}
+            handleFromAirportSelect={handleFromAirportSelect}
+            searchedAirports={searchedAirports}
+            classes={classes}
+          />
 
           <Box
             id="toAirportTrigger"
@@ -305,13 +184,13 @@ const AirInput = ({
               style={{ marginLeft: "10px" }}
             >
               <Typography style={{ fontSize: "1em", display: "flex" }}>
-                <FlightLandIcon style={{ color: "#0067FF" }} />
-                <Typography marginLeft="10px">To</Typography>
+                {/* <FlightLandIcon style={{ color: "#0067FF" }} /> */}
+                <Typography>To</Typography>
               </Typography>
               <Typography
                 style={{
                   fontWeight: "bold",
-                  fontSize: "23px",
+                  fontSize: "1rem",
                   color: "#212F3C",
                 }}
               >
@@ -329,120 +208,16 @@ const AirInput = ({
               </Typography>
             </Stack>
           </Box>
-          <Popover
-            open={Boolean(toAnchorEl)}
-            anchorEl={toAnchorEl}
-            onClose={handlePopoverClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            transitionDuration={300}
-            PaperProps={{
-              style: {
-                backgroundColor: "rgba(255,255,255,0.9)",
-              },
-            }}
-          >
-            <div className={classes.popover}>
-              <TextField
-                type="text"
-                placeholder="Type to search"
-                variant="standard"
-                value={searchQuery}
-                onChange={handleSearchQueryChange}
-                className={classes.input}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                autoFocus
-              />
 
-              {searchQuery === ""
-                ? airports.map((airport, index) => (
-                    <div
-                      key={`${airport.code}-${index}`}
-                      onClick={() => handleToAirportSelect(airport)}
-                      className={classes.airportItem}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
-                            {airport.city}, {airport.country}
-                          </Typography>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontSize="15px"
-                          >
-                            {airport.name}
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
-                            {airport.code}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </div>
-                  ))
-                : searchedAirports.map((airport, index) => (
-                    <div
-                      key={`${airport.code}-${index}`}
-                      onClick={() => handleToAirportSelect(airport)}
-                      className={classes.airportItem}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
-                            {airport.city}, {airport.country}
-                          </Typography>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontSize="15px"
-                          >
-                            {airport.name}
-                          </Typography>
-                        </Box>
-                        <Box>
-                          <Typography
-                            fontFamily="Google Sans, sans-serif"
-                            fontWeight="bold"
-                          >
-                            {airport.code}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </div>
-                  ))}
-            </div>
-          </Popover>
+          <ToAirportPopover
+            toAnchorEl={toAnchorEl}
+            handlePopoverClose={handlePopoverClose}
+            searchQuery={searchQuery}
+            handleSearchQueryChange={handleSearchQueryChange}
+            handleToAirportSelect={handleToAirportSelect}
+            searchedAirports={searchedAirports}
+            classes={classes}
+          />
         </Box>
       </Grid>
 
@@ -479,7 +254,7 @@ const AirInput = ({
                 display="flex"
                 flexDirection="row"
               >
-                <Typography marginLeft="10px">Travel Date</Typography>
+                <Typography>Travel Date</Typography>
                 {isTravelDatePopoverOpen ? (
                   <KeyboardArrowUpIcon style={{ fontSize: "30px" }} />
                 ) : (
@@ -493,7 +268,7 @@ const AirInput = ({
                 color="#212F3C"
                 marginLeft="10px"
                 textAlign="left"
-                style={{ fontSize: "22px", fontWeight: "bold" }}
+                style={{ fontSize: "1rem", fontWeight: "bold" }}
               >
                 {selectedDate.format("DD MMM YY")}
               </Typography>
@@ -503,32 +278,13 @@ const AirInput = ({
             </LocalizationProvider>
           </Box>
 
-          <Popover
-            open={Boolean(dAnchorEl)}
-            anchorEl={dAnchorEl}
-            onClose={handleDPopoverClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            transitionDuration={300}
-            PaperProps={{
-              style: {
-                backgroundColor: "rgba(255,255,255,0.9)",
-              },
-            }}
-          >
-            <div className={classes.popover}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                  value={selectedDate}
-                  onChange={handleDepartureDateChange}
-                  renderInput={(props) => <TextField {...props} />}
-                  adapter={AdapterDayjs}
-                />
-              </LocalizationProvider>
-            </div>
-          </Popover>
+          <TravelDatePopover
+            dAnchorEl={dAnchorEl}
+            handleDPopoverClose={handleDPopoverClose}
+            selectedDate={selectedDate}
+            handleDepartureDateChange={handleDepartureDateChange}
+            classes={classes}
+          />
 
           <Box
             id="returnDateTrigger"
@@ -560,7 +316,7 @@ const AirInput = ({
               <>
                 <Typography
                   marginLeft="10px"
-                  style={{ fontSize: "22px", fontWeight: "bold" }}
+                  style={{ fontSize: "1rem", fontWeight: "bold" }}
                 >
                   {returnDate.format("DD MMM YY")}
                 </Typography>
@@ -579,32 +335,13 @@ const AirInput = ({
             )}
           </Box>
 
-          <Popover
-            open={Boolean(returnAnchorEl)}
-            anchorEl={returnAnchorEl}
-            onClose={handleRPopoverClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
-            }}
-            transitionDuration={300}
-            PaperProps={{
-              style: {
-                backgroundColor: "rgba(255,255,255,0.9)",
-              },
-            }}
-          >
-            <div className={classes.popover}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                  value={returnDate}
-                  onChange={handleReturnDateChange}
-                  renderInput={(props) => <TextField {...props} />}
-                  adapter={AdapterDayjs}
-                />
-              </LocalizationProvider>
-            </div>
-          </Popover>
+          <ReturnDatePopover
+            returnAnchorEl={returnAnchorEl}
+            handleRPopoverClose={handleRPopoverClose}
+            returnDate={returnDate}
+            handleReturnDateChange={handleReturnDateChange}
+            classes={classes}
+          />
         </Box>
       </Grid>
 
@@ -628,7 +365,7 @@ const AirInput = ({
                 <Typography
                   color="#212F3C"
                   textAlign="left"
-                  style={{ fontSize: "22px", fontWeight: "bold" }}
+                  style={{ fontSize: "1rem", fontWeight: "bold" }}
                 >{`${adults + children + infants} Person${
                   adults + children + infants > 1 ? "s" : ""
                 }`}</Typography>
@@ -677,95 +414,18 @@ const AirInput = ({
             )}
           </Box>
 
-          <Popover
-            open={isModalOpen}
-            anchorEl={dAnchorEl}
-            onClose={closeModal}
-            anchorOrigin={{
-              vertical: "center",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            transitionDuration={300}
-            PaperProps={{
-              style: {
-                backgroundColor: "rgba(255,255,255,0.9)",
-              },
-            }}
-          >
-            <Box
-              style={{ padding: 20, minWidth: 200, boxSizing: "border-box" }}
-            >
-              <Box style={{ marginBottom: 10 }}>
-                <Typography fontFamily="Google Sans, sans-serif">
-                  Adults
-                </Typography>
-                <Button onClick={() => travelerCount("adults", "decrement")}>
-                  -
-                </Button>
-                {adults}
-                <Button onClick={() => travelerCount("adults", "increment")}>
-                  +
-                </Button>
-              </Box>
-              <Divider style={{ margin: "8px 0" }} />
-              <Box style={{ marginBottom: 10 }}>
-                <Typography fontFamily="Google Sans, sans-serif">
-                  Children
-                </Typography>
-                <Button onClick={() => travelerCount("children", "decrement")}>
-                  -
-                </Button>
-                {children}
-                <Button onClick={() => travelerCount("children", "increment")}>
-                  +
-                </Button>
-              </Box>
-              <Box style={{ marginBottom: 10 }}>
-                <Typography fontFamily="Google Sans, sans-serif">
-                  Infants
-                </Typography>
-                <Button onClick={() => travelerCount("infants", "decrement")}>
-                  -
-                </Button>
-                {infants}
-                <Button onClick={() => travelerCount("infants", "increment")}>
-                  +
-                </Button>
-              </Box>
-
-              <Divider style={{ margin: "8px 0" }} />
-              <RadioGroup
-                row
-                aria-label="class"
-                name="class"
-                value={selectedClass}
-                onChange={handleClassChange}
-              >
-                <FormControlLabel
-                  value="Economy"
-                  control={<Radio />}
-                  label="Economy"
-                />
-                <FormControlLabel
-                  value="Business"
-                  control={<Radio />}
-                  label="Business"
-                />
-              </RadioGroup>
-              <Button
-                fontFamily="Google Sans, sans-serif"
-                variant="contained"
-                color="primary"
-                onClick={closeModal}
-              >
-                Done
-              </Button>
-            </Box>
-          </Popover>
+          <TravelerClassPopover
+            isModalOpen={isModalOpen}
+            dAnchorEl={dAnchorEl}
+            closeModal={closeModal}
+            travelerCount={travelerCount}
+            adults={adults}
+            children={children}
+            infants={infants}
+            selectedClass={selectedClass}
+            handleClassChange={handleClassChange}
+            classes={classes}
+          />
         </Box>
       </Grid>
     </Grid>
@@ -773,87 +433,3 @@ const AirInput = ({
 };
 
 export default AirInput;
-
-// import React from "react";
-// import { Box, Grid, Popover, Typography, TextField } from "@mui/material";
-// import { LocalizationProvider, DateCalendar } from "@mui/x-date-pickers";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-// import useStyles from "./styles";
-// import AirportSelector from "./AirportSelector";
-// import DateSelector from "./DateSelector";
-// import TravelerClassSelector from "./TravelerClassSelector";
-
-// const AirInput = ({
-//   selectedOption,
-//   selectedFromAirport,
-//   setSelectedFromAirport,
-//   selectedToAirport,
-//   setSelectedToAirport,
-//   searchQuery,
-//   setSearchQuery,
-//   selectedDate,
-//   setSelectedDate,
-//   returnDate,
-//   setReturnDate,
-//   adults,
-//   setAdults,
-//   children,
-//   setChildren,
-//   infants,
-//   setInfants,
-//   selectedClass,
-//   setSelectedClass,
-// }) => {
-//   const classes = useStyles();
-
-//   const handleSwapAirports = () => {
-//     const temp = selectedFromAirport;
-//     setSelectedFromAirport(selectedToAirport);
-//     setSelectedToAirport(temp);
-//   };
-
-//   return (
-//     <Grid container spacing={1} style={{ paddingBottom: "60px", width: "99%" }}>
-//       <AirportSelector
-//         selectedAirport={selectedFromAirport}
-//         setSelectedAirport={setSelectedFromAirport}
-//         searchQuery={searchQuery}
-//         setSearchQuery={setSearchQuery}
-//         label="From"
-//         swapAirports={handleSwapAirports}
-//       />
-//       <AirportSelector
-//         selectedAirport={selectedToAirport}
-//         setSelectedAirport={setSelectedToAirport}
-//         searchQuery={searchQuery}
-//         setSearchQuery={setSearchQuery}
-//         label="To"
-//       />
-//       <DateSelector
-//         selectedDate={selectedDate}
-//         setSelectedDate={setSelectedDate}
-//         label="Travel Date"
-//       />
-//       {selectedOption === "return" && (
-//         <DateSelector
-//           selectedDate={returnDate}
-//           setSelectedDate={setReturnDate}
-//           label="Return Date"
-//         />
-//       )}
-//       <TravelerClassSelector
-//         adults={adults}
-//         setAdults={setAdults}
-//         children={children}
-//         setChildren={setChildren}
-//         infants={infants}
-//         setInfants={setInfants}
-//         selectedClass={selectedClass}
-//         setSelectedClass={setSelectedClass}
-//       />
-//     </Grid>
-//   );
-// };
-
-// export default AirInput;

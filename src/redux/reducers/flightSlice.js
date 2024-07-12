@@ -1,7 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import airports from "../../components/FlightSearch/data/Airport"; // Make sure to import the airports data
 
 const BASE_URL = process.env.REACT_APP_API_URL;
+
+// Find default airports
+const defaultFromAirport = airports.find((airport) => airport.city === "Dhaka");
+const defaultToAirport = airports.find((airport) => airport.city === "Jashore");
 
 // Async thunk for fetching flight results
 export const fetchFlightResults = createAsyncThunk(
@@ -29,6 +34,8 @@ const flightSlice = createSlice({
     isLoadingFlightData: false,
     error: null,
     hasResults: false,
+    selectedFromAirport: defaultFromAirport,
+    selectedToAirport: defaultToAirport,
   },
   reducers: {
     setSearchParams: (state, action) => {
@@ -46,6 +53,12 @@ const flightSlice = createSlice({
       state.isLoadingFlightData = false;
       state.error = null;
       state.hasResults = false;
+    },
+    setFromAirport: (state, action) => {
+      state.selectedFromAirport = action.payload;
+    },
+    setToAirport: (state, action) => {
+      state.selectedToAirport = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -73,14 +86,17 @@ export const {
   setSearchParams,
   resetFlightState,
   updateSearchParametersAndSetLoading,
+  setFromAirport,
+  setToAirport,
 } = flightSlice.actions;
 
 export const selectFlightSearchData = (state) => state.flight.searchData;
-
 export const selectFlightSearchParams = (state) => state.flight.searchParams;
 export const selectIsLoadingFlightData = (state) =>
   state.flight.isLoadingFlightData;
 export const selectFlightError = (state) => state.flight.error;
 export const selectHasFlightResults = (state) => state.flight.hasResults;
+export const selectFromAirport = (state) => state.flight.selectedFromAirport;
+export const selectToAirport = (state) => state.flight.selectedToAirport;
 
 export default flightSlice.reducer;

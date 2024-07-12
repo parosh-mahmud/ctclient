@@ -1,30 +1,21 @@
-// flightSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+// In your flightSlice.js
+import { createSlice } from "@reduxjs/toolkit";
 
-const flightSlice = createSlice({
-  name: 'flights',
+export const flightSlice = createSlice({
+  name: "flight",
   initialState: {
-    flights: [],
-    searchID: null,
-    searchData: null,
-    flightSearchData: null,
+    flightData: [],
+    isLoading: false,
+    error: null,
   },
   reducers: {
-    setFlights: (state, action) => {
-      state.flights = action.payload;
+    setFlightData: (state, action) => {
+      state.flightData = action.payload;
     },
-    setSearchID: (state, action) => {
-      state.searchID = action.payload;
-    },
-    setFlightSearchData: (state, action) => {
-      state.flightSearchData = action.payload;
-    },
+    // Other reducers...
   },
 });
 
-export const { setFlights, setSearchID, setFlightSearchData } = flightSlice.actions;
-export const selectFlights = (state) => state.flights.flights;
-export const selectSearchID = (state) => state.flights.searchID;
-export const selectFlightSearchData = (state) => state.flights.flightSearchData;
+export const { setFlightData } = flightSlice.actions;
 
 export default flightSlice.reducer;
