@@ -21,16 +21,18 @@ import { selectSearchIDResultID } from "../../redux/slices/searchIDResultIDSlice
 import { useHistory } from "react-router-dom";
 import { setPassengerDetails } from "../../redux/slices/passengerDetailsSlice";
 import { selectAirPriceData } from "../../redux/slices/airPriceSlice";
+
 const PassengerDetailsForm = () => {
   const { searchId, resultId } = useSelector(selectSearchIDResultID);
   const [showPassportFields, setShowPassportFields] = useState(true);
-  console.log("searchId", searchId);
-  console.log("resultId", resultId);
   const airPriceData = useSelector(selectAirPriceData);
+
   const originCode =
-    airPriceData.Results[0].segments[0].Origin.Airport.AirportCode;
+    airPriceData?.Results?.[0]?.segments?.[0]?.Origin?.Airport?.AirportCode;
   const destinationCode =
-    airPriceData.Results[0].segments[0].Destination.Airport.AirportCode;
+    airPriceData?.Results?.[0]?.segments?.[0]?.Destination?.Airport
+      ?.AirportCode;
+
   const excludedAirports = [
     "DAC",
     "CGP",
@@ -43,14 +45,13 @@ const PassengerDetailsForm = () => {
   ];
 
   useEffect(() => {
-    // Show passport fields only if both airports are in the excluded list
     if (
       excludedAirports.includes(originCode) &&
       excludedAirports.includes(destinationCode)
     ) {
-      setShowPassportFields(true);
-    } else {
       setShowPassportFields(false);
+    } else {
+      setShowPassportFields(true);
     }
   }, [originCode, destinationCode, excludedAirports]);
 
@@ -147,9 +148,6 @@ const PassengerDetailsForm = () => {
     try {
       const updatedFormData = formatFormDataForRequest();
       await dispatch(fetchAirPreBookResults(updatedFormData));
-      // Log the API response data in the AirBookForm component
-
-      // Dispatch the updatedFormData to the passengerDetailsSlice
       dispatch(setPassengerDetails(updatedFormData));
       history.push("/airbook");
     } catch (error) {
@@ -474,7 +472,7 @@ const PassengerDetailsForm = () => {
             >
               <Checkbox defaultChecked />
               <Typography>
-                I have read and aggreed to the Terms and Conditions
+                I have read and agreed to the Terms and Conditions
               </Typography>
             </Box>
             <Button variant="contained" onClick={handleContinue}>

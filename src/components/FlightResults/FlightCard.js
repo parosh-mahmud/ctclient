@@ -201,7 +201,7 @@ export const FlightCard = React.memo(
           <Box
             sx={{
               marginTop: "20px",
-              boxShadow: "4",
+              boxShadow: showActions ? "4" : "none",
               borderRadius: "10px",
               paddingBottom: "1px",
             }}
@@ -573,18 +573,23 @@ export const FlightCard = React.memo(
                   </div>
                   {index === 0 && (
                     <>
-                      <div className="grid-item price">
-                        {" "}
-                        <Typography>
-                          {isLoading ? (
-                            <Skeleton animation="wave" width={90} height={60} />
-                          ) : (
-                            <Typography fontSize="2rem" fontWeight="bold">
-                              BDT {calculateTotalAmount()}
-                            </Typography>
-                          )}
-                        </Typography>
-                      </div>
+                      {showActions && ( // Conditionally render the BDT box
+                        <div className="grid-item price">
+                          <Typography>
+                            {isLoading ? (
+                              <Skeleton
+                                animation="wave"
+                                width={90}
+                                height={60}
+                              />
+                            ) : (
+                              <Typography fontSize="2rem" fontWeight="bold">
+                                BDT {calculateTotalAmount(flightData)}
+                              </Typography>
+                            )}
+                          </Typography>
+                        </div>
+                      )}
                       <div className="grid-item seat-option">
                         {isLoading ? (
                           <>
@@ -649,7 +654,8 @@ export const FlightCard = React.memo(
                     </>
                   )}
                 </div>
-                {index === 0 && (
+
+                {showActions && (
                   <Divider
                     variant="middle"
                     sx={{

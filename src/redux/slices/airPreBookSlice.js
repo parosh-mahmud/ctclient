@@ -1,9 +1,9 @@
 // airPreBookSlice.js
-import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
-const BASE_URL = process.env.REACT_APP_API_URL
+import { createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+const BASE_URL = process.env.REACT_APP_API_URL;
 const airPreBookSlice = createSlice({
-  name: 'airPreBook',
+  name: "airPreBook",
   initialState: {
     searchData: null,
     isLoadingAirPreBookData: false,
@@ -42,15 +42,16 @@ export const fetchAirPreBookResults = (formData) => async (dispatch) => {
 
     const response = await axios.post(`${BASE_URL}/api/airPreBook`, formData);
 
-   await dispatch(setAirPreBookSearchData(response.data));
-    console.log(formData)
-    console.log('API Response:', response.data);
+    await dispatch(setAirPreBookSearchData(response.data));
+    console.log(formData);
+    console.log("API Response:", response.data);
   } catch (error) {
-    console.error('Error fetching air pre-book results:', error.message);
+    console.error("Error fetching air pre-book results:", error.message);
     dispatch(setErrorAirPreBookData(error.message));
   }
 };
 
-export const selectAirPreBookSearchData = (state) => state.airPreBook.searchData;
+export const selectAirPreBookSearchData = (state) =>
+  state.airPreBook.searchData;
 
 export default airPreBookSlice.reducer;

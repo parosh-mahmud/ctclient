@@ -57,9 +57,9 @@ const AirPriceShow = () => {
           alignItems: "center",
         }}
       >
-        <Typography sx={{ fontWeight: "bold", fontSize: "20px" }}>
+        {/* <Typography sx={{ fontWeight: "bold", fontSize: "20px" }}>
           Fare Summary
-        </Typography>
+        </Typography> */}
       </Box>
 
       {/* Conditional rendering for each Box if airPriceData.Results exists */}
