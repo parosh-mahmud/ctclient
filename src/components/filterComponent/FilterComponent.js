@@ -7,6 +7,7 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  SvgIcon,
 } from "@mui/material";
 import TuneIcon from "@mui/icons-material/Tune";
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
@@ -19,11 +20,26 @@ import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import AirlinesIcon from "@mui/icons-material/Airlines";
 
+function StopsIcon(props) {
+  return (
+    <SvgIcon
+      {...props}
+      viewBox="0 0 200 50"
+      style={{ width: "30px", height: "30px" }}
+    >
+      <circle cx="40" cy="25" r="20" fill="blue" />
+      <circle cx="100" cy="25" r="20" fill="blue" />
+      <circle cx="160" cy="25" r="20" fill="blue" />
+    </SvgIcon>
+  );
+}
+
 function HorizontalBoxes({
   flightDataArray,
   onSortFlights,
   onFilterByAirline,
   onFilterByRefundable,
+  onFilterByStops,
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -58,6 +74,7 @@ function HorizontalBoxes({
     refundable: null,
     layover: null,
     airlines: null,
+    stops: null,
   });
 
   const [selectedSort, setSelectedSort] = useState({
@@ -66,6 +83,7 @@ function HorizontalBoxes({
     refundable: "Refundable",
     layover: "Layover",
     airlines: "Airlines",
+    stops: "Stops",
   });
 
   const handleClick = (menu) => (event) => {
@@ -85,6 +103,8 @@ function HorizontalBoxes({
   const handleFilterSelection = (criteria, menu) => {
     if (menu === "refundable") {
       onFilterByRefundable(criteria);
+    } else if (menu === "stops") {
+      onFilterByStops(criteria);
     } else {
       onFilterByAirline(criteria);
     }
@@ -284,6 +304,7 @@ function HorizontalBoxes({
             <IconButton onClick={handleClick("layover")}>
               <AirlineStopsIcon sx={iconStyle} />
               <Typography sx={stylesForText}>{selectedSort.layover}</Typography>
+
               <ExpandMoreIcon
                 fontSize={isMobile ? "small" : "medium"}
                 style={{
@@ -358,6 +379,51 @@ function HorizontalBoxes({
                   {airline}
                 </MenuItem>
               ))}
+            </Menu>
+          </Grid>
+          <Grid item xs={4} md="auto">
+            <IconButton onClick={handleClick("stops")}>
+              <Typography sx={stylesForText}>{selectedSort.stops}</Typography>
+              <StopsIcon sx={iconStyle} />
+              <ExpandMoreIcon
+                fontSize={isMobile ? "small" : "medium"}
+                style={{
+                  transform: isMenuOpen("stops")
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
+                  transition: "transform 0.2s",
+                }}
+              />
+            </IconButton>
+            <Menu
+              id="stops-menu"
+              anchorEl={anchorEls.stops}
+              open={isMenuOpen("stops")}
+              onClose={handleClose("stops")}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+            >
+              <MenuItem
+                onClick={() => handleFilterSelection("Non-stop", "stops")}
+              >
+                Non-stop
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleFilterSelection("1 Stop", "stops")}
+              >
+                1 Stop
+              </MenuItem>
+              <MenuItem
+                onClick={() => handleFilterSelection("2+ Stops", "stops")}
+              >
+                2+ Stops
+              </MenuItem>
             </Menu>
           </Grid>
         </>

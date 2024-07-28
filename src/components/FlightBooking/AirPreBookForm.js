@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAirPreBookResults } from "../../redux/slices/airPreBookSlice";
 import { selectSearchIDResultID } from "../../redux/slices/searchIDResultIDSlice";
 import { useHistory } from "react-router-dom";
+import dayjs from "dayjs";
 import { setPassengerDetails } from "../../redux/slices/passengerDetailsSlice";
 import { selectAirPriceData } from "../../redux/slices/airPriceSlice";
 import FlightCard from "../FlightResults/FlightCard";
@@ -29,6 +30,7 @@ import AirPriceShow from "./AirPriceShow";
 import LayoutPage from "../../pages/LayoutPage";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { selectFlightSearchParams } from "../../redux/reducers/flightSlice";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 const AirPreBookForm = () => {
   const { searchId, resultId } = useSelector(selectSearchIDResultID);
@@ -39,6 +41,71 @@ const AirPreBookForm = () => {
   const segment = flightData?.segments?.[0];
   const segmentReturn = flightData?.segments?.[1];
   const passenger = useSelector(selectFlightSearchParams);
+  const isLoading = useSelector(
+    (state) => state.airPreBook.isLoadingAirPreBookData
+  );
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    let tempErrors = {};
+    formData.passengers.forEach((passenger, index) => {
+      // First name and last name validation
+      if (!passenger.firstName.trim()) {
+        tempErrors[`firstName${index}`] = "First name is required";
+      }
+      if (!passenger.lastName.trim()) {
+        tempErrors[`lastName${index}`] = "Last name is required";
+      }
+      // Email validation with simple regex pattern
+      if (
+        !passenger.email.trim() ||
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(passenger.email)
+      ) {
+        tempErrors[`email${index}`] = "Valid email is required";
+      }
+      // Phone number validation
+      if (!passenger.phoneNumber.trim()) {
+        tempErrors[`phoneNumber${index}`] = "Phone number is required";
+      }
+      // Nationality validation
+      if (!passenger.nationality.trim()) {
+        tempErrors[`nationality${index}`] = "Nationality is required";
+      }
+      // Additional validations here
+    });
+
+    if (!formData.fareRulesChecked) {
+      tempErrors.fareRules = "You must agree to the fare rules";
+    }
+    if (!formData.termsAndConditionsChecked) {
+      tempErrors.termsAndConditions =
+        "You must agree to the terms and conditions";
+    }
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  const LoadingBackdrop = ({ open }) => {
+    return (
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: "rgba(0, 0, 0, 0.7)",
+        }}
+        open={open}
+      >
+        <Box textAlign="center">
+          <CircularProgress color="inherit" />
+          <Typography variant="h6" sx={{ mt: 2, color: "common.white" }}>
+            Loading booking details...
+          </Typography>
+        </Box>
+      </Backdrop>
+    );
+  };
+
   const totalPassengers =
     passenger.AdultQuantity +
     passenger.ChildQuantity +
@@ -56,7 +123,7 @@ const AirPreBookForm = () => {
         nationality: "",
         email: "",
         phoneNumber: "",
-        address: "",
+        address: "bd",
       })),
     fareRulesChecked: false,
     termsAndConditionsChecked: false,
@@ -71,13 +138,13 @@ const AirPreBookForm = () => {
           firstName: "",
           lastName: "",
           gender: "",
-          dateOfBirth: "",
+          dateOfBirth: dayjs("1999-07-03"),
           passportNumber: "",
           dateOfExpiry: "",
-          nationality: "",
+          nationality: "Bangldeshi",
           email: "",
           phoneNumber: "",
-          address: "",
+          address: "BD",
         })),
     }));
   }, [totalPassengers]);
@@ -152,6 +219,17 @@ const AirPreBookForm = () => {
       ...prevData,
       [name]: checked,
     }));
+
+    // Immediately clear any errors related to the checkbox when it is checked
+    if (checked) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: null, // Clears the specific error for this checkbox
+      }));
+    } else {
+      // Optionally re-validate if you want to show the error immediately when unchecked
+      validateForm();
+    }
   };
 
   const formatFormDataForRequest = () => {
@@ -181,13 +259,15 @@ const AirPreBookForm = () => {
   };
 
   const handleContinue = async () => {
-    try {
-      const updatedFormData = formatFormDataForRequest();
-      await dispatch(fetchAirPreBookResults(updatedFormData));
-      dispatch(setPassengerDetails(updatedFormData));
-      history.push("/airbook");
-    } catch (error) {
-      console.error("Error dispatching thunk action:", error.message);
+    if (validateForm()) {
+      try {
+        const updatedFormData = formatFormDataForRequest();
+        await dispatch(fetchAirPreBookResults(updatedFormData));
+        dispatch(setPassengerDetails(updatedFormData));
+        history.push("/airbook");
+      } catch (error) {
+        console.error("Error dispatching thunk action:", error.message);
+      }
     }
   };
 
@@ -197,6 +277,7 @@ const AirPreBookForm = () => {
 
   return (
     <LayoutPage>
+      <LoadingBackdrop open={isLoading} />
       <Grid
         container
         justifyContent="center"
@@ -213,7 +294,7 @@ const AirPreBookForm = () => {
               id="panel1-header"
             >
               <Typography fontSize={20} fontWeight="bold">
-                Flight Summary
+                Flight summary
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -244,7 +325,7 @@ const AirPreBookForm = () => {
               id="panel2-header"
             >
               <Typography fontSize={20} fontWeight="bold">
-                Enter Traveler Details
+                Enter passenger details
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
@@ -277,6 +358,8 @@ const AirPreBookForm = () => {
                         <Grid item xs={12} sm={6}>
                           <TextField
                             fullWidth
+                            error={!!errors[`firstName${index}`]}
+                            helperText={errors[`firstName${index}`]}
                             label="First Name"
                             variant="outlined"
                             value={p.firstName}
@@ -292,7 +375,8 @@ const AirPreBookForm = () => {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                           <TextField
-                            fullWidth
+                            error={!!errors[`lastName${index}`]}
+                            helperText={errors[`lastName${index}`]}
                             label="Last Name"
                             variant="outlined"
                             value={p.lastName}
@@ -304,6 +388,7 @@ const AirPreBookForm = () => {
                               )
                             }
                             placeholder="Enter last name"
+                            fullWidth
                           />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -311,7 +396,7 @@ const AirPreBookForm = () => {
                             <RadioGroup
                               row
                               aria-label="gender"
-                              name="gender"
+                              name={`gender${index}`}
                               value={p.gender}
                               onChange={(e) =>
                                 handleInputField(
@@ -320,6 +405,8 @@ const AirPreBookForm = () => {
                                   e.target.value
                                 )
                               }
+                              error={!!errors[`gender${index}`]}
+                              helperText={errors[`gender${index}`]}
                             >
                               <FormControlLabel
                                 value="male"
@@ -344,7 +431,11 @@ const AirPreBookForm = () => {
                               }
                               label="Date of Birth"
                               renderInput={(params) => (
-                                <TextField {...params} />
+                                <TextField
+                                  {...params}
+                                  error={!!errors[`dateOfBirth${index}`]}
+                                  helperText={errors[`dateOfBirth${index}`]}
+                                />
                               )}
                             />
                           </LocalizationProvider>
@@ -387,7 +478,8 @@ const AirPreBookForm = () => {
                         )}
                         <Grid item xs={12} sm={6}>
                           <TextField
-                            fullWidth
+                            error={!!errors[`nationality${index}`]}
+                            helperText={errors[`nationality${index}`]}
                             label="Nationality"
                             variant="outlined"
                             value={p.nationality}
@@ -399,11 +491,13 @@ const AirPreBookForm = () => {
                               )
                             }
                             placeholder="Enter nationality"
+                            fullWidth
                           />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                           <TextField
-                            fullWidth
+                            error={!!errors[`email${index}`]}
+                            helperText={errors[`email${index}`]}
                             label="Email"
                             variant="outlined"
                             value={p.email}
@@ -411,11 +505,13 @@ const AirPreBookForm = () => {
                               handleInputField(index, "email", e.target.value)
                             }
                             placeholder="Enter email address"
+                            fullWidth
                           />
                         </Grid>
                         <Grid item xs={12} sm={6}>
                           <TextField
-                            fullWidth
+                            error={!!errors[`phoneNumber${index}`]}
+                            helperText={errors[`phoneNumber${index}`]}
                             label="Phone Number"
                             variant="outlined"
                             value={p.phoneNumber}
@@ -427,6 +523,7 @@ const AirPreBookForm = () => {
                               )
                             }
                             placeholder="Enter phone number"
+                            fullWidth
                           />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -449,30 +546,68 @@ const AirPreBookForm = () => {
             </AccordionDetails>
           </Accordion>
           <Box sx={{ padding: "20px" }}>
-            <Checkbox
-              checked={formData.fareRulesChecked}
-              onChange={(e) =>
-                handleCheckboxChange("fareRulesChecked", e.target.checked)
-              }
-            />
-            <Typography sx={{ display: "inline", marginLeft: "10px" }}>
-              I have read and understood the Fare Rules
-            </Typography>
-            <br />
-            <Checkbox
-              checked={formData.termsAndConditionsChecked}
-              onChange={(e) =>
-                handleCheckboxChange(
-                  "termsAndConditionsChecked",
-                  e.target.checked
-                )
-              }
-            />
-            <Typography sx={{ display: "inline", marginLeft: "10px" }}>
-              I have read and agreed to the Terms and Conditions
-            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                marginLeft: "20px",
+              }}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.fareRulesChecked}
+                    onChange={(e) =>
+                      handleCheckboxChange("fareRulesChecked", e.target.checked)
+                    }
+                    name="fareRulesChecked"
+                    color="primary"
+                  />
+                }
+                label={
+                  <Typography sx={{ textAlign: "left" }}>
+                    I have read and understood the Fare Rules
+                  </Typography>
+                }
+                sx={{ alignSelf: "flex-start" }}
+              />
+              {errors.fareRules && (
+                <Typography color="error" sx={{ ml: 4 }}>
+                  {errors.fareRules}
+                </Typography>
+              )}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.termsAndConditionsChecked}
+                    onChange={(e) =>
+                      handleCheckboxChange(
+                        "termsAndConditionsChecked",
+                        e.target.checked
+                      )
+                    }
+                    name="termsAndConditionsChecked"
+                    color="primary"
+                  />
+                }
+                label={
+                  <Typography sx={{ textAlign: "left" }}>
+                    I have read and agreed to the Terms and Conditions
+                  </Typography>
+                }
+                sx={{ alignSelf: "flex-start" }}
+              />
+              {errors.termsAndConditions && (
+                <Typography color="error" sx={{ ml: 4 }}>
+                  {errors.termsAndConditions}
+                </Typography>
+              )}
+            </Box>
+
             <br />
             <Button
+              fullWidth
               variant="contained"
               color="primary"
               onClick={handleContinue}
@@ -492,7 +627,7 @@ const AirPreBookForm = () => {
               id="panel3-header"
             >
               <Typography fontSize={20} fontWeight="bold">
-                Price Details
+                Price details
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
