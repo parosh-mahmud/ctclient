@@ -47,17 +47,53 @@ const useStyles = makeStyles((theme) => ({
 export const gridContainerStyle = {
   backgroundColor: "rgba(255,255,255,0.5)",
   overflow: "hidden",
-  boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
+  // boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
   margin: "0",
   borderBottomLeftRadius: "5px",
   borderBottomRightRadius: "5px",
+  justifyContent: "center",
 };
 
 export const paperStyle = {
-  paddingLeft: "10px",
-  margin: 0,
   display: "flex",
   alignItems: "center",
+  backgroundColor: "#fff",
+  borderRadius: "10px",
+  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  border: "1px solid #E5E7EB",
+  width: "100%",
+  position: "relative",
+};
+
+export const boxStyle = {
+  cursor: "pointer",
+  overflow: "hidden",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  padding: "10px",
+  height: "96px",
+};
+
+export const swapIconStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "40px",
+  height: "40px",
+  cursor: "pointer",
+  background: "#fff",
+  border: "1px solid #E5E7EB",
+  borderRadius: "50%",
+  boxShadow: "0 0 8px rgba(0, 0, 0, 0.1)",
+};
+
+export const typographyPadding = {
+  paddingLeft: "20px",
 };
 
 export default useStyles;

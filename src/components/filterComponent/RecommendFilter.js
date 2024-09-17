@@ -1,51 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { Padding } from "@mui/icons-material";
 
 const recommendedBoxStyle = {
-  width: "100%", // Adjusted for better responsiveness
+  width: "100%",
   height: "auto",
-  // backgroundColor: 'rgba(255,255,255,0.5)',
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-
-  borderRadius: "3px",
-  flexDirection: {
-    xs: "row", // Ensure row layout on extra small devices
-    sm: "row", // Keep row layout for devices wider than the sm breakpoint
-  },
-  gap: 2, // Consistent gap for simplicity
+  flexDirection: "row",
+  gap: 2,
 };
 
 const boxStyle = {
-  width: {
-    xs: "100%", // Adjust as necessary for full width on small screens
-    sm: "280px", // Fixed width on larger screens
-  },
-  height: "35px",
+  width: { xs: "100%", sm: "280px" },
+  height: "auto",
+  padding: "8px", // Added padding for better layout
   backgroundColor: "rgba(255,255,255,0.5)",
-
-  borderRadius: "3px",
+  borderRadius: "5px", // Slightly larger border radius
   cursor: "pointer",
-
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  transition:
-    "transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease",
+  transition: "transform 0.3s ease, box-shadow 0.3s ease",
 };
 
 const headingTextStyle = {
   fontSize: "14px",
+  fontWeight: "bold", // Bold text for emphasis
 };
 
 const typographyStyle = {
-  display: {
-    xs: "none", // Hide on extra small devices
-    sm: "block", // Show on devices wider than the sm breakpoint
-  },
+  display: { xs: "none", sm: "block" }, // Responsive display
+  fontSize: "12px", // Smaller font size for secondary text
 };
 
 const RecommendFilter = ({ flightDataArray, onSortFlights }) => {
@@ -63,7 +50,7 @@ const RecommendFilter = ({ flightDataArray, onSortFlights }) => {
       return durationA - durationB;
     });
     onSortFlights(sortedByDuration);
-    setActiveBox("fastest"); // Update active box state here
+    setActiveBox("fastest");
   };
 
   const handleSortByBaseFare = () => {
@@ -73,25 +60,21 @@ const RecommendFilter = ({ flightDataArray, onSortFlights }) => {
       return baseFareA - baseFareB;
     });
     onSortFlights(sortedByBaseFare);
-    setActiveBox("cheapest"); // Update active box state here
+    setActiveBox("cheapest");
   };
 
   const getBoxStyle = (boxName) => ({
     ...boxStyle,
     backgroundColor:
-      activeBox === boxName ? "primary.main" : "rgba(255,255,255,0.5)",
-    border:
-      activeBox === boxName
-        ? "1px solid primary.main"
-        : "1px solid primary.main",
-    transform: activeBox === boxName ? "scale(1)" : "scale(0.9)",
+      activeBox === boxName ? "#007bff" : "rgba(255,255,255,0.5)", // Primary color for active
+    color: activeBox === boxName ? "#fff" : "#000",
+    transform: activeBox === boxName ? "scale(1.05)" : "scale(1)",
     boxShadow:
-      activeBox === boxName ? "0px 4px 4px rgba(0, 0, 0, 0.2)" : "none",
-    color: activeBox === boxName ? "white" : "black",
+      activeBox === boxName ? "0px 4px 8px rgba(0, 0, 0, 0.2)" : "none",
   });
 
   return (
-    <Box sx={{ ...recommendedBoxStyle, flexDirection: "row" }}>
+    <Box sx={recommendedBoxStyle}>
       <Box
         onClick={() => setActiveBox("recommended")}
         sx={getBoxStyle("recommended")}
@@ -101,6 +84,7 @@ const RecommendFilter = ({ flightDataArray, onSortFlights }) => {
           sx={{
             display: "flex",
             justifyContent: "space-between",
+            width: "100%",
           }}
         >
           <Typography sx={typographyStyle}>5H 30</Typography>
@@ -114,11 +98,12 @@ const RecommendFilter = ({ flightDataArray, onSortFlights }) => {
           sx={{
             display: "flex",
             justifyContent: "space-between",
+            width: "100%",
           }}
         >
-          <Typography sx={typographyStyle}>5H 30</Typography>
-          <Typography sx={typographyStyle}>Direct</Typography>
-          <Typography sx={typographyStyle}>BDT 61984</Typography>
+          <Typography sx={typographyStyle}>11H 30</Typography>
+          <Typography sx={typographyStyle}>1 Stop</Typography>
+          <Typography sx={typographyStyle}>BDT 61597</Typography>
         </Box>
       </Box>
       <Box onClick={handleSortByDuration} sx={getBoxStyle("fastest")}>
@@ -127,11 +112,12 @@ const RecommendFilter = ({ flightDataArray, onSortFlights }) => {
           sx={{
             display: "flex",
             justifyContent: "space-between",
+            width: "100%",
           }}
         >
           <Typography sx={typographyStyle}>5H 30</Typography>
           <Typography sx={typographyStyle}>Direct</Typography>
-          <Typography sx={typographyStyle}>BDT 61984</Typography>
+          <Typography sx={typographyStyle}>BDT 68952</Typography>
         </Box>
       </Box>
     </Box>

@@ -14,7 +14,6 @@ import {
   ArrowForward as ArrowForwardIcon,
   AirlineSeatReclineNormal as AirlineSeatReclineNormalIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
-  KeyboardArrowUp as KeyboardArrowUpIcon,
   Flight as FlightIcon,
   Circle as CircleIcon,
 } from "@mui/icons-material";
@@ -23,16 +22,9 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import TabComponent from "../tabComponent/TabComponent";
 import FlightCardMobile from "./FlightCardMobile";
-import { fetchAirPrice } from "../../redux/slices/airPriceSlice";
 import "./FlightCard.css";
-import {
-  selectFlightSearchData,
-  selectIsLoadingFlightData,
-  selectFlightSearchParams,
-} from "../../redux/reducers/flightSlice";
-import { setSearchIDResultID } from "../../redux/slices/searchIDResultIDSlice";
-import useStyles from "./FlightCardStyles";
 import { TabContext } from "@mui/lab";
+import fetchAirports from "../../services/api";
 
 const BASE_URL = process.env.REACT_APP_API_URL;
 
@@ -44,45 +36,82 @@ export const FlightCard = React.memo(
     onSelect,
     availability,
     showActions = true,
+    isLoading,
   }) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const classes = useStyles();
-    const searchparams = useSelector(selectFlightSearchParams);
     const [activeTab, setActiveTab] = useState(0);
     const [showDetails, setShowDetails] = useState(false);
     const [airlineLogoUrl, setAirlineLogoUrl] = useState(null);
     const [anchorEl, setAnchorEl] = useState(null);
-    const isLoading = useSelector(selectIsLoadingFlightData);
-    const flightSearchData = useSelector(selectFlightSearchData);
-    const totalPassenger = searchparams.AdultQuantity;
     const isMenuOpen = Boolean(anchorEl);
-    console.log(flightSearchData);
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
 
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
+    const [departureInfo, setDepartureInfo] = useState({});
+    const [arrivalInfo, setArrivalInfo] = useState({});
+
+    // Correctly extracting segments
+    const segments =
+      flightData?.offer?.paxSegmentList?.map((item) => item.paxSegment) || [];
 
     useEffect(() => {
-      if (flightData?.segments?.[0]?.Airline?.AirlineCode) {
-        const fetchLogoUrl = async () => {
-          try {
-            const response = await axios.get(
-              `${BASE_URL}/api/airline/${flightData.segments[0].Airline.AirlineCode}`
-            );
-            setAirlineLogoUrl(response.data.logoUrl);
-          } catch (error) {
-            console.error("Error fetching airline logo:", error);
+      const fetchDepartureInfo = async () => {
+        try {
+          const result = await fetchAirports(
+            segments[0]?.departure?.iatA_LocationCode
+          );
+          if (result.length > 0) {
+            setDepartureInfo(result[0]);
           }
-        };
-        fetchLogoUrl();
-      }
-    }, [flightData]);
+        } catch (error) {
+          console.error("Error fetching departure airport data:", error);
+        }
+      };
+
+      const fetchArrivalInfo = async () => {
+        try {
+          const result = await fetchAirports(
+            segments[0]?.arrival?.iatA_LocationCode
+          );
+          if (result.length > 0) {
+            setArrivalInfo(result[0]);
+          }
+        } catch (error) {
+          console.error("Error fetching arrival airport data:", error);
+        }
+      };
+
+      fetchDepartureInfo();
+      fetchArrivalInfo();
+    }, [segments]);
+
+    useEffect(() => {
+      const fetchLogoUrl = async () => {
+        const airlineCode = segments[0]?.marketingCarrierInfo?.carrierDesigCode;
+
+        if (!airlineCode) {
+          console.error("Airline code is missing in flight data");
+          return;
+        }
+
+        try {
+          const response = await axios.get(
+            `${BASE_URL}/api/airline/${airlineCode}`
+          );
+
+          if (response?.data?.logoUrl) {
+            setAirlineLogoUrl(response.data.logoUrl);
+          } else {
+            console.error("No logo URL found in response");
+          }
+        } catch (error) {
+          console.error("Error fetching airline logo:", error);
+        }
+      };
+
+      fetchLogoUrl();
+    }, [segments]);
 
     const handleTabChange = (event, newValue) => {
       setActiveTab(newValue);
@@ -97,6 +126,7 @@ export const FlightCard = React.memo(
     };
 
     const handleViewDetails = () => {
+      if (segments.length === 0) return; // Prevent undefined access
       setShowDetails((prev) => !prev);
       setActiveTab("0");
     };
@@ -104,69 +134,41 @@ export const FlightCard = React.memo(
     const calculateTotalAmount = () => {
       let totalAmount = 0;
 
-      if (Array.isArray(flightData.Fares)) {
-        flightData.Fares.forEach((fare) => {
-          const baseFare = fare.BaseFare || 0;
-          const tax = fare.Tax || 0;
-          const otherCharges = fare.OtherCharges || 0;
-          const serviceFees = fare.ServiceFee || 0;
+      if (Array.isArray(flightData.offer.fareDetailList)) {
+        flightData.offer.fareDetailList.forEach((fareItem) => {
+          const fareDetail = fareItem.fareDetail;
+          const baseFare = fareDetail.baseFare || 0;
+          const tax = fareDetail.tax || 0;
+          const otherFee = fareDetail.otherFee || 0;
+          const discount = fareDetail.discount || 0;
+          const vat = fareDetail.vat || 0;
+          const paxCount = fareDetail.paxCount || 1;
 
           totalAmount +=
-            (baseFare + tax + otherCharges + serviceFees) * fare.PassengerCount;
+            (baseFare + tax + otherFee + vat - discount) * paxCount;
         });
-      } else {
-        console.error(
-          "Fares is not an array or is undefined",
-          flightData.Fares
-        );
       }
 
       return totalAmount;
     };
 
     const calculateDuration = (segment) => {
-      if (
-        !segment ||
-        !segment.Origin ||
-        !segment.Destination ||
-        !segment.Origin.DepTime ||
-        !segment.Destination.ArrTime
-      ) {
-        console.error("Invalid segment data:", segment);
-        return "N/A"; // Return "N/A" if any required data is missing
-      }
-
-      const depTime = new Date(segment.Origin.DepTime);
-      const arrTime = new Date(segment.Destination.ArrTime);
-
-      const durationInMinutes = (arrTime - depTime) / (1000 * 60);
+      const durationInMinutes = parseInt(segment.duration, 10);
 
       const hours = Math.floor(durationInMinutes / 60);
-      const minutes = Math.round(durationInMinutes % 60); // Use Math.round to avoid floating point arithmetic issues
+      const minutes = durationInMinutes % 60;
 
-      return hours > 0 ? `${hours} Hr ${minutes} Min` : `${minutes} Min`;
+      return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
     };
 
     const handleSelect = async () => {
       try {
         onFetchingStart();
-        if (!flightData?.segments?.length || !flightData.segments[0]?.Airline) {
-          console.error("Incomplete flightData structure");
-          return;
-        }
 
         const requestBody = {
-          SearchID: flightSearchData.SearchId,
-          ResultID: flightData.ResultID,
+          offerId: flightData.offer.offerId,
         };
 
-        await dispatch(fetchAirPrice(requestBody));
-        dispatch(
-          setSearchIDResultID({
-            searchId: flightSearchData.SearchId,
-            resultId: flightData.ResultID,
-          })
-        );
         history.push("/airprebookform");
 
         if (typeof onSelect === "function") {
@@ -184,8 +186,6 @@ export const FlightCard = React.memo(
         {isMobile ? (
           <FlightCardMobile
             flightData={flightData}
-            isLoading={isLoading}
-            onSelect={onSelect}
             calculateTotalAmount={calculateTotalAmount}
             calculateDuration={calculateDuration}
             handleSelect={handleSelect}
@@ -193,8 +193,7 @@ export const FlightCard = React.memo(
             handleViewDetails={handleViewDetails}
             airlineLogoUrl={airlineLogoUrl}
             isMobile={isMobile}
-            segment={flightData.segments[0]}
-            classes={classes}
+            segment={segments[0]}
             showActions={showActions}
           />
         ) : (
@@ -207,7 +206,7 @@ export const FlightCard = React.memo(
             }}
             className="container"
           >
-            {flightData.segments.map((segment, index) => (
+            {segments.map((segment, index) => (
               <React.Fragment key={index}>
                 <div className="flight-card">
                   <div className="grid-item logo">
@@ -235,10 +234,9 @@ export const FlightCard = React.memo(
                       <Typography fontWeight="bold">
                         {isLoading ? (
                           <Skeleton animation="wave" width={30} />
-                        ) : segment.Airline ? (
-                          segment.Airline.FlightNumber
                         ) : (
-                          "N/A"
+                          segment.marketingCarrierInfo
+                            ?.marketingCarrierFlightNumber
                         )}
                       </Typography>
                     </Box>
@@ -246,36 +244,18 @@ export const FlightCard = React.memo(
                       <Typography fontWeight="bold">
                         {isLoading ? (
                           <Skeleton animation="wave" width={30} />
-                        ) : segment.Airline ? (
-                          segment.Airline.AirlineCode
                         ) : (
-                          "N/A"
+                          segment.marketingCarrierInfo?.carrierDesigCode
                         )}
                       </Typography>
                       <Typography fontWeight="bold">
                         {isLoading ? (
                           <Skeleton animation="wave" width={30} />
-                        ) : segment.Equipment ? (
-                          `${segment.Equipment}`
                         ) : (
-                          "N/A"
+                          segment.iatA_AircraftType?.iatA_AircraftTypeCode
                         )}
                       </Typography>
                     </Box>
-                  </div>
-
-                  <div className="grid-item aircraft-model"></div>
-                  <div className="grid-item airline-name">
-                    {" "}
-                    <Typography color="#0067FF">
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={200} height={30} />
-                      ) : segment.Airline ? (
-                        segment.Airline.AirlineName
-                      ) : (
-                        "N/A"
-                      )}
-                    </Typography>
                   </div>
 
                   <div className="grid-item departure-city">
@@ -285,22 +265,10 @@ export const FlightCard = React.memo(
                       fontWeight="bold"
                       className="city-name"
                     >
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={80} />
-                      ) : segment.Origin ? (
-                        segment.Origin.Airport.CityName
-                      ) : (
-                        "N/A"
-                      )}
+                      {departureInfo.city || "Loading..."}
                     </Typography>
                     <Typography fontSize="1.5rem" className="city-code">
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={40} />
-                      ) : segment.Origin ? (
-                        segment.Origin.Airport.CityCode
-                      ) : (
-                        "N/A"
-                      )}
+                      {segment.departure?.iatA_LocationCode || "Unknown Code"}
                     </Typography>
                   </div>
                   <div className="grid-item blank"></div>
@@ -310,13 +278,7 @@ export const FlightCard = React.memo(
                       color="#0067FF"
                       fontWeight="bold"
                     >
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={80} />
-                      ) : segment.Destination ? (
-                        segment.Destination.Airport.CityName
-                      ) : (
-                        "N/A"
-                      )}
+                      {arrivalInfo.city || "Loading..."}
                     </Typography>
                     <Typography
                       sx={{
@@ -327,31 +289,18 @@ export const FlightCard = React.memo(
                       fontSize="1.5rem"
                       mt="-15px"
                     >
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={40} />
-                      ) : segment.Destination ? (
-                        segment.Destination.Airport.CityCode
-                      ) : (
-                        "N/A"
-                      )}
+                      {segment.arrival?.iatA_LocationCode || "Unknown Code"}
                     </Typography>
                   </div>
                   <div className="grid-item departure-time">
                     <Typography fontSize="3rem" fontWeight="bold">
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={80} />
-                      ) : segment.Origin ? (
-                        new Date(segment.Origin.DepTime).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          }
-                        )
-                      ) : (
-                        "N/A"
-                      )}
+                      {new Date(
+                        segment.departure.aircraftScheduledDateTime
+                      ).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
                     </Typography>
                     <Typography
                       variant={isMobile ? "body2" : "h6"}
@@ -361,24 +310,17 @@ export const FlightCard = React.memo(
                         marginTop: "-15px",
                       }}
                     >
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={80} />
-                      ) : segment.Origin ? (
-                        new Date(segment.Origin.DepTime).toLocaleDateString(
-                          "en-US",
-                          {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          }
-                        )
-                      ) : (
-                        ""
-                      )}
+                      {new Date(
+                        segment.departure.aircraftScheduledDateTime
+                      ).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </Typography>
                   </div>
+
                   <div className="grid-item itinerary-icon">
-                    {" "}
                     <Box
                       style={{
                         flex: "1",
@@ -393,110 +335,96 @@ export const FlightCard = React.memo(
                         style={{
                           display: "flex",
                           flexDirection: "column",
-                          width: "80%", // Use 100% instead of 200px
+                          width: "80%",
                         }}
                       >
-                        {isLoading ? (
-                          <Skeleton animation="wave" width="100%" height={30} /> // Make Skeleton also responsive
-                        ) : (
-                          <>
-                            <Box
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100%",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-evenly",
+                              alignItems: "center",
+                              paddingLeft: "3px",
+                              width: "100%",
+                            }}
+                          >
+                            <Divider
                               sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                width: "100%", // Ensuring it uses full width
+                                borderColor: "#0067FF",
+                                borderWidth: "1px",
+                                width: "30%",
+                              }}
+                            />
+                            <Typography
+                              style={{
+                                width: "40%",
+                                textAlign: "center",
+                                overflow: "hidden",
+                                whiteSpace: "nowrap",
+                                fontSize: "15px",
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "space-evenly",
-                                  alignItems: "center",
-                                  paddingLeft: "3px",
-
-                                  width: "100%", // Ensure internal box also uses full width
-                                }}
-                              >
-                                <Divider
-                                  sx={{
-                                    borderColor: "#0067FF",
-                                    borderWidth: "1px",
-                                    width: "30%", // Using percentage instead of fixed value
-                                  }}
-                                />
-                                <Typography
-                                  style={{
-                                    width: "40%", // Allocate width for the duration text
-                                    textAlign: "center", // Center the text
-
-                                    overflow: "hidden",
-                                    whiteSpace: "nowrap",
-                                    fontSize: "15px",
-                                  }}
-                                >
-                                  {calculateDuration(segment)}
-                                </Typography>
-                                <Divider
-                                  sx={{
-                                    borderColor: "#0067FF",
-                                    borderWidth: "1px",
-                                    width: "30%", // Using percentage for symmetry
-                                  }}
-                                />
-                              </Box>
-                            </Box>
-                            <Box
+                              {calculateDuration(segment)}
+                            </Typography>
+                            <Divider
                               sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                marginTop: "-15px !important",
+                                borderColor: "#0067FF",
+                                borderWidth: "1px",
+                                width: "30%",
                               }}
-                            >
-                              <FlightIcon
-                                style={{
-                                  fontSize: isMobile ? "1rem" : "1.5rem",
-                                  color: "#0067FF",
-                                  transform: "rotate(90deg)",
-                                }}
-                              />
-                              <Divider
-                                sx={{
-                                  borderColor: "#0067FF",
-                                  borderWidth: "1px",
-                                  width: "100%", // Full width divider
-                                }}
-                              />
-                              <CircleIcon
-                                style={{
-                                  fontSize: isMobile ? "12px" : "12px",
-                                  color: "#0067FF",
-                                  marginLeft: 2,
-                                }}
-                              />
-                            </Box>
-                          </>
-                        )}
+                            />
+                          </Box>
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginTop: "-15px !important",
+                          }}
+                        >
+                          <FlightIcon
+                            style={{
+                              fontSize: isMobile ? "1rem" : "1.5rem",
+                              color: "#0067FF",
+                              transform: "rotate(90deg)",
+                            }}
+                          />
+                          <Divider
+                            sx={{
+                              borderColor: "#0067FF",
+                              borderWidth: "1px",
+                              width: "100%",
+                            }}
+                          />
+                          <CircleIcon
+                            style={{
+                              fontSize: isMobile ? "12px" : "12px",
+                              color: "#0067FF",
+                              marginLeft: 2,
+                            }}
+                          />
+                        </Box>
                       </div>
                     </Box>
                   </div>
+
                   <div className="grid-item arrival-time">
-                    {" "}
                     <Typography fontSize="3rem" fontWeight="bold">
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={80} />
-                      ) : segment.Destination ? (
-                        new Date(
-                          segment.Destination.ArrTime
-                        ).toLocaleTimeString("en-US", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          hour12: false,
-                        })
-                      ) : (
-                        "N/A"
-                      )}
+                      {new Date(
+                        segment.arrival.aircraftScheduledDateTime
+                      ).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      })}
                     </Typography>
                     <Typography
                       variant={isMobile ? "body2" : "h6"}
@@ -506,150 +434,82 @@ export const FlightCard = React.memo(
                         marginTop: "-15px",
                       }}
                     >
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={80} />
-                      ) : segment.Destination ? (
-                        new Date(
-                          segment.Destination.ArrTime
-                        ).toLocaleDateString("en-US", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })
-                      ) : (
-                        ""
-                      )}
+                      {new Date(
+                        segment.arrival.aircraftScheduledDateTime
+                      ).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </Typography>
                   </div>
-                  <div className="grid-item departure-airport">
-                    {isLoading ? (
-                      <Skeleton
-                        animation="wave"
-                        variant="text"
-                        width={100}
-                        height={20}
-                      />
-                    ) : (
-                      <Typography
-                        variant={isMobile ? "body2" : "h6"}
-                        style={{
-                          fontSize: "0.875rem",
 
-                          whiteSpace: "nowrap",
-                          width: "100%",
-                          maxWidth: "100%",
-                          display: "block",
-                          marginTop: "-5px",
-                        }}
-                      >
-                        {segment.Origin
-                          ? segment.Origin.Airport.AirportName
-                          : "Unknown Airport"}
-                      </Typography>
-                    )}
+                  {/* Additional Information */}
+                  <div className="grid-item departure-airport">
+                    {departureInfo.name || "Loading..."}
                   </div>
                   <div className="grid-item blank"></div>
                   <div className="grid-item arrival-airport">
-                    {" "}
-                    <Typography
-                      variant={isMobile ? "body2" : "h6"}
-                      style={{
-                        fontSize: "0.875rem",
-                        whiteSpace: "nowrap",
-                        width: "100%",
-                        maxWidth: "100%",
-                        display: "block",
-                        marginTop: "-5px",
-                      }}
-                    >
-                      {isLoading ? (
-                        <Skeleton animation="wave" width={100} height={20} />
-                      ) : segment.Destination ? (
-                        segment.Destination.Airport.AirportName
-                      ) : (
-                        "Unknown Airport"
-                      )}
-                    </Typography>
+                    {arrivalInfo.name || "Loading..."}
                   </div>
+
                   {index === 0 && (
                     <>
-                      {showActions && ( // Conditionally render the BDT box
+                      {showActions && (
                         <div className="grid-item price">
-                          <Typography>
-                            {isLoading ? (
-                              <Skeleton
-                                animation="wave"
-                                width={90}
-                                height={60}
-                              />
-                            ) : (
-                              <Typography fontSize="2rem" fontWeight="bold">
-                                BDT {calculateTotalAmount(flightData)}
-                              </Typography>
-                            )}
+                          <Typography fontSize="2rem" fontWeight="bold">
+                            BDT {calculateTotalAmount(flightData)}
                           </Typography>
                         </div>
                       )}
                       <div className="grid-item seat-option">
-                        {isLoading ? (
-                          <>
-                            <Skeleton
-                              width={100}
-                              height={30}
-                              animation="wave"
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <Typography
-                              sx={{
-                                display: "flex",
-                                alignItems: "center", // Ensure vertical center alignment within Typography
-                                justifyContent: "center", // Center the icon and text inside Typography
-                                fontWeight: "bold",
-                                marginRight: 2, // Optional: adds space between Typography and Button
-                              }}
-                            >
-                              <AirlineSeatReclineNormalIcon
-                                style={{
-                                  color: "#0067FF",
-                                  fontSize: "1.3rem",
-                                }}
-                              />
-                              {availability}
-                            </Typography>
-                            <Button
-                              sx={{
-                                textOverflow: "ellipsis",
-                                fontSize: "13px",
-                                whiteSpace: "nowrap",
-                                textAlign: "left",
-                                color: "black",
-                                textTransform: "none",
-                                padding: 0,
-                                "& .MuiSvgIcon-root": {
-                                  transition: "transform 0.3s",
-                                  transform: isMenuOpen
-                                    ? "rotate(180deg)"
-                                    : "rotate(0deg)",
-                                },
-                              }}
-                              onClick={handleClick}
-                              endIcon={<KeyboardArrowDownIcon />}
-                            >
-                              Economy FL
-                            </Button>
+                        <Typography
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: "bold",
+                            marginRight: 2,
+                          }}
+                        >
+                          <AirlineSeatReclineNormalIcon
+                            style={{
+                              color: "#0067FF",
+                              fontSize: "1.3rem",
+                            }}
+                          />
+                          {availability}
+                        </Typography>
+                        <Button
+                          sx={{
+                            textOverflow: "ellipsis",
+                            fontSize: "13px",
+                            whiteSpace: "nowrap",
+                            textAlign: "left",
+                            color: "black",
+                            textTransform: "none",
+                            padding: 0,
+                            "& .MuiSvgIcon-root": {
+                              transition: "transform 0.3s",
+                              transform: isMenuOpen
+                                ? "rotate(180deg)"
+                                : "rotate(0deg)",
+                            },
+                          }}
+                          onClick={handleMenuOpen}
+                          endIcon={<KeyboardArrowDownIcon />}
+                        >
+                          Economy FL
+                        </Button>
 
-                            <Menu
-                              anchorEl={anchorEl}
-                              open={isMenuOpen}
-                              onClose={handleClose}
-                            >
-                              <MenuItem onClick={handleClose}>Demo 1</MenuItem>
-                              <MenuItem onClick={handleClose}>Demo 2</MenuItem>
-                            </Menu>
-                          </>
-                        )}
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={isMenuOpen}
+                          onClose={handleMenuClose}
+                        >
+                          <MenuItem onClick={handleMenuClose}>Demo 1</MenuItem>
+                          <MenuItem onClick={handleMenuClose}>Demo 2</MenuItem>
+                        </Menu>
                       </div>
                     </>
                   )}
@@ -660,7 +520,7 @@ export const FlightCard = React.memo(
                     variant="middle"
                     sx={{
                       my: 2,
-                      width: "80%", // Adjust the percentage to control the divider's width
+                      width: "80%",
                       marginLeft: "-1px",
                       marginRight: "auto",
                     }}
@@ -681,16 +541,16 @@ export const FlightCard = React.memo(
                     borderBottomRightRadius: "10px",
                     borderBottomLeftRadius: "10px",
                     ":hover": {
-                      backgroundColor: "#00008B", // Darker blue on hover
+                      backgroundColor: "#00008B",
                     },
                   }}
                   onClick={handleViewDetails}
                   className="view-details-button"
                   style={{
-                    width: "90%", // Set width to 70%
+                    width: "90%",
                     justifyContent: "flex-end",
-                    borderTopRightRadius: "0px", // Set top left border radius
-                    borderBottomRightRadius: "10px", // Set bottom left border radius
+                    borderTopRightRadius: "0px",
+                    borderBottomRightRadius: "10px",
                   }}
                   endIcon={
                     <KeyboardArrowDownIcon
@@ -712,13 +572,13 @@ export const FlightCard = React.memo(
                   color="primary"
                   className="select-button"
                   style={{
-                    width: "20%", // Set width to 30%
+                    width: "20%",
                     justifyContent: "flex-end",
-                    borderTopLeftRadius: "0px", // No radius on the top left
+                    borderTopLeftRadius: "0px",
                     borderBottomLeftRadius: "10px",
-                    borderBottomRightRadius: "10px", // No radius on the bottom left
+                    borderBottomRightRadius: "10px",
                     ":hover": {
-                      backgroundColor: "#00008B", // Darker blue on hover
+                      backgroundColor: "#00008B",
                     },
                   }}
                   endIcon={<ArrowForwardIcon />}
@@ -727,49 +587,17 @@ export const FlightCard = React.memo(
                 </Button>
               </div>
             )}
-            {showDetails && (
-              <TabComponent
-                activeTab={activeTab}
-                handleTabChange={handleTabChange}
-                flightDataf={flightData}
-              />
-            )}
+            {showDetails &&
+              segments.length > 0 && ( // Check if segments are available
+                <TabComponent
+                  activeTab={activeTab}
+                  handleTabChange={handleTabChange}
+                  flightDataf={flightData}
+                />
+              )}
           </Box>
         )}
       </TabContext>
-    );
-  }
-);
-
-export const FlightInfoItem = React.memo(
-  ({ icon, value, valueStyle, isMobile, isLoading }) => {
-    const theme = useTheme();
-    const isXs = useMediaQuery(theme.breakpoints.down("xs"));
-    const isSm = useMediaQuery(theme.breakpoints.between("xs", "sm"));
-    const isMd = useMediaQuery(theme.breakpoints.between("sm", "md"));
-
-    let variant;
-    if (isXs) {
-      variant = "body2";
-    } else if (isSm) {
-      variant = "body1";
-    } else if (isMd) {
-      variant = "h6";
-    } else {
-      variant = "h5";
-    }
-
-    return (
-      <Box flex="1" display="flex" alignItems="center">
-        {icon && <Box sx={{ mr: 1 }}>{icon}</Box>}
-        {isLoading ? (
-          <Skeleton width={60} height={20} />
-        ) : (
-          <Typography variant={variant} style={{ ...valueStyle, flexGrow: 1 }}>
-            {value}
-          </Typography>
-        )}
-      </Box>
     );
   }
 );

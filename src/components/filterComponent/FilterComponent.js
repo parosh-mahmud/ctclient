@@ -115,12 +115,20 @@ function HorizontalBoxes({
   const [uniqueAirlines, setUniqueAirlines] = useState([]);
 
   useEffect(() => {
-    const airlineSet = new Set(
-      flightDataArray.flatMap((flight) =>
-        flight.segments.map((segment) => segment.Airline.AirlineName)
-      )
-    );
-    setUniqueAirlines(["All Airlines", ...airlineSet]);
+    if (flightDataArray && flightDataArray.length > 0) {
+      // Extract airline names from the new data structure
+      const airlineSet = new Set(
+        flightDataArray.flatMap((offerItem) => {
+          const offer = offerItem.offer;
+          const segments = offer.paxSegmentList.map((item) => item.paxSegment);
+          return segments.map(
+            (segment) =>
+              segment.marketingCarrierInfo?.carrierName || "Unknown Airline"
+          );
+        })
+      );
+      setUniqueAirlines(["All Airlines", ...airlineSet]);
+    }
   }, [flightDataArray]);
 
   const isMenuOpen = (menu) => Boolean(anchorEls[menu]);
@@ -283,13 +291,6 @@ function HorizontalBoxes({
                 }
               >
                 Refundable
-              </MenuItem>
-              <MenuItem
-                onClick={() =>
-                  handleFilterSelection("Partially Refundable", "refundable")
-                }
-              >
-                Partially Refundable
               </MenuItem>
               <MenuItem
                 onClick={() =>

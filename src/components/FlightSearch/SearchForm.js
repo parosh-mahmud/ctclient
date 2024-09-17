@@ -254,33 +254,69 @@ export const SearchForm = ({ searchButtonLabel }) => {
 
   const handleFormData = async () => {
     let updatedFormData = {
-      AdultQuantity: adults,
-      ChildQuantity: children,
-      InfantQuantity: infants,
-      EndUserIp: "103.124.251.147",
-      JourneyType: selectedOption === "oneway" ? "1" : "2",
-      Segments: [
-        {
-          Origin: selectedFromAirport.code,
-          Destination: selectedToAirport.code,
-          CabinClass: selectedClass === "Economy" ? "1" : "2",
-          DepartureDateTime: selectedDate.format("YYYY-MM-DD"),
+      pointOfSale: "BD",
+      request: {
+        originDest: [
+          {
+            originDepRequest: {
+              iatA_LocationCode: selectedFromAirport.code, // Origin airport code
+              date: selectedDate.format("YYYY-MM-DD"), // Departure date
+            },
+            destArrivalRequest: {
+              iatA_LocationCode: selectedToAirport.code, // Destination airport code
+            },
+          },
+        ],
+        pax: [],
+        shoppingCriteria: {
+          tripType: selectedOption === "oneway" ? "Oneway" : "Return",
+          travelPreferences: {
+            vendorPref: [], // Empty array for airline preferences
+            cabinCode: selectedClass === "Economy" ? "Economy" : "Business", // Cabin class
+          },
+          returnUPSellInfo: true,
         },
-      ],
+      },
     };
-    console.log(updatedFormData);
-    if (selectedOption === "return") {
-      updatedFormData.Segments.push({
-        Origin: selectedToAirport.code,
-        Destination: selectedFromAirport.code,
-        CabinClass: selectedClass === "Economy" ? "1" : "2",
-        DepartureDateTime: returnDate.format("YYYY-MM-DD"),
+
+    // Add passengers to the request
+    for (let i = 0; i < adults; i++) {
+      updatedFormData.request.pax.push({
+        paxID: `PAX${i + 1}`,
+        ptc: "ADT", // Adult Passenger
+      });
+    }
+    for (let i = 0; i < children; i++) {
+      updatedFormData.request.pax.push({
+        paxID: `PAX${adults + i + 1}`,
+        ptc: "CHD", // Child Passenger
+      });
+    }
+    for (let i = 0; i < infants; i++) {
+      updatedFormData.request.pax.push({
+        paxID: `PAX${adults + children + i + 1}`,
+        ptc: "INF", // Infant Passenger
       });
     }
 
+    // Add return segment if selected
+    if (selectedOption === "return") {
+      updatedFormData.request.originDest.push({
+        originDepRequest: {
+          iatA_LocationCode: selectedToAirport.code,
+          date: returnDate.format("YYYY-MM-DD"),
+        },
+        destArrivalRequest: {
+          iatA_LocationCode: selectedFromAirport.code,
+        },
+      });
+    }
+
+    console.log(updatedFormData);
+
     try {
       setIsFetching(true);
-      dispatch(fetchFlightResults(updatedFormData));
+      await dispatch(fetchFlightResults(updatedFormData));
       history.push("/flight-results");
     } finally {
       setIsFetching(false);
@@ -290,13 +326,12 @@ export const SearchForm = ({ searchButtonLabel }) => {
   return (
     <>
       <Grid container style={gridContainerStyle}>
-        <Grid item>
+        <Grid item xs={12} style={{ marginLeft: "10px" }}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
-              marginLeft: "10px",
-              justifyContent: "center",
+              justifyContent: "flex-start", // Aligns CustomIconButton to start from the left
               alignItems: "center",
               width: "100%",
             }}

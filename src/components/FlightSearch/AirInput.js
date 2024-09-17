@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Grid, Stack, Typography } from "@mui/material";
-import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff";
-import FlightLandIcon from "@mui/icons-material/FlightLand";
+import React, { useEffect, useRef } from "react";
+import { Box, Grid, Typography } from "@mui/material";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import FromAirportPopover from "./FromAirportPopover";
@@ -15,15 +13,19 @@ import TravelerClassPopover from "./TravelerClassPopover";
 import { selectFlightSearchParams } from "../../redux/reducers/flightSlice";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
-import useStyles from "./styles";
+import { selectFlightSearchData } from "../../redux/reducers/flightSlice";
+import useStyles, {
+  swapIconStyle,
+  boxStyle,
+  paperStyle,
+  typographyPadding,
+} from "./styles";
 
 const AirInput = ({
   isFirstChild,
-  canRemove,
   journeyType,
   onAddCity,
   onRemoveCity,
-  paperStyle,
   selectedFromAirport,
   selectedToAirport,
   handlePopoverClick,
@@ -62,10 +64,9 @@ const AirInput = ({
 }) => {
   const travelDateRef = useRef(null);
   const searchParams = useSelector(selectFlightSearchParams);
-  console.log(searchParams.AdultQuantity);
-  console.log(searchParams);
   const styles = useStyles();
-  // Effect to update selectedDate from searchParams
+  const flightdata = useSelector(selectFlightSearchData);
+  console.log(flightdata);
   useEffect(() => {
     if (searchParams.DepartureDateTime) {
       const parsedDate = dayjs(searchParams.DepartureDateTime);
@@ -76,83 +77,61 @@ const AirInput = ({
   return (
     <Grid container spacing={1} style={{ paddingBottom: "60px", width: "99%" }}>
       <Grid item sm={12} xs={12} lg={6} md={6} direction="row">
-        <Box style={paperStyle}>
+        <Box style={{ ...paperStyle, position: "relative" }}>
           <Box
             onClick={(event) => handlePopoverClick(event, "from")}
             style={{
-              border: "1px solid #0067FF",
+              ...boxStyle,
+              borderRight: "1px solid #E5E7EB",
+              borderRadius: "10px 0 0 10px",
               width: "calc(50% - 20px)",
-              height: "96px",
-              cursor: "pointer",
-              overflow: "hidden",
-              borderRadius: "5px",
+              textAlign: "left",
+              paddingLeft: "10px",
             }}
           >
-            <Stack
-              direction="column"
-              justifyContent="flex-start"
-              alignItems="flex-start"
-              style={{ marginLeft: "10px" }}
+            <Typography
+              sx={{
+                ...typographyPadding,
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                fontSize: "14px",
+                textAlign: "left",
+              }}
             >
-              <Typography style={{ fontSize: "1em", display: "flex" }}>
-                {/* <FlightTakeoffIcon style={{ color: "#0067FF" }} /> */}
-                <Typography
-                  sx={{
-                    fontFamily: "Google Sans, sans-serif",
-                    // marginLeft: "10px",
-                  }}
-                >
-                  From
-                </Typography>
-              </Typography>
-              <Typography
-                textAlign="left"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  fontFamily: "Google Sans, sans-serif",
-                  textAlign: "left",
-                  color: "#212F3C",
-                }}
-              >
-                {selectedFromAirport
-                  ? `${selectedFromAirport.city} - ${selectedFromAirport.code}`
-                  : "Select an Airport"}
-              </Typography>
-              <Typography
-                textAlign="left"
-                sx={{
-                  fontSize: "13px",
-                  textAlign: "left",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {selectedFromAirport
-                  ? selectedFromAirport.name
-                  : "Select an Airport"}
-              </Typography>
-            </Stack>
+              From
+            </Typography>
+            <Typography
+              style={{
+                ...typographyPadding,
+                fontWeight: "bold",
+                fontSize: "1.25rem",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#343A40",
+                textAlign: "left",
+              }}
+            >
+              {selectedFromAirport
+                ? selectedFromAirport.city
+                : "Select an Airport"}
+            </Typography>
+            <Typography
+              style={{
+                ...typographyPadding,
+                fontSize: "13px",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                whiteSpace: "nowrap",
+                textAlign: "left",
+              }}
+            >
+              {selectedFromAirport
+                ? selectedFromAirport.name
+                : "Select an Airport"}
+            </Typography>
           </Box>
 
-          <Box
-            onClick={handleSwapAirports}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "40px",
-              height: "40px",
-              position: "relative",
-              zIndex: 1,
-              cursor: "pointer",
-            }}
-          >
-            <SwapHorizIcon
-              style={{
-                fontSize: "45px",
-                color: "#212F3C",
-              }}
-            />
+          <Box onClick={handleSwapAirports} style={swapIconStyle}>
+            <SwapHorizIcon style={{ fontSize: "24px", color: "#FF0000" }} />
           </Box>
 
           <FromAirportPopover
@@ -166,47 +145,49 @@ const AirInput = ({
           />
 
           <Box
-            id="toAirportTrigger"
             onClick={(event) => handlePopoverClick(event, "to")}
             style={{
-              border: "1px solid #0067FF",
+              ...boxStyle,
+              borderRadius: "0 10px 10px 0",
               width: "calc(50% - 20px)",
-              height: "96px",
-              cursor: "pointer",
-              borderRadius: "5px",
-              overflow: "hidden",
+              textAlign: "left",
             }}
           >
-            <Stack
-              direction="column"
-              justifyContent="flex-start"
-              alignItems="baseline"
-              style={{ marginLeft: "10px" }}
+            <Typography
+              sx={{
+                ...typographyPadding,
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                fontSize: "14px",
+                textAlign: "left",
+              }}
             >
-              <Typography style={{ fontSize: "1em", display: "flex" }}>
-                {/* <FlightLandIcon style={{ color: "#0067FF" }} /> */}
-                <Typography>To</Typography>
-              </Typography>
-              <Typography
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  color: "#212F3C",
-                }}
-              >
-                {selectedToAirport
-                  ? `${selectedToAirport.city} - ${selectedToAirport.code}`
-                  : "Select an Airport"}
-              </Typography>
-              <Typography
-                textAlign="left"
-                style={{ fontSize: "13px", whiteSpace: "nowrap" }}
-              >
-                {selectedToAirport
-                  ? selectedToAirport.name
-                  : "Select an Airport"}
-              </Typography>
-            </Stack>
+              To
+            </Typography>
+            <Typography
+              style={{
+                ...typographyPadding,
+                fontWeight: "bold",
+                fontSize: "1.25rem",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#343A40",
+                textAlign: "left",
+              }}
+            >
+              {selectedToAirport ? selectedToAirport.city : "Select an Airport"}
+            </Typography>
+            <Typography
+              style={{
+                ...typographyPadding,
+                fontSize: "13px",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                whiteSpace: "nowrap",
+                textAlign: "left",
+              }}
+            >
+              {selectedToAirport ? selectedToAirport.name : "Select an Airport"}
+            </Typography>
           </Box>
 
           <ToAirportPopover
@@ -221,61 +202,51 @@ const AirInput = ({
         </Box>
       </Grid>
 
-      <Grid item sm={12} xs={12} lg={4} md={4}>
-        <Box style={paperStyle}>
+      <Grid item sm={12} xs={12} lg={6} md={6}>
+        <Box style={{ ...paperStyle, position: "relative" }}>
           <Box
             id="travelDateTrigger"
             ref={travelDateRef}
             onClick={handleDPopoverClick}
             style={{
-              borderRight: "none",
-              border: "1px solid #0067FF",
-              borderBottomLeftRadius: "5px",
-              borderTopLeftRadius: "5px",
-              width: "50%",
-              height: "96px",
-              float: "left",
-              cursor: "pointer",
-              boxSizing: "border-box",
+              ...boxStyle,
+              borderRight: "1px solid #E5E7EB",
+              borderRadius: "10px 0 0 10px",
+              width: "calc(33.33% - 20px)",
+              textAlign: "left",
             }}
           >
-            <Box
-              style={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "row",
+            <Typography
+              sx={{
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                fontSize: "14px",
+                textAlign: "left",
               }}
             >
-              <Box
-                marginLeft="10px"
-                textAlign="left"
-                alignItems="center"
-                justifyContent="center"
-                display="flex"
-                flexDirection="row"
-              >
-                <Typography>Travel Date</Typography>
-                {isTravelDatePopoverOpen ? (
-                  <KeyboardArrowUpIcon style={{ fontSize: "30px" }} />
-                ) : (
-                  <KeyboardArrowDownIcon style={{ fontSize: "24px" }} />
-                )}
-              </Box>
-            </Box>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Typography
-                color="#212F3C"
-                marginLeft="10px"
-                textAlign="left"
-                style={{ fontSize: "1rem", fontWeight: "bold" }}
-              >
-                {selectedDate.format("DD MMM YY")}
-              </Typography>
-              <Typography fontSize="13px" marginLeft="10px" textAlign="left">
-                {dayOfWeek}
-              </Typography>
-            </LocalizationProvider>
+              Travel Date
+            </Typography>
+            <Typography
+              style={{
+                fontWeight: "bold",
+                fontSize: "1.25rem",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#343A40",
+                textAlign: "left",
+              }}
+            >
+              {selectedDate.format("DD MMM YY")}
+            </Typography>
+            <Typography
+              style={{
+                fontSize: "13px",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                textAlign: "left",
+              }}
+            >
+              {dayOfWeek}
+            </Typography>
           </Box>
 
           <TravelDatePopover
@@ -290,49 +261,43 @@ const AirInput = ({
             id="returnDateTrigger"
             onClick={(event) => handleRPopoverClick(event)}
             style={{
-              width: "50%",
-              height: "96px",
-              float: "left",
-              boxSizing: "border-box",
-              border: "1px solid #0067FF",
-              borderTopRightRadius: "5px",
-              borderBottomRightRadius: "5px",
-              borderLeft: "none",
-              cursor: "pointer",
-              justifyContent: "center",
-              alignItems: "center",
-              boxSizing: "border-box",
+              ...boxStyle,
+              borderRight: "1px solid #E5E7EB",
+              width: "calc(33.33% - 20px)",
+              textAlign: "left",
             }}
           >
-            <Box style={{ display: "flex" }}>
-              <Typography marginLeft="10px">Return</Typography>
-              {isReturnDatePopoverOpen ? (
-                <KeyboardArrowUpIcon style={{ fontSize: "30px" }} />
-              ) : (
-                <KeyboardArrowDownIcon style={{ fontSize: "24px" }} />
-              )}
-            </Box>
-            {returnDate ? (
-              <>
-                <Typography
-                  marginLeft="10px"
-                  style={{ fontSize: "1rem", fontWeight: "bold" }}
-                >
-                  {returnDate.format("DD MMM YY")}
-                </Typography>
-                <Typography marginLeft="10px">
-                  {returnDate.format("dddd")}
-                </Typography>
-              </>
-            ) : (
-              <Typography
-                marginLeft="10px"
-                textAlign="left"
-                style={{ fontSize: "13px" }}
-              >
-                Tap here to add return date
-              </Typography>
-            )}
+            <Typography
+              sx={{
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                fontSize: "14px",
+                textAlign: "left",
+              }}
+            >
+              Return Date
+            </Typography>
+            <Typography
+              style={{
+                fontWeight: "bold",
+                fontSize: "1.25rem",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#343A40",
+                textAlign: "left",
+              }}
+            >
+              {returnDate ? returnDate.format("DD MMM YY") : "Tap to add"}
+            </Typography>
+            <Typography
+              style={{
+                fontSize: "13px",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                textAlign: "left",
+              }}
+            >
+              {returnDate ? returnDate.format("dddd") : ""}
+            </Typography>
           </Box>
 
           <ReturnDatePopover
@@ -342,76 +307,49 @@ const AirInput = ({
             handleReturnDateChange={handleReturnDateChange}
             classes={classes}
           />
-        </Box>
-      </Grid>
 
-      <Grid item sm={12} xs={12} lg={2} md={2}>
-        <Box style={paperStyle}>
           <Box
             onClick={openModal}
             style={{
-              width: "100%",
-              height: "96px",
-              cursor: "pointer",
-              border: "1px solid #0067FF",
-              borderRadius: "5px",
-              boxSizing: "border-box",
-              flexWrap: "wrap",
+              ...boxStyle,
+              borderRadius: "0 10px 10px 0",
+              width: "calc(33.33% - 20px)",
+              textAlign: "left",
             }}
           >
-            {(isFirstChild || journeyType !== "multicity") && (
-              <Box sx={{ marginLeft: "10px" }}>
-                <Typography textAlign="left">Traveller & Class</Typography>
-                <Typography
-                  color="#212F3C"
-                  textAlign="left"
-                  style={{ fontSize: "1rem", fontWeight: "bold" }}
-                >{`${adults + children + infants} Person${
-                  adults + children + infants > 1 ? "s" : ""
-                }`}</Typography>
-                <Typography
-                  color="#212F3C"
-                  textAlign="left"
-                  fontSize="13px"
-                  style={{ fontStyle: "italic", fontWeight: "bold" }}
-                >
-                  {selectedClass}
-                </Typography>
-              </Box>
-            )}
-
-            {journeyType === "multicity" && !isFirstChild && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 2,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  fontFamily="Google Sans, sans-serif"
-                  fontSize="50px"
-                  size="small"
-                  variant="outlined"
-                  onClick={onAddCity}
-                  style={{ flex: 1 }}
-                >
-                  +
-                </Typography>
-                <Typography
-                  fontFamily="Google Sans, sans-serif"
-                  fontSize="50px"
-                  size="small"
-                  variant="outlined"
-                  onClick={onRemoveCity}
-                  style={{ flex: 1 }}
-                >
-                  -
-                </Typography>
-              </Box>
-            )}
+            <Typography
+              sx={{
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                fontSize: "14px",
+                textAlign: "left",
+              }}
+            >
+              Traveller & Class
+            </Typography>
+            <Typography
+              style={{
+                fontWeight: "bold",
+                fontSize: "1.25rem",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#343A40",
+                textAlign: "left",
+              }}
+            >
+              {`${adults + children + infants} Person${
+                adults + children + infants > 1 ? "s" : ""
+              }`}
+            </Typography>
+            <Typography
+              style={{
+                fontSize: "13px",
+                fontFamily: "Google Sans, sans-serif",
+                color: "#6C757D",
+                textAlign: "left",
+              }}
+            >
+              {selectedClass}
+            </Typography>
           </Box>
 
           <TravelerClassPopover

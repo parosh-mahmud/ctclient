@@ -37,7 +37,7 @@ const FlightResults = () => {
   const currentSearchParams = useSelector(selectFlightSearchParams);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  console.log(currentSearchParams);
+  console.log(flightSearchData);
   const [isSearchFormVisible, setIsSearchFormVisible] = useState(false);
   const [uniqueAirlines, setUniqueAirlines] = useState([]);
   const [showSortedFlights, setShowSortedFlights] = useState(false);
@@ -46,25 +46,37 @@ const FlightResults = () => {
   const [selectedRefundable, setSelectedRefundable] = useState("All");
 
   useEffect(() => {
-    if (flightSearchData?.Results?.length > 0) {
-      const airlineNames = flightSearchData.Results.flatMap((flight) =>
-        flight.segments.map((segment) => segment.Airline.AirlineName)
+    if (flightSearchData?.response?.offersGroup?.length > 0) {
+      const airlineNames = flightSearchData.response.offersGroup.flatMap(
+        (offerItem) => {
+          const offer = offerItem.offer;
+          const segments = offer.paxSegmentList.map((item) => item.paxSegment);
+          return segments.map(
+            (segment) =>
+              segment.marketingCarrierInfo?.carrierName || "Unknown Airline"
+          );
+        }
       );
       const uniqueAirlineNames = [...new Set(airlineNames)];
       setUniqueAirlines(uniqueAirlineNames);
     }
-  }, [flightSearchData.Results]);
+  }, [flightSearchData]);
 
-  const totalFlights = flightSearchData?.Results?.length || 0;
+  const totalFlights = flightSearchData?.response?.offersGroup?.length || 0;
 
   const handleFilterByAirline = (airlineName) => {
     if (airlineName === "All Airlines") {
       setShowSortedFlights(false);
     } else {
-      const filteredFlights = flightSearchData.Results.filter((flight) =>
-        flight.segments.some(
-          (segment) => segment.Airline.AirlineName === airlineName
-        )
+      const filteredFlights = flightSearchData.response.offersGroup.filter(
+        (offerItem) => {
+          const offer = offerItem.offer;
+          const segments = offer.paxSegmentList.map((item) => item.paxSegment);
+          return segments.some(
+            (segment) =>
+              segment.marketingCarrierInfo?.carrierName === airlineName
+          );
+        }
       );
       setSortedFlights(filteredFlights);
       setShowSortedFlights(true);
@@ -80,24 +92,21 @@ const FlightResults = () => {
   const location = useLocation();
 
   const handleSortFlights = (sortBy) => {
-    let sortedFlights = [...flightSearchData.Results];
+    let sortedFlights = [...flightSearchData.response.offersGroup];
 
     sortedFlights.sort((a, b) => {
+      const offerA = a.offer;
+      const offerB = b.offer;
+
+      const baseFareA = offerA.fareDetailList[0]?.fareDetail?.baseFare || 0;
+      const baseFareB = offerB.fareDetailList[0]?.fareDetail?.baseFare || 0;
+
       switch (sortBy) {
         case "Cheapest":
-          return a.Fares[0].BaseFare - b.Fares[0].BaseFare;
+          return baseFareA - baseFareB;
         case "Highest":
-          return b.Fares[0].BaseFare - a.Fares[0].BaseFare;
-        case "Earlier Flight":
-          return (
-            new Date(a.segments[0].Origin.DepTime).getTime() -
-            new Date(b.segments[0].Origin.DepTime).getTime()
-          );
-        case "Later Flight":
-          return (
-            new Date(b.segments[0].Origin.DepTime).getTime() -
-            new Date(a.segments[0].Origin.DepTime).getTime()
-          );
+          return baseFareB - baseFareA;
+        // Add cases for "Earlier Flight" and "Later Flight" as needed
         default:
           return 0;
       }
@@ -167,15 +176,15 @@ const FlightResults = () => {
   const filterFlightsByLowestBaseFare = (flights) => {
     const flightMap = new Map();
 
-    flights.forEach((flight) => {
-      const flightNumber = flight.segments[0].Airline.FlightNumber;
+    flights.forEach((offerItem) => {
+      const offer = offerItem.offer;
+      const flightNumber = offer.paxSegmentList[0]?.paxSegment?.flightNumber;
+      const baseFare = offer.fareDetailList[0]?.fareDetail?.baseFare || 0;
+
       const currentFlight = flightMap.get(flightNumber);
 
-      if (
-        !currentFlight ||
-        flight.Fares[0].BaseFare < currentFlight.Fares[0].BaseFare
-      ) {
-        flightMap.set(flightNumber, flight);
+      if (!currentFlight || baseFare < currentFlight.baseFare) {
+        flightMap.set(flightNumber, { ...offerItem, baseFare });
       }
     });
 
@@ -183,7 +192,9 @@ const FlightResults = () => {
   };
 
   const filteredFlights = filterFlightsByLowestBaseFare(
-    showSortedFlights ? sortedFlights : flightSearchData?.Results || []
+    showSortedFlights
+      ? sortedFlights
+      : flightSearchData?.response?.offersGroup || []
   );
 
   return (
@@ -271,10 +282,13 @@ const FlightResults = () => {
                   }}
                 >
                   <FilterComponent
-                    flightDataArray={flightSearchData.Results}
+                    flightDataArray={
+                      flightSearchData?.response?.offersGroup || []
+                    }
                     onSortFlights={handleSortFlights}
                     onFilterByAirline={handleFilterByAirline}
                     onFilterByRefundable={handleFilterByRefundable}
+                    // onFilterByStops={handleFilterByStops} // Make sure to implement this function
                   />
                 </Box>
                 <Box
@@ -291,10 +305,10 @@ const FlightResults = () => {
                     borderRadius: "5px",
                   }}
                 >
-                  <RecommendFilter
+                  {/* <RecommendFilter
                     flightDataArray={flightSearchData.Results}
                     onSortFlights={handleSortFlights}
-                  />
+                  /> */}
                 </Box>
                 {isLoading ? (
                   <Skeleton variant="text" width={100} height={20} />
@@ -314,11 +328,11 @@ const FlightResults = () => {
                   </Typography>
                 )}
                 <Box>
-                  {filteredFlights.map((flight) => (
-                    <div key={flight.ResultID}>
+                  {filteredFlights.map((offerItem) => (
+                    <div key={offerItem.offer.offerId}>
                       <FlightCard
-                        flightData={flight}
-                        availability={flight.Availabilty}
+                        flightData={offerItem}
+                        availability={offerItem.offer.seatsRemaining}
                         isLoading={isLoading}
                         onFetchingStart={handleFetchingStart}
                         onFetchingComplete={handleFetchingComplete}
